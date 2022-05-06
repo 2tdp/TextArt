@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">RemiTextArt</string>
+
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+
+    //splash
+    <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
+    <string name="splash_2">Unfold The \nBeautiful \nStories</string>
+    <string name="splash_3">Customize \nYour \nPictures</string>
+    <string name="next">Next</string>
+    <string name="start">Get Started</string>
+
+    //request permission
+    <string name="rp_1">Write Storage</string>
+    <string name="rp_2">We need you to provide this permission to perform actions inside the app</string>
+    <string name="rp_3">To work, \"TextArt\" app needs access to your audio files.</string>
+    <string name="allow_per">Allow Permission</string>
+
+    //home
+    <string name="cre_pro">Create Project</string>
+    <string name="temp">Template</string>
+    <string name="pro">Project</string>
+    <string name="pros">Projects</string>
+    <string name="des">Create Your Project</string>
+
+    //project
+    <string name="des_pro">Could Not Find Any Results!</string>
+    <string name="dialog_title_del_pro">Delete this Project?</string>
+    <string name="dialog_des_del_pro">Are you sure want to delete this Project?</string>
+
+    //settings
+    <string name="setting">Setting</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="help">Help</string>
+    <string name="policy">Policy</string>
+</resources>

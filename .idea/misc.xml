@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_dialog.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_create_project.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_project.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_template.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/custom_background_popupmenu.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_create_project.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_main.xml" value="0.3416666666666667" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_projects.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_settings.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_check_permission.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_click_create.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_del_project.xml" value="0.33" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_create_project.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_create_projects.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_one_splash.xml" value="0.33" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_projects.xml" value="0.35572916666666665" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_template.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_three_splash.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_two_splash.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_project.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/splash_activity.xml" value="0.33" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
