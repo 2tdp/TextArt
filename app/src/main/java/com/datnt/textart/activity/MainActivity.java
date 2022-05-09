@@ -52,9 +52,11 @@ public class MainActivity extends AppCompatActivity {
             tvCancel.setOnClickListener(v1 -> dialog.cancel());
             ivUseTemp.setOnClickListener(v2 -> {
                 Utils.setIntent(this, TemplateActivity.class.getName());
+                dialog.cancel();
             });
             ivCreate.setOnClickListener(v3 -> {
                 Utils.setIntent(this, CreateProjectActivity.class.getName());
+                dialog.cancel();
             });
         });
 

@@ -44,7 +44,8 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:fontFamily="@font/poppins_regular"
             android:gravity="center"
+            android:padding="@dimen/_5sdp"
             android:textColor="@color/green"
-            android:textSize="@dimen/_13ssp" />
+            android:textSize="@dimen/_15ssp" />
     </RelativeLayout>
 </RelativeLayout>

@@ -12,10 +12,12 @@
     <color name="light_blue_900">#FF01579B</color>
 
     // myColor
+    <color name="trans">#00000000</color>
     <color name="background">#D7D7D7</color>
     <color name="black">#575757</color>
     <color name="green">#2BB4CD</color>
     <color name="white">#FFFFFF</color>
+    <color name="white_2">#80656565</color>
     <color name="yellow">#EAD732</color>
     <color name="pink">#ED7DAF</color>
     <color name="gray">#9E9E9E</color>

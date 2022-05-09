@@ -4,6 +4,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="all">All</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -35,4 +36,10 @@
     <string name="rate_us">Rate Us</string>
     <string name="help">Help</string>
     <string name="policy">Policy</string>
+
+    //background
+    <string name="bg">Background</string>
+    <string name="recent">Recent</string>
+    <string name="my_app">My App</string>
+    <string name="color">Color</string>
 </resources>
