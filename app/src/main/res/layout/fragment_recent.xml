@@ -7,7 +7,7 @@
     tools:context=".fragment.create.RecentFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvPic"
+        android:id="@+id/rcvPicRecent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/_5sdp"

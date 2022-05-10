@@ -25,10 +25,11 @@ public class CreateProjectActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private TextView tvRecent, tvMyApp, tvColor;
-    private ImageView ivRecent;
+    private ImageView ivRecent, ivBack;
     private View vRecent, vMyApp, vColor;
 
     private RecentFragment recentFragment;
+    private ColorFragment colorFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class CreateProjectActivity extends AppCompatActivity {
     }
 
     private void init() {
+        ivBack = findViewById(R.id.ivBack);
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPage);
 
@@ -51,6 +53,7 @@ public class CreateProjectActivity extends AppCompatActivity {
     }
 
     private void evenClick() {
+        ivBack.setOnClickListener(v -> onBackPressed());
     }
 
     private void setUpLayout() {
@@ -83,7 +86,13 @@ public class CreateProjectActivity extends AppCompatActivity {
         tvColor = vColor.findViewById(R.id.tvColor);
         ivRecent = vRecent.findViewById(R.id.ivRecent);
 
-        vRecent.setOnClickListener(v -> recentFragment.setExpand(ivRecent));
+        vRecent.setOnClickListener(v -> {
+            if (viewPager.getCurrentItem() == 0) recentFragment.setExpand(ivRecent, "");
+            else {
+                viewPager.setCurrentItem(0, true);
+                recentFragment.setExpand(ivRecent, "click");
+            }
+        });
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -109,7 +118,8 @@ public class CreateProjectActivity extends AppCompatActivity {
         recentFragment = RecentFragment.newInstance();
         recentFragment.setViewPager(viewPager);
         MyAppFragment myAppFragment = MyAppFragment.newInstance();
-        ColorFragment colorFragment = ColorFragment.newInstance();
+        colorFragment = ColorFragment.newInstance();
+        colorFragment.setViewPager(viewPager);
 
         fragmentsAdapter.addFrag(recentFragment);
         fragmentsAdapter.addFrag(myAppFragment);
@@ -141,7 +151,7 @@ public class CreateProjectActivity extends AppCompatActivity {
                     vRecent.setBackgroundResource(R.drawable.tab_indicator_uncheck);
                     tvRecent.setTextColor(getResources().getColor(R.color.black));
                     ivRecent.setImageResource(R.drawable.ic_bottom);
-                    recentFragment.setExpand(null);
+                    recentFragment.setExpand(null, "");
                     break;
                 case 1:
                     vMyApp.setBackgroundResource(R.drawable.tab_indicator_uncheck);
@@ -159,5 +169,10 @@ public class CreateProjectActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkTab(true, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -5,4 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".fragment.create.MyAppFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvPicMyApp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_5sdp"
+        android:scrollbars="none" />
+
 </FrameLayout>

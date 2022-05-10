@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class RecentFragment extends Fragment {
 
     private RelativeLayout rlExpand;
-    private RecyclerView rcvPic, rcvBucket;
+    private RecyclerView rcvPicRecent, rcvBucket;
     private RecentAdapter recentAdapter;
     private BucketAdapter bucketAdapter;
     private View vExpand, vBg;
@@ -55,7 +55,7 @@ public class RecentFragment extends Fragment {
     }
 
     private void init(View view) {
-        rcvPic = view.findViewById(R.id.rcvPic);
+        rcvPicRecent = view.findViewById(R.id.rcvPicRecent);
         rcvBucket = view.findViewById(R.id.rcvBucketPic);
         rlExpand = view.findViewById(R.id.rlExpand);
         vExpand = view.findViewById(R.id.viewExpand);
@@ -68,36 +68,7 @@ public class RecentFragment extends Fragment {
     }
 
     private void evenClick() {
-        vBg.setOnClickListener(v -> setExpand(ivExpand));
-
-//        rcvPic.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-//            @Override
-//            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-//                int touch = 0;
-//                switch (e.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        viewPager.setUserInputEnabled(false);
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        viewPager.setUserInputEnabled(true);
-//                        break;
-//                }
-//                return false;
-//            }
-//
-//            @Override
-//            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//
-//            }
-//        });
+        vBg.setOnClickListener(v -> setExpand(ivExpand, ""));
     }
 
     private void setUpLayout() {
@@ -105,28 +76,37 @@ public class RecentFragment extends Fragment {
         setUpBucket();
     }
 
-    public void setExpand(ImageView ivExpand) {
+    public void setExpand(ImageView ivExpand, String click) {
         this.ivExpand = ivExpand;
-        checkExpand(ivExpand, rlExpand.getVisibility() == View.VISIBLE);
+        checkExpand(ivExpand, rlExpand.getVisibility() == View.VISIBLE, click);
     }
 
-    private void checkExpand(ImageView ivExpand, boolean check) {
-        if (ivExpand != null) {
-            if (check) {
-                vBg.setVisibility(View.GONE);
-                rlExpand.setVisibility(View.GONE);
-                ivExpand.setImageResource(R.drawable.ic_bottom_pink);
-                rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
+    private void checkExpand(ImageView ivExpand, boolean check, String click) {
+        if (click.equals("")) {
+            if (ivExpand != null) {
+                if (check) {
+                    vBg.setVisibility(View.GONE);
+                    rlExpand.setVisibility(View.GONE);
+                    ivExpand.setImageResource(R.drawable.ic_bottom_pink);
+                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
+                } else {
+                    vBg.setVisibility(View.VISIBLE);
+                    rlExpand.setVisibility(View.VISIBLE);
+                    ivExpand.setImageResource(R.drawable.ic_top_pink);
+                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down));
+                }
             } else {
-                vBg.setVisibility(View.VISIBLE);
-                rlExpand.setVisibility(View.VISIBLE);
-                ivExpand.setImageResource(R.drawable.ic_top_pink);
-                rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down));
+                if (check) {
+                    vBg.setVisibility(View.GONE);
+                    rlExpand.setVisibility(View.GONE);
+                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
+                }
             }
         } else {
             if (check) {
                 vBg.setVisibility(View.GONE);
                 rlExpand.setVisibility(View.GONE);
+                ivExpand.setImageResource(R.drawable.ic_bottom_pink);
                 rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
             }
         }
@@ -139,7 +119,7 @@ public class RecentFragment extends Fragment {
             BucketPicModel bucket = (BucketPicModel) o;
             recentAdapter.setData(bucket.getLstPic());
             recentAdapter.notifyChange();
-            setExpand(ivExpand);
+            setExpand(ivExpand, "");
         });
         if (!lstBucket.isEmpty()) bucketAdapter.setData(lstBucket);
 
@@ -156,8 +136,8 @@ public class RecentFragment extends Fragment {
         if (!lstPic.isEmpty()) recentAdapter.setData(lstPic);
 
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
-        rcvPic.setLayoutManager(manager);
-        rcvPic.setAdapter(recentAdapter);
+        rcvPicRecent.setLayoutManager(manager);
+        rcvPicRecent.setAdapter(recentAdapter);
     }
 
     public ViewPager2 getViewPager() {
