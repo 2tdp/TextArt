@@ -119,7 +119,6 @@ public class CreateProjectActivity extends AppCompatActivity {
         recentFragment.setViewPager(viewPager);
         MyAppFragment myAppFragment = MyAppFragment.newInstance();
         colorFragment = ColorFragment.newInstance();
-        colorFragment.setViewPager(viewPager);
 
         fragmentsAdapter.addFrag(recentFragment);
         fragmentsAdapter.addFrag(myAppFragment);

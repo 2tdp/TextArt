@@ -4,96 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".fragment.create.ColorFragment">
 
-    <LinearLayout
-        android:id="@+id/llColorPicker"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvColor"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:weightSum="10">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:layout_weight="4">
-
-            <com.datnt.textart.customview.ColorPicker
-                android:id="@+id/colorPickerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:nestedScrollingEnabled="true"
-                app:initialColor="@color/red"
-                app:preferenceName="Test2"
-                app:selector="@drawable/wheel" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_weight="1">
-
-            <com.datnt.textart.customview.MyAlphaSlideBar
-                android:id="@+id/alphaSlideBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boder_layout"
-                android:layout_gravity="center"
-                app:borderColor_AlphaSlideBar="@android:color/darker_gray"
-                app:borderSize_AlphaSlideBar="5"
-                app:selector_AlphaSlideBar="@drawable/wheel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_weight="1">
-
-            <com.datnt.textart.customview.MyBrightnessSlideBar
-                android:id="@+id/brightnessSlide"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:borderColor_BrightnessSlider="@android:color/darker_gray"
-                app:borderSize_BrightnessSlider="5"
-                app:selector_BrightnessSlider="@drawable/wheel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:layout_weight="2"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/pink"
-                android:textSize="@dimen/_13ssp"
-                android:textStyle="bold" />
-
-            <com.datnt.textart.customview.colorpickerview.AlphaTileView
-                android:id="@+id/alphaTileView"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:orientation="horizontal"
-                app:tileSize="20" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:padding="@dimen/_5sdp"
+        android:scrollbars="none" />
 
 </RelativeLayout>
