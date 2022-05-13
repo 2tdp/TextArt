@@ -1,18 +1,19 @@
 package com.datnt.textart.fragment.create;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -20,12 +21,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.BucketAdapter;
 import com.datnt.textart.adapter.RecentAdapter;
 import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.BucketPicModel;
 import com.datnt.textart.model.PicModel;
+import com.datnt.textart.sharepref.DataLocalManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RecentFragment extends Fragment {
@@ -34,9 +39,8 @@ public class RecentFragment extends Fragment {
     private RecyclerView rcvPicRecent, rcvBucket;
     private RecentAdapter recentAdapter;
     private BucketAdapter bucketAdapter;
-    private View vExpand, vBg;
+    private View vBg;
     private ImageView ivExpand;
-    private ViewPager2 viewPager;
 
     public static RecentFragment newInstance() {
         RecentFragment fragment = new RecentFragment();
@@ -58,7 +62,6 @@ public class RecentFragment extends Fragment {
         rcvPicRecent = view.findViewById(R.id.rcvPicRecent);
         rcvBucket = view.findViewById(R.id.rcvBucketPic);
         rlExpand = view.findViewById(R.id.rlExpand);
-        vExpand = view.findViewById(R.id.viewExpand);
         vBg = view.findViewById(R.id.viewBg);
 
         rlExpand.getLayoutParams().height = (int) getResources().getDisplayMetrics().heightPixels * 60 / 100;
@@ -132,19 +135,16 @@ public class RecentFragment extends Fragment {
         ArrayList<PicModel> lstPic = new ArrayList<>(DataPic.getAllPictureList(requireContext()));
 
         recentAdapter = new RecentAdapter(requireContext(), (Object o, int pos) -> {
+            PicModel pic = (PicModel) o;
+            Intent intent = new Intent(requireActivity(), EditActivity.class);
+            intent.putExtra("bitmap", pic.getUri());
+            startActivity(intent);
+            DataLocalManager.setOption("bitmap", "bitmap");
         });
         if (!lstPic.isEmpty()) recentAdapter.setData(lstPic);
 
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvPicRecent.setLayoutManager(manager);
         rcvPicRecent.setAdapter(recentAdapter);
-    }
-
-    public ViewPager2 getViewPager() {
-        return viewPager;
-    }
-
-    public void setViewPager(ViewPager2 viewPager) {
-        this.viewPager = viewPager;
     }
 }

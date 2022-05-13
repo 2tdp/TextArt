@@ -2,8 +2,6 @@ package com.datnt.textart.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +13,7 @@ import com.datnt.textart.fragment.splash.OneSplashFragment;
 import com.datnt.textart.fragment.splash.ThreeSplashFragment;
 import com.datnt.textart.fragment.splash.TwoSplashFragment;
 import com.datnt.textart.sharepref.DataLocalManager;
-import com.datnt.textart.utils.DepthPageTransformer;
 import com.datnt.textart.utils.Utils;
-import com.datnt.textart.utils.ZoomOutPageTransformer;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 public class SplashActivity extends AppCompatActivity {
@@ -79,7 +74,6 @@ public class SplashActivity extends AppCompatActivity {
         viewPager2.registerOnPageChangeCallback(onPageChangeCallback);
 
         viewPager2.setAdapter(viewPagerAdapter);
-        viewPager2.setPageTransformer(new DepthPageTransformer());
         indicator.setViewPager2(viewPager2);
     }
 

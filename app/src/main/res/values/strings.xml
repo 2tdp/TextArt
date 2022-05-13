@@ -42,5 +42,13 @@
     <string name="recent">Recent</string>
     <string name="my_app">My App</string>
     <string name="color">Color</string>
+    <string name="color_direc">Color Direction</string>
 
+    //custom size
+    <string name="custom_size">Custom Size</string>
+    <string name="original">Original</string>
+    <string name="size1_1">1.1</string>
+    <string name="size9_16">9.16</string>
+    <string name="size4_5">4.5</string>
+    <string name="size16_9">16.9</string>
 </resources>

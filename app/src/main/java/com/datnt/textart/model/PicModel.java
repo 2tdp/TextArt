@@ -32,18 +32,6 @@ public class PicModel implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDate_add() {
         return date_add;
     }
@@ -52,52 +40,24 @@ public class PicModel implements Serializable {
         return bucket;
     }
 
-    public void setBucket(String bucket) {
-        this.bucket = bucket;
-    }
-
-    public void setDate_add(String date_add) {
-        this.date_add = date_add;
-    }
-
     public String getHeight() {
         return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
     }
 
     public String getWidth() {
         return width;
     }
 
-    public void setWidth(String width) {
-        this.width = width;
-    }
-
     public String getSize() {
         return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
     }
 
     public String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getUri() {
         return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     public boolean isCheck() {

@@ -5,6 +5,9 @@
       <map>
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_dialog.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_layout.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_size.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_size_check.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_size_uncheck.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_tab.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_create_project.xml" value="0.2075" />
@@ -16,6 +19,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bottom_uncheck.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bubble_big_colorpickerview_skydoves.xml" value="0.1935" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bubble_small_colorpickerview_skydoves.xml" value="0.1935" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_direc_top_bottom.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_top_pink.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/tab_indicator.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/tab_indicator_check.xml" value="0.2075" />
@@ -23,6 +27,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_main.xml" value="0.3416666666666667" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_projects.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_settings.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_size.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/custom_tab_color.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/custom_tab_myapp.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/custom_tab_recent.xml" value="0.35989583333333336" />
@@ -30,6 +35,8 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_click_create.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_colorpicker_colorpickerview_skydoves.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_del_project.xml" value="0.33" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_pick_color.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/dialog_pick_direction.xml" value="0.35885416666666664" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/flag_bubble_colorpickerview_skydoves.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_color.xml" value="0.25" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_create_project.xml" value="0.35989583333333336" />

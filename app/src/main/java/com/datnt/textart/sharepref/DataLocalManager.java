@@ -1,8 +1,11 @@
 package com.datnt.textart.sharepref;
 
 import android.content.Context;
+
+import com.datnt.textart.model.ColorModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,4 +54,32 @@ public class DataLocalManager {
     public static String getOption(String key) {
         return DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
     }
+
+//    public static void setColor(ColorModel color, String key) {
+//        Gson gson = new Gson();
+//        JsonObject jsonObject = gson.toJsonTree(color).getAsJsonObject();
+//        String json = jsonObject.toString();
+//
+//        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+//    }
+//
+//    public static ColorModel getColor(String key) {
+//        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+//        ColorModel color = null;
+//
+//        Gson gson = new Gson();
+//
+//        JSONObject jsonObject = null;
+//        try {
+//            jsonObject = new JSONObject(strJson);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (jsonObject != null) {
+//            color = gson.fromJson(jsonObject.toString(), ColorModel.class);
+//        }
+//
+//        return color;
+//    }
 }

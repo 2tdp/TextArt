@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -72,6 +73,24 @@ public class Utils {
         underLine.setSpan(new UnderlineSpan(), 0, underLine.length(), 0);
 
         return underLine;
+    }
+
+    public static GradientDrawable.Orientation setDirection(int pos) {
+        switch (pos) {
+            case 0:
+                return GradientDrawable.Orientation.TOP_BOTTOM;
+            case 1:
+                return GradientDrawable.Orientation.TL_BR;
+            case 2:
+                return GradientDrawable.Orientation.LEFT_RIGHT;
+            case 3:
+                return GradientDrawable.Orientation.BL_TR;
+            case 4:
+                return GradientDrawable.Orientation.BOTTOM_TOP;
+            case 5:
+                return GradientDrawable.Orientation.RIGHT_LEFT;
+        }
+        return GradientDrawable.Orientation.TOP_BOTTOM;
     }
 
     private static String makeFilename(Context activity, String namePic) {

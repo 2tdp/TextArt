@@ -2,6 +2,7 @@ package com.datnt.textart.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
-import com.datnt.textart.customview.CustomColor;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,8 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
     private Context context;
     private ArrayList<ColorModel> lstColor;
     private ICallBackItem callBack;
+
+    private GradientDrawable gradient;
 
     public ColorAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
@@ -52,13 +55,11 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
 
     class ColorHolder extends RecyclerView.ViewHolder {
 
-        CustomColor customColor;
         ImageView ivPick;
 
         public ColorHolder(@NonNull View itemView) {
             super(itemView);
 
-            customColor = itemView.findViewById(R.id.customColor);
             ivPick = itemView.findViewById(R.id.ivPick);
         }
 
@@ -68,13 +69,18 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
 
             itemView.setOnClickListener(v -> callBack.callBackItem(color, position));
 
-            if (!color.isColor()) {
-                customColor.setVisibility(View.GONE);
-                ivPick.setVisibility(View.VISIBLE);
+            if (color.getColorStart() == 0) {
+                ivPick.setImageResource(R.drawable.ic_pick_color);
+                ivPick.setBackground(null);
             } else {
-                ivPick.setVisibility(View.GONE);
-                customColor.setVisibility(View.VISIBLE);
-                customColor.setColor(color);
+                if (color.getColorStart() != color.getColorEnd())
+                    gradient = new GradientDrawable(Utils.setDirection(color.getDirec()), new int[]{color.getColorStart(), color.getColorEnd()});
+                else
+                    gradient = new GradientDrawable(Utils.setDirection(0), new int[]{color.getColorStart(), color.getColorEnd()});
+                gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+                gradient.setCornerRadius(34f);
+                ivPick.setImageResource(0);
+                ivPick.setBackground(gradient);
             }
         }
     }

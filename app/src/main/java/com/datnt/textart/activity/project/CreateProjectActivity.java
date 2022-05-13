@@ -29,7 +29,6 @@ public class CreateProjectActivity extends AppCompatActivity {
     private View vRecent, vMyApp, vColor;
 
     private RecentFragment recentFragment;
-    private ColorFragment colorFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,9 +115,8 @@ public class CreateProjectActivity extends AppCompatActivity {
         ViewPagerAddFragmentsAdapter fragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
         recentFragment = RecentFragment.newInstance();
-        recentFragment.setViewPager(viewPager);
         MyAppFragment myAppFragment = MyAppFragment.newInstance();
-        colorFragment = ColorFragment.newInstance();
+        ColorFragment colorFragment = ColorFragment.newInstance();
 
         fragmentsAdapter.addFrag(recentFragment);
         fragmentsAdapter.addFrag(myAppFragment);
