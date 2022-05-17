@@ -51,4 +51,12 @@
     <string name="size9_16">9.16</string>
     <string name="size4_5">4.5</string>
     <string name="size16_9">16.9</string>
+    <string name="add_text">Add Text</string>
+    <string name="sticker">Sticker</string>
+    <string name="image">Image</string>
+    <string name="background">Background</string>
+    <string name="blend">Blend</string>
+    <string name="decor">Decor</string>
+    <string name="size">Size</string>
+
 </resources>

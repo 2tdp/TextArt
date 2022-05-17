@@ -87,15 +87,15 @@ public class ColorFragment extends Fragment {
 
         int[] arrColor = getResources().getIntArray(R.array.lstColor);
 
-        int direction = 1;
+        int direction = 0;
         for (int i = arrColor.length - 1; i >= 0; i--) {
             if (i < 70)
                 lstColor.add(new ColorModel(arrColor[i], arrColor[i], 0, false));
             else {
                 lstColor.add(new ColorModel(arrColor[i], arrColor[i - 1], direction, false));
                 i--;
-                if (direction < 6) direction++;
-                else direction = 1;
+                if (direction < 5) direction++;
+                else direction = 0;
             }
         }
 

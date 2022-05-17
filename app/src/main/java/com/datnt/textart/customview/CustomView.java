@@ -9,13 +9,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
 import android.graphics.Shader;
-import android.graphics.SweepGradient;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
@@ -24,13 +22,14 @@ import com.datnt.textart.sharepref.DataLocalManager;
 
 public class CustomView extends View {
 
-    private Path path, pathClear;
+    private Path path;
     private Paint paint;
     private Shader shader;
     private Bitmap bitmap;
     private ColorModel color;
+    private Rect src;
     private int size;
-    int w, h;
+    private float w, h;
 
     public CustomView(Context context) {
         super(context);
@@ -50,42 +49,30 @@ public class CustomView extends View {
     public void init() {
         if (paint == null) paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         if (path == null) path = new Path();
-        if (pathClear == null) pathClear = new Path();
 
         paint.setStyle(Paint.Style.FILL);
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (getWidth() == 0 || getHeight() == 0) return;
         w = getWidth();
         h = getHeight();
 
-        pathClear.addRect(0, 0, w / 2f, h / 2f, Path.Direction.CW);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        if (DataLocalManager.getOption("bitmap").equals("")) {
-            resetSize(size);
-            resetColor();
-            canvas.clipPath(path, Region.Op.INTERSECT);
-            canvas.drawPath(path, paint);
+        if (bitmap != null) {
+            setSRC(size);
+            canvas.drawBitmap(bitmap, src, setDST(size), paint);
         } else {
-            DataLocalManager.setOption("", "bitmap");
-            canvas.drawBitmap(resetBitmap(size), 0, 0, paint);
+            setSizeColor(size);
+            resetColor();
+            canvas.drawPath(path, paint);
         }
     }
 
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
-        invalidate();
-    }
-
-    public void setColor(ColorModel color) {
-        this.color = color;
+    public void setData(Bitmap bitmap, ColorModel color) {
+        if (bitmap != null) this.bitmap = bitmap;
+        else this.color = color;
         invalidate();
     }
 
@@ -94,25 +81,120 @@ public class CustomView extends View {
         invalidate();
     }
 
-    private Bitmap resetBitmap(int size) {
-
-        return bitmap;
-    }
-
-    private void resetSize(int pos) {
-        switch (pos) {
+    private void setSRC(int size) {
+        switch (size) {
             case 1:
-                path.addRect(0, 0, w, w, Path.Direction.CW);
+                float wB = bitmap.getWidth();
+                float hB = bitmap.getHeight();
+
+                if ((float) wB / hB > 1) {
+                    src = new Rect((int) (wB - hB) / 2, 0, (int) (wB + hB) / 2, (int) hB);
+                } else if ((float) wB / hB < 1) {
+                    src = new Rect(0, (int) (hB - wB) / 2, (int) wB, (int) (hB + wB) / 2);
+                }
                 break;
             case 2:
+                createSRC(9 / 16f);
                 break;
             case 3:
+                createSRC(4 / 5f);
                 break;
             case 4:
+                createSRC(16 / 9f);
+                break;
+            default:
+                src = null;
+                break;
+        }
+    }
+
+    private void createSRC(float scale) {
+
+        float w = bitmap.getWidth();
+        float h = bitmap.getHeight();
+
+        if ((float) w / h > scale) {
+            src = new Rect((int) (w * (1 - scale)) / 2, 0, (int) (w * (1 + scale)) / 2, (int) h);
+        } else if ((float) w / h < scale) {
+            src = new Rect(0, (int) (h * (1 - 1 / scale)) / 2, (int) w, (int) (h * (1 + 1 / scale)) / 2);
+        }
+    }
+
+    private RectF setDST(int size) {
+        switch (size) {
+            case 1:
+                if (w / h > 1) {
+                    return new RectF( (w - h) / 2, 0, (w + h) / 2, h);
+                } else if (w / h < 1) {
+                    return new RectF(0, (h - w) / 2, w, (h + w) / 2);
+                }
+            case 2:
+                return createDST(9 / 16f);
+            case 3:
+                return createDST(4 / 5f);
+            case 4:
+                return createDST(16 / 9f);
+            default:
+                int sourceWidth = bitmap.getWidth();
+                int sourceHeight = bitmap.getHeight();
+
+                float xScale = (float) w / (float) sourceWidth;
+                float yScale = (float) h / (float) sourceHeight;
+                float scale = Math.max(xScale, yScale);
+
+                float scaledWidth = scale * sourceWidth;
+                float scaledHeight = scale * sourceHeight;
+                if (scale == xScale) {
+                    return new RectF(0, -(scaledHeight - h) / 2, w, (scaledHeight + h) / 2);
+                } else {
+                    return new RectF(-(scaledWidth - w) / 2, 0, (w + scaledWidth) / 2, h);
+                }
+        }
+    }
+
+    private RectF createDST(float scale) {
+        RectF dst = new RectF();
+
+        if (w / h < scale) {
+            dst.set(0, (h * (1 - 1 / scale)) / 2, w,  (h * (1 + 1 / scale)) / 2);
+        } else if (w / h > scale) {
+            dst.set((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h);
+        }
+
+        return dst;
+    }
+
+    private void setSizeColor(int pos) {
+        path.reset();
+        switch (pos) {
+            case 1:
+                if (w / h > 1) {
+                    path.addRect((w - h) / 2, 0.0f, (w + h) / 2, h, Path.Direction.CW);
+                } else if (w / h < 1) {
+                    path.addRect(0, (h - w) / 2, w, (h + w) / 2, Path.Direction.CW);
+                }
+                break;
+            case 2:
+                setPath(9 / 16f);
+                break;
+            case 3:
+                setPath(4 / 5f);
+                break;
+            case 4:
+                setPath(16 / 9f);
                 break;
             default:
                 path.addRect(0, 0, w, h, Path.Direction.CW);
                 break;
+        }
+        invalidate();
+    }
+
+    private void setPath(float scale) {
+        if (w / h > scale) {
+            path.addRect((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h, Path.Direction.CW);
+        } else if (w / h < scale) {
+            path.addRect(0, (h * (1 - 1 / scale)) / 2, w, (h * (1 + 1 / scale)) / 2, Path.Direction.CW);
         }
     }
 
@@ -161,13 +243,13 @@ public class CustomView extends View {
     private int[] setDirection(int direc) {
         switch (direc) {
             case 0:
-                return new int[]{w / 2, 0, w / 2, h};
+                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
             case 1:
-                return new int[]{0, 0, w, h};
+                return new int[]{0, 0, (int) w, (int) h};
             case 2:
-                return new int[]{0, h / 2, w, h / 2};
+                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
             case 3:
-                return new int[]{0, h, w, 0};
+                return new int[]{0, (int) h, (int) w, 0};
         }
         return new int[]{0, 0, 0, 0};
     }

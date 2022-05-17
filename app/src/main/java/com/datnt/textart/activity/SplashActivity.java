@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
     private DotsIndicator indicator;
     private TextView tvSplash;
 
-    private ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+    private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageSelected(int position) {
             if (position == 2) tvSplash.setText(Utils.underLine(getString(R.string.start)));
@@ -80,6 +80,10 @@ public class SplashActivity extends AppCompatActivity {
     private void FirstInstall() {
         if (!DataLocalManager.getFirstInstall("first")) {
             DataLocalManager.setFirstInstall("first", true);
+        } else {
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }
