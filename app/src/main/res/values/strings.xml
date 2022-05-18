@@ -5,6 +5,7 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="all">All</string>
+    <string name="del">Delete</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -59,4 +60,16 @@
     <string name="decor">Decor</string>
     <string name="size">Size</string>
 
+    //addtext
+    <string name="input_text">Input Text</string>
+    <string name="tap_to_edit">Tap to edit</string>
+    <string name="quotes">Quotes</string>
+    <string name="fonts">Fonts</string>
+    <string name="style">Style</string>
+
+    //layer
+    <string name="layer">Layer</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="lock">Lock</string>
+    <string name="look">Look</string>
 </resources>

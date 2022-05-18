@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,6 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.ColorAdapter;
 import com.datnt.textart.model.ColorModel;
-import com.datnt.textart.sharepref.DataLocalManager;
-import com.datnt.textart.utils.Utils;
 import com.flask.colorpicker.ColorPickerView;
 
 import java.util.ArrayList;

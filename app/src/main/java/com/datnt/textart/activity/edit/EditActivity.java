@@ -1,35 +1,50 @@
 package com.datnt.textart.activity.edit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datnt.textart.R;
 import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.customview.stickerview.BitmapStickerIcon;
+import com.datnt.textart.customview.stickerview.DeleteIconEvent;
+import com.datnt.textart.customview.stickerview.FlipHorizontallyEvent;
+import com.datnt.textart.customview.stickerview.Sticker;
+import com.datnt.textart.customview.stickerview.StickerView;
+import com.datnt.textart.customview.stickerview.TextSticker;
+import com.datnt.textart.customview.stickerview.ZoomIconEvent;
 import com.datnt.textart.model.ColorModel;
-import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.Utils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class EditActivity extends AppCompatActivity {
 
-    private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo, ivLayer, ivImport;
+    private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo, ivLayer, ivImport, ivLook, ivLock;
     private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle;
-    private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop;
+    private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop, rlDel, rlDuplicate, rlLook, rlLock, rlLayer, rlExpand;
     private LinearLayout llLayoutImport, llReUndo;
     private HorizontalScrollView vSize, vOperation;
     private CustomView vMain;
+    private StickerView stickerView;
     private Bitmap bitmap;
 
     @Override
@@ -44,11 +59,13 @@ public class EditActivity extends AppCompatActivity {
         setUpLayout();
         getData();
         evenClick();
+        setUpStickerView();
     }
 
     private void setUpLayout() {
         ivBack = findViewById(R.id.ivBack);
         ivTick = findViewById(R.id.ivTick);
+        stickerView = findViewById(R.id.stickerView);
         vMain = findViewById(R.id.vMain);
         ivOriginal = findViewById(R.id.ivOriginal);
         iv1_1 = findViewById(R.id.iv1_1);
@@ -76,6 +93,78 @@ public class EditActivity extends AppCompatActivity {
         vOperation = findViewById(R.id.vOperation);
         llReUndo = findViewById(R.id.lLReUndo);
         tvTitle = findViewById(R.id.tvTitle);
+        rlExpand = findViewById(R.id.rlExpand);
+        rlDel = findViewById(R.id.rlDel);
+        rlDuplicate = findViewById(R.id.rlDuplicate);
+        rlLock = findViewById(R.id.rlLock);
+        rlLook = findViewById(R.id.rlLook);
+        ivLock = findViewById(R.id.ivLock);
+        ivLook = findViewById(R.id.ivLook);
+        rlLayer = findViewById(R.id.rlLayer);
+    }
+
+    private void setUpStickerView() {
+        BitmapStickerIcon deleteIcon = new BitmapStickerIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.sticker_ic_close_white_18dp, null), BitmapStickerIcon.LEFT_TOP);
+        deleteIcon.setIconEvent(new DeleteIconEvent());
+
+        BitmapStickerIcon zoomIcon = new BitmapStickerIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.sticker_ic_scale_white_18dp, null), BitmapStickerIcon.RIGHT_BOTTOM);
+        zoomIcon.setIconEvent(new ZoomIconEvent());
+
+        BitmapStickerIcon flipIcon = new BitmapStickerIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.sticker_ic_flip_white_18dp, null), BitmapStickerIcon.RIGHT_TOP);
+        flipIcon.setIconEvent(new FlipHorizontallyEvent());
+
+        stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon));
+        stickerView.setBackgroundColor(Color.WHITE);
+        stickerView.setLocked(false);
+        stickerView.setConstrained(true);
+
+        stickerView.setOnStickerOperationListener(new StickerView.OnStickerOperationListener() {
+            @Override
+            public void onStickerAdded(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerAdded");
+            }
+
+            @Override
+            public void onStickerClicked(@NonNull Sticker sticker) {
+                //stickerView.removeAllSticker();
+                if (sticker instanceof TextSticker) {
+                    ((TextSticker) sticker).setTextColor(Color.RED);
+                    stickerView.replace(sticker);
+                    stickerView.invalidate();
+                }
+                Log.d("2tdp", "onStickerClicked");
+            }
+
+            @Override
+            public void onStickerDeleted(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerDeleted");
+            }
+
+            @Override
+            public void onStickerDragFinished(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerDragFinished");
+            }
+
+            @Override
+            public void onStickerTouchedDown(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerTouchedDown");
+            }
+
+            @Override
+            public void onStickerZoomFinished(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerZoomFinished");
+            }
+
+            @Override
+            public void onStickerFlipped(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onStickerFlipped");
+            }
+
+            @Override
+            public void onStickerDoubleTapped(@NonNull Sticker sticker) {
+                Log.d("2tdp", "onDoubleTapped: double tap will be with two click");
+            }
+        });
     }
 
     private void getData() {
@@ -104,18 +193,31 @@ public class EditActivity extends AppCompatActivity {
         iv9_16.setOnClickListener(v -> checkSize(2));
         iv4_5.setOnClickListener(v -> checkSize(3));
         iv16_9.setOnClickListener(v -> checkSize(4));
+
+        ivLayer.setOnClickListener(v -> clickLayer());
+        rlLayer.setOnClickListener(v -> {
+            vOperation.setVisibility(View.VISIBLE);
+            vOperation.setAnimation(AnimationUtils.makeInChildBottomAnimation(this));
+            rlExpand.setVisibility(View.GONE);
+        });
+
+        rlAddText.setOnClickListener(v -> Utils.setIntent(this, AddTextActivity.class.getName()));
+    }
+
+    private void clickLayer() {
+        if (vOperation.getVisibility() == View.VISIBLE) vOperation.setVisibility(View.GONE);
+        rlExpand.setVisibility(View.VISIBLE);
+        rlExpand.setAnimation(AnimationUtils.makeInChildBottomAnimation(this));
     }
 
     private void clickTick() {
         tvTitle.setVisibility(View.GONE);
         vSize.setVisibility(View.GONE);
-        vSize.setAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up));
         ivTick.setVisibility(View.GONE);
 
         llLayoutImport.setVisibility(View.VISIBLE);
         llReUndo.setVisibility(View.VISIBLE);
         vOperation.setVisibility(View.VISIBLE);
-        vOperation.setAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up_in));
     }
 
     private void checkSize(int pos) {

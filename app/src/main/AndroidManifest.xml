@@ -20,6 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TextArt">
         <activity
+            android:name=".activity.edit.AddTextActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.edit.EditActivity"
             android:exported="false" />
         <activity

@@ -84,13 +84,13 @@ public class CustomView extends View {
     private void setSRC(int size) {
         switch (size) {
             case 1:
-                float wB = bitmap.getWidth();
-                float hB = bitmap.getHeight();
+                int wB = bitmap.getWidth();
+                int hB = bitmap.getHeight();
 
                 if ((float) wB / hB > 1) {
-                    src = new Rect((int) (wB - hB) / 2, 0, (int) (wB + hB) / 2, (int) hB);
+                    src = new Rect( (wB - hB) / 2, 0,  (wB + hB) / 2,  hB);
                 } else if ((float) wB / hB < 1) {
-                    src = new Rect(0, (int) (hB - wB) / 2, (int) wB, (int) (hB + wB) / 2);
+                    src = new Rect(0,  (hB - wB) / 2,  wB,  (hB + wB) / 2);
                 }
                 break;
             case 2:
@@ -110,8 +110,8 @@ public class CustomView extends View {
 
     private void createSRC(float scale) {
 
-        float w = bitmap.getWidth();
-        float h = bitmap.getHeight();
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
 
         if ((float) w / h > scale) {
             src = new Rect((int) (w * (1 - scale)) / 2, 0, (int) (w * (1 + scale)) / 2, (int) h);
@@ -135,11 +135,11 @@ public class CustomView extends View {
             case 4:
                 return createDST(16 / 9f);
             default:
-                int sourceWidth = bitmap.getWidth();
-                int sourceHeight = bitmap.getHeight();
+                float sourceWidth = bitmap.getWidth();
+                float sourceHeight = bitmap.getHeight();
 
-                float xScale = (float) w / (float) sourceWidth;
-                float yScale = (float) h / (float) sourceHeight;
+                float xScale = w / sourceWidth;
+                float yScale = h / sourceHeight;
                 float scale = Math.max(xScale, yScale);
 
                 float scaledWidth = scale * sourceWidth;
