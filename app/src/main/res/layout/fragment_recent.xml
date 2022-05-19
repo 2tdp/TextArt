@@ -24,6 +24,7 @@
         android:id="@+id/rlExpand"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:animateLayoutChanges="true"
         android:background="@drawable/boder_layout"
         android:visibility="gone">
 

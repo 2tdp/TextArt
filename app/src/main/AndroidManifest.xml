@@ -21,7 +21,8 @@
         android:theme="@style/Theme.TextArt">
         <activity
             android:name=".activity.edit.AddTextActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|stateVisible" />
         <activity
             android:name=".activity.edit.EditActivity"
             android:exported="false" />

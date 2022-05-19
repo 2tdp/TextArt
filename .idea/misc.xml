@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable-v24/ic_text_align_center.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_bottomsheet_dialog.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_dialog.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_layout.xml" value="0.2075" />
@@ -10,11 +11,15 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_size_check.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_size_uncheck.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_tab.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_text.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_text_check.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_click_font.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_custom.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_create_project.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_project.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_template.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_unclick_font.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/custom_background_popupmenu.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_add_text.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bottom.xml" value="0.2075" />
@@ -30,6 +35,14 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_no_redo.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_no_undo.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_redo.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_search.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_align_center.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_align_left.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_align_left_select.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_align_right.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_align_right_select.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_font_favorite.xml" value="0.2055" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_text_font_un_favorite.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_top_pink.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_undo.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/sticker_transparent_background.xml" value="0.2055" />
@@ -65,8 +78,10 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_two_splash.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_bucket_pic.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_color.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_font.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_picture.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_project.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_quotes.xml" value="0.35885416666666664" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/splash_activity.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/colorpickerview/src/main/res/layout/dialog_colorpicker_colorpickerview_skydoves.xml" value="0.35989583333333336" />

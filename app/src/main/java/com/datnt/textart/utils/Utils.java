@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -52,17 +53,34 @@ public class Utils {
         }
     }
 
+    public static void hideKeyboard(Context context, View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+            view.clearFocus();
+        }
+    }
+
+    public static void showSoftKeyboard(Context context, View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
     public static void setIntent(Activity activity, String nameActivity) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(activity.getPackageName(), nameActivity));
         activity.startActivity(intent, ActivityOptions.makeCustomAnimation(activity, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
     }
 
-    public static void setAnimExit(Activity activity){
+    public static void setAnimExit(Activity activity) {
         activity.overridePendingTransition(R.anim.slide_in_left_small, R.anim.slide_out_right);
     }
 
-    public static void showToast(Activity activity, String msg){
+    public static void showToast(Activity activity, String msg) {
         Toast toast = Toast.makeText(activity, msg, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
@@ -164,7 +182,7 @@ public class Utils {
         return mType;
     }
 
-    public static void rateApp(Context context){
+    public static void rateApp(Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + context.getPackageName()));
         context.startActivity(intent);
@@ -237,7 +255,6 @@ public class Utils {
             image.compress(Bitmap.CompressFormat.PNG, 100, stream);
             stream.close();
             uri = FileProvider.getUriForFile(context, "com.remi.datnt.borderframe", file);
-            ;
         } catch (IOException e) {
             Log.d("TAG", "IOException while trying to write file for sharing: " + e.getMessage());
         }

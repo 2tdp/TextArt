@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.datnt.textart.customview.stickerview.StickerView;
 import com.datnt.textart.customview.stickerview.TextSticker;
 import com.datnt.textart.customview.stickerview.ZoomIconEvent;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -46,6 +48,7 @@ public class EditActivity extends AppCompatActivity {
     private CustomView vMain;
     private StickerView stickerView;
     private Bitmap bitmap;
+    private Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,47 +63,6 @@ public class EditActivity extends AppCompatActivity {
         getData();
         evenClick();
         setUpStickerView();
-    }
-
-    private void setUpLayout() {
-        ivBack = findViewById(R.id.ivBack);
-        ivTick = findViewById(R.id.ivTick);
-        stickerView = findViewById(R.id.stickerView);
-        vMain = findViewById(R.id.vMain);
-        ivOriginal = findViewById(R.id.ivOriginal);
-        iv1_1 = findViewById(R.id.iv1_1);
-        iv9_16 = findViewById(R.id.iv9_16);
-        iv4_5 = findViewById(R.id.iv4_5);
-        iv16_9 = findViewById(R.id.iv16_9);
-        tvOriginal = findViewById(R.id.tvOriginal);
-        tv1_1 = findViewById(R.id.tv1_1);
-        tv9_16 = findViewById(R.id.tv9_16);
-        tv4_5 = findViewById(R.id.tv4_5);
-        tv16_9 = findViewById(R.id.tv16_9);
-        ivUndo = findViewById(R.id.ivUndo);
-        ivRedo = findViewById(R.id.ivRedo);
-        ivLayer = findViewById(R.id.ivLayer);
-        ivImport = findViewById(R.id.ivImport);
-        rlAddText = findViewById(R.id.rlAddText);
-        rlSticker = findViewById(R.id.rlStick);
-        rlImage = findViewById(R.id.rlImage);
-        rlBackground = findViewById(R.id.rlBackground);
-        rlBlend = findViewById(R.id.rlBlend);
-        rlDecor = findViewById(R.id.rlDecor);
-        rlCrop = findViewById(R.id.rlCrop);
-        llLayoutImport = findViewById(R.id.llLayerImport);
-        vSize = findViewById(R.id.vSize);
-        vOperation = findViewById(R.id.vOperation);
-        llReUndo = findViewById(R.id.lLReUndo);
-        tvTitle = findViewById(R.id.tvTitle);
-        rlExpand = findViewById(R.id.rlExpand);
-        rlDel = findViewById(R.id.rlDel);
-        rlDuplicate = findViewById(R.id.rlDuplicate);
-        rlLock = findViewById(R.id.rlLock);
-        rlLook = findViewById(R.id.rlLook);
-        ivLock = findViewById(R.id.ivLock);
-        ivLook = findViewById(R.id.ivLook);
-        rlLayer = findViewById(R.id.rlLayer);
     }
 
     private void setUpStickerView() {
@@ -211,13 +173,35 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void clickTick() {
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        vSize.startAnimation(animation);
         tvTitle.setVisibility(View.GONE);
         vSize.setVisibility(View.GONE);
         ivTick.setVisibility(View.GONE);
 
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+        vOperation.startAnimation(animation);
         llLayoutImport.setVisibility(View.VISIBLE);
         llReUndo.setVisibility(View.VISIBLE);
         vOperation.setVisibility(View.VISIBLE);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                vSize.clearAnimation();
+                vOperation.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     private void checkSize(int pos) {
@@ -300,8 +284,50 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
+    private void setUpLayout() {
+        ivBack = findViewById(R.id.ivBack);
+        ivTick = findViewById(R.id.ivTick);
+        stickerView = findViewById(R.id.stickerView);
+        vMain = findViewById(R.id.vMain);
+        ivOriginal = findViewById(R.id.ivOriginal);
+        iv1_1 = findViewById(R.id.iv1_1);
+        iv9_16 = findViewById(R.id.iv9_16);
+        iv4_5 = findViewById(R.id.iv4_5);
+        iv16_9 = findViewById(R.id.iv16_9);
+        tvOriginal = findViewById(R.id.tvOriginal);
+        tv1_1 = findViewById(R.id.tv1_1);
+        tv9_16 = findViewById(R.id.tv9_16);
+        tv4_5 = findViewById(R.id.tv4_5);
+        tv16_9 = findViewById(R.id.tv16_9);
+        ivUndo = findViewById(R.id.ivUndo);
+        ivRedo = findViewById(R.id.ivRedo);
+        ivLayer = findViewById(R.id.ivLayer);
+        ivImport = findViewById(R.id.ivImport);
+        rlAddText = findViewById(R.id.rlAddText);
+        rlSticker = findViewById(R.id.rlStick);
+        rlImage = findViewById(R.id.rlImage);
+        rlBackground = findViewById(R.id.rlBackground);
+        rlBlend = findViewById(R.id.rlBlend);
+        rlDecor = findViewById(R.id.rlDecor);
+        rlCrop = findViewById(R.id.rlCrop);
+        llLayoutImport = findViewById(R.id.llLayerImport);
+        vSize = findViewById(R.id.vSize);
+        vOperation = findViewById(R.id.vOperation);
+        llReUndo = findViewById(R.id.lLReUndo);
+        tvTitle = findViewById(R.id.tvTitle);
+        rlExpand = findViewById(R.id.rlExpand);
+        rlDel = findViewById(R.id.rlDel);
+        rlDuplicate = findViewById(R.id.rlDuplicate);
+        rlLock = findViewById(R.id.rlLock);
+        rlLook = findViewById(R.id.rlLook);
+        ivLock = findViewById(R.id.ivLock);
+        ivLook = findViewById(R.id.ivLook);
+        rlLayer = findViewById(R.id.rlLayer);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Utils.setAnimExit(this);
     }
 }

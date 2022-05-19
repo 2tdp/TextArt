@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,6 +20,7 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.BucketAdapter;
 import com.datnt.textart.adapter.RecentAdapter;
+import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.BucketPicModel;
 import com.datnt.textart.model.PicModel;
@@ -31,9 +33,10 @@ public class RecentFragment extends Fragment {
     private RelativeLayout rlExpand;
     private RecyclerView rcvPicRecent, rcvBucket;
     private RecentAdapter recentAdapter;
-    private BucketAdapter bucketAdapter;
     private View vBg;
     private ImageView ivExpand;
+    private Animation animation;
+    private IClickFolder clickFolder;
 
     public static RecentFragment newInstance() {
         RecentFragment fragment = new RecentFragment();
@@ -81,41 +84,63 @@ public class RecentFragment extends Fragment {
         if (click.equals("")) {
             if (ivExpand != null) {
                 if (check) {
+                    animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up);
+                    rlExpand.startAnimation(animation);
                     vBg.setVisibility(View.GONE);
                     rlExpand.setVisibility(View.GONE);
                     ivExpand.setImageResource(R.drawable.ic_bottom_pink);
-                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
                 } else {
+                    animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down);
+                    rlExpand.startAnimation(animation);
                     vBg.setVisibility(View.VISIBLE);
                     rlExpand.setVisibility(View.VISIBLE);
                     ivExpand.setImageResource(R.drawable.ic_top_pink);
-                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down));
                 }
             } else {
                 if (check) {
+                    animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up);
+                    rlExpand.startAnimation(animation);
                     vBg.setVisibility(View.GONE);
                     rlExpand.setVisibility(View.GONE);
-                    rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
                 }
             }
         } else {
             if (check) {
+                animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up);
+                rlExpand.startAnimation(animation);
                 vBg.setVisibility(View.GONE);
                 rlExpand.setVisibility(View.GONE);
                 ivExpand.setImageResource(R.drawable.ic_bottom_pink);
-                rlExpand.setAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up));
             }
         }
+        if (animation != null)
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    rlExpand.clearAnimation();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
     }
 
     private void setUpBucket() {
         ArrayList<BucketPicModel> lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
 
-        bucketAdapter = new BucketAdapter(requireContext(), (Object o, int pos) -> {
+        BucketAdapter bucketAdapter = new BucketAdapter(requireContext(), (Object o, int pos) -> {
             BucketPicModel bucket = (BucketPicModel) o;
             recentAdapter.setData(bucket.getLstPic());
             recentAdapter.notifyChange();
             setExpand(ivExpand, "");
+            clickFolder.clickFolder(bucket.getBucket());
         });
         if (!lstBucket.isEmpty()) bucketAdapter.setData(lstBucket);
 
@@ -139,5 +164,9 @@ public class RecentFragment extends Fragment {
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvPicRecent.setLayoutManager(manager);
         rcvPicRecent.setAdapter(recentAdapter);
+    }
+
+    public void changeFolder(IClickFolder clickFolder) {
+        this.clickFolder = clickFolder;
     }
 }

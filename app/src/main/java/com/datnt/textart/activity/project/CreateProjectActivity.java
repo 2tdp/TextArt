@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.fragment.create.ColorFragment;
 import com.datnt.textart.fragment.create.MyAppFragment;
 import com.datnt.textart.fragment.create.RecentFragment;
@@ -115,6 +116,7 @@ public class CreateProjectActivity extends AppCompatActivity {
         ViewPagerAddFragmentsAdapter fragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
         recentFragment = RecentFragment.newInstance();
+        recentFragment.changeFolder(str -> tvRecent.setText(str));
         MyAppFragment myAppFragment = MyAppFragment.newInstance();
         ColorFragment colorFragment = ColorFragment.newInstance();
 

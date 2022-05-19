@@ -6,6 +6,7 @@
     <string name="cancel">Cancel</string>
     <string name="all">All</string>
     <string name="del">Delete</string>
+    <string name="copy">Copy</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -66,6 +67,14 @@
     <string name="quotes">Quotes</string>
     <string name="fonts">Fonts</string>
     <string name="style">Style</string>
+    <string name="favorite">Favorite</string>
+    <string name="your_font">Your Fonts</string>
+    <string name="new_font">New Fonts</string>
+    <string name="italic">Italic</string>
+    <string name="regular">Regular</string>
+    <string name="semi_bold">SemiBold</string>
+    <string name="bold">Bold</string>
+    <string name="bold_italic">Bold Italic</string>
 
     //layer
     <string name="layer">Layer</string>
