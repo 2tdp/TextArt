@@ -58,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:background="@color/white"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="start"
             android:hint="@string/tap_to_edit"
             android:padding="@dimen/_5sdp"
@@ -293,64 +294,11 @@
         android:orientation="vertical"
         android:padding="@dimen/_10sdp">
 
-        <TextView
-            android:id="@+id/tvItalic"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvStyleFont"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_italic"
-            android:gravity="center_vertical"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/italic"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp" />
-
-        <TextView
-            android:id="@+id/tvRegular"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_regular"
-            android:gravity="center_vertical"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/regular"
-            android:textColor="@color/pink"
-            android:textSize="@dimen/_13ssp" />
-
-        <TextView
-            android:id="@+id/tvSemiBold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_semi_bold"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/semi_bold"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp" />
-
-        <TextView
-            android:id="@+id/tvBold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_bold"
-            android:gravity="center_vertical"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/bold"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp" />
-
-        <TextView
-            android:id="@+id/tvBoldItalic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_bold_italic"
-            android:gravity="center_vertical"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/bold_italic"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp" />
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
     </LinearLayout>
 
     <View

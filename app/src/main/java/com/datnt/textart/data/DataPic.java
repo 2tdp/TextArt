@@ -1,6 +1,5 @@
 package com.datnt.textart.data;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +8,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 
 import com.datnt.textart.R;
-import com.datnt.textart.fragment.create.ColorFragment;
 import com.datnt.textart.model.BucketPicModel;
 import com.datnt.textart.model.PicModel;
 

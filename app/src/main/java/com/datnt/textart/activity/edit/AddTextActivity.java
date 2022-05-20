@@ -1,8 +1,11 @@
 package com.datnt.textart.activity.edit;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -15,17 +18,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.datnt.textart.R;
+import com.datnt.textart.adapter.FontsAdapter;
+import com.datnt.textart.adapter.StyleFontAdapter;
+import com.datnt.textart.data.DataFont;
+import com.datnt.textart.model.FontModel;
+import com.datnt.textart.model.StyleFontModel;
+import com.datnt.textart.model.TextModel;
 import com.datnt.textart.utils.Utils;
+
+import java.util.ArrayList;
 
 public class AddTextActivity extends AppCompatActivity {
 
     private ImageView ivBack, ivTick, ivLeft, ivCenter, ivRight;
-    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts, tvItalic, tvRegular, tvSemiBold, tvBold, tvBoldItalic;
+    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts;
     private EditText etText;
-    private RecyclerView rcvQuotes, rcvQuotesTitle, rcvFonts;
+    private RecyclerView rcvQuotes, rcvQuotesTitle, rcvFonts, rcvStyleFont;
     private RelativeLayout rlFonts, rlQuotes, rlText;
     private LinearLayout llStyleFont;
     private Animation animation;
+    private FontModel font;
+    private ArrayList<FontModel> lstFont;
+    private int positionStyleFont, positionFont;
+    private boolean check;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +67,11 @@ public class AddTextActivity extends AppCompatActivity {
         tvQuotes.setOnClickListener(v -> changeStateText(0));
         tvFonts.setOnClickListener(v -> changeStateText(1));
         tvStyle.setOnClickListener(v -> changeStateText(2));
+
+        ivTick.setOnClickListener(v -> clickTick());
+    }
+
+    private void clickTick() {
     }
 
     private void setUpQuotes() {
@@ -59,11 +79,57 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void setUpFonts() {
-
+        FontsAdapter fontsAdapter = new FontsAdapter(this, (o, pos) -> {
+            font = (FontModel) o;
+            etText.setTypeface(getTypeFace(font.getNameFont(), font.getLstStyle().get(0).getName()));
+            font.getLstStyle().get(0).setSelected(true);
+            positionStyleFont = 0;
+            check = true;
+        });
+        fontsAdapter.setData(lstFont);
+        if (!check) getCurrentStyleFont(lstFont);
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        rcvFonts.setLayoutManager(manager);
+        rcvFonts.setAdapter(fontsAdapter);
+        rcvFonts.scrollToPosition(positionFont);
     }
 
     private void setUpStyle() {
+        StyleFontAdapter styleFontAdapter = new StyleFontAdapter(this, (o, pos) -> {
+            StyleFontModel styleFont = (StyleFontModel) o;
+            etText.setTypeface(getTypeFace(styleFont.getFont(), styleFont.getName()));
+            positionStyleFont = pos + 2;
+        });
+        if (font != null) styleFontAdapter.setData(font.getLstStyle());
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        rcvStyleFont.setLayoutManager(manager);
+        rcvStyleFont.setAdapter(styleFontAdapter);
+        rcvStyleFont.scrollToPosition(positionStyleFont);
+    }
 
+    private Typeface getTypeFace(String font, String style) {
+        return Typeface.createFromAsset(getAssets(), "fonts/"
+                + font.toLowerCase() + "/"
+                + font.toLowerCase() + "_"
+                + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
+    }
+
+    private void getCurrentStyleFont(ArrayList<FontModel> lstFont) {
+        for (int j = 0; j < lstFont.size(); j++) {
+            FontModel f = lstFont.get(j);
+            if (f.getNameFont().equals("poppins")) {
+                font = f;
+                font.setSelected(true);
+                positionFont = j + 2;
+                for (int i = 0; i < font.getLstStyle().size(); i++) {
+                    StyleFontModel style = font.getLstStyle().get(i);
+                    if (style.getName().trim().equals("Regular")) {
+                        style.setSelected(true);
+                        positionStyleFont = i + 2;
+                    }
+                }
+            }
+        }
     }
 
     private void changeLayout(int pos) {
@@ -217,20 +283,18 @@ public class AddTextActivity extends AppCompatActivity {
         tvFavorite = findViewById(R.id.tvFavorite);
         tvYourFont = findViewById(R.id.tvYourFont);
         tvNewFonts = findViewById(R.id.tvNewFonts);
-        tvItalic = findViewById(R.id.tvItalic);
-        tvRegular = findViewById(R.id.tvRegular);
-        tvSemiBold = findViewById(R.id.tvSemiBold);
-        tvBold = findViewById(R.id.tvBold);
-        tvBoldItalic = findViewById(R.id.tvBoldItalic);
         rcvFonts = findViewById(R.id.rcvFonts);
         rcvQuotesTitle = findViewById(R.id.rcvQuotesTitle);
         rcvQuotes = findViewById(R.id.rcvQuotes);
+        rcvStyleFont = findViewById(R.id.rcvStyleFont);
         rlFonts = findViewById(R.id.rlFonts);
         rlQuotes = findViewById(R.id.rlQuotes);
         rlText = findViewById(R.id.rlText);
         llStyleFont = findViewById(R.id.llStyleFont);
 
         changeStateText(0);
+
+        lstFont = DataFont.getDataFont(this);
     }
 
     @Override

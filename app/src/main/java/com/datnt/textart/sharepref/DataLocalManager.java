@@ -3,6 +3,7 @@ package com.datnt.textart.sharepref;
 import android.content.Context;
 
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.model.FontModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -53,6 +54,33 @@ public class DataLocalManager {
 
     public static String getOption(String key) {
         return DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+    }
+
+    public static void setListFont(ArrayList<FontModel> lstFont, String key) {
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.toJsonTree(lstFont).getAsJsonArray();
+        String json = jsonArray.toString();
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static ArrayList<FontModel> getListFont(String key) {
+        Gson gson = new Gson();
+        JSONObject jsonObject;
+        ArrayList<FontModel> lstFont = new ArrayList<>();
+
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        try {
+            JSONArray jsonArray = new JSONArray(strJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                lstFont.add(gson.fromJson(jsonObject.toString(), FontModel.class));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return lstFont;
     }
 
 //    public static void setColor(ColorModel color, String key) {
