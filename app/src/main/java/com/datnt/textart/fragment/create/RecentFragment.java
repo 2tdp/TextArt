@@ -1,5 +1,6 @@
 package com.datnt.textart.fragment.create;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -156,7 +157,7 @@ public class RecentFragment extends Fragment {
             PicModel pic = (PicModel) o;
             Intent intent = new Intent(requireActivity(), EditActivity.class);
             intent.putExtra("bitmap", pic.getUri());
-            startActivity(intent);
+            startActivity(intent, ActivityOptions.makeCustomAnimation(requireContext(), R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
             DataLocalManager.setOption("bitmap", "bitmap");
         });
         if (!lstPic.isEmpty()) recentAdapter.setData(lstPic);

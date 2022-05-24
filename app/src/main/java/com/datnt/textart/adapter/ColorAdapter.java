@@ -23,11 +23,13 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
     private Context context;
     private ArrayList<ColorModel> lstColor;
     private ICallBackItem callBack;
+    private int resourceLayout;
 
     private GradientDrawable gradient;
 
-    public ColorAdapter(Context context, ICallBackItem callBack) {
+    public ColorAdapter(Context context, int resourceLayout, ICallBackItem callBack) {
         this.context = context;
+        this.resourceLayout = resourceLayout;
         this.callBack = callBack;
     }
 
@@ -39,7 +41,7 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
     @NonNull
     @Override
     public ColorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ColorHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_color, parent, false));
+        return new ColorHolder(LayoutInflater.from(parent.getContext()).inflate(resourceLayout, parent, false));
     }
 
     @Override

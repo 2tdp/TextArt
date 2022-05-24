@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
 import com.datnt.textart.model.StyleFontModel;
+import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,10 @@ public class StyleFontAdapter extends RecyclerView.Adapter<StyleFontAdapter.Styl
 
     @Override
     public int getItemCount() {
+        if (lstStyleFont == null) {
+            Utils.showToast(context, context.getResources().getString(R.string.pls_pick_style));
+            return 0;
+        }
         if (!lstStyleFont.isEmpty()) return lstStyleFont.size();
         return 0;
     }

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.view.Gravity;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
@@ -18,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.datnt.textart.R;
+
+import java.io.Serializable;
 
 /**
  * Customize your sticker with text and image background.
@@ -164,6 +167,18 @@ public class TextSticker extends Sticker {
     }
 
     @NonNull
+    public TextSticker setTextSize(@Dimension(unit = Dimension.SP) float size){
+        textPaint.setTextSize(convertSpToPx(size));
+        maxTextSizePixels = textPaint.getTextSize();
+        return this;
+    }
+
+    @NonNull
+    public float getTextSize(){
+        return convertPxToSp(textPaint.getTextSize());
+    }
+
+    @NonNull
     public TextSticker setTypeface(@Nullable Typeface typeface) {
         textPaint.setTypeface(typeface);
         return this;
@@ -232,34 +247,26 @@ public class TextSticker extends Sticker {
 
         // Safety check
         // (Do not resize if the view does not have dimensions or if there is no text)
-        if (text == null
-                || text.length() <= 0
-                || availableHeightPixels <= 0
-                || availableWidthPixels <= 0
+        if (text == null || text.length() <= 0 || availableHeightPixels <= 0 || availableWidthPixels <= 0
                 || maxTextSizePixels <= 0) {
             return this;
         }
 
         float targetTextSizePixels = maxTextSizePixels;
-        int targetTextHeightPixels =
-                getTextHeightPixels(text, availableWidthPixels, targetTextSizePixels);
+        int targetTextHeightPixels = getTextHeightPixels(text, availableWidthPixels, targetTextSizePixels);
 
         // Until we either fit within our TextView
         // or we have reached our minimum text size,
         // incrementally try smaller sizes
-        while (targetTextHeightPixels > availableHeightPixels
-                && targetTextSizePixels > minTextSizePixels) {
+        while (targetTextHeightPixels > availableHeightPixels && targetTextSizePixels > minTextSizePixels) {
             targetTextSizePixels = Math.max(targetTextSizePixels - 2, minTextSizePixels);
 
-            targetTextHeightPixels =
-                    getTextHeightPixels(text, availableWidthPixels, targetTextSizePixels);
+            targetTextHeightPixels = getTextHeightPixels(text, availableWidthPixels, targetTextSizePixels);
         }
 
-        // If we have reached our minimum text size and the text still doesn't fit,
-        // append an ellipsis
+        // If we have reached our minimum text size and the text still doesn't fit, append an ellipsis
         // (NOTE: Auto-ellipsize doesn't work hence why we have to do it here)
-        if (targetTextSizePixels == minTextSizePixels
-                && targetTextHeightPixels > availableHeightPixels) {
+        if (targetTextSizePixels == minTextSizePixels && targetTextHeightPixels > availableHeightPixels) {
             // Make a copy of the original TextPaint object for measuring
             TextPaint textPaintCopy = new TextPaint(textPaint);
             textPaintCopy.setTextSize(targetTextSizePixels);
@@ -314,8 +321,7 @@ public class TextSticker extends Sticker {
      * with the specified width
      * and when the text has the specified size.
      */
-    protected int getTextHeightPixels(@NonNull CharSequence source, int availableWidthPixels,
-                                      float textSizePixels) {
+    protected int getTextHeightPixels(@NonNull CharSequence source, int availableWidthPixels, float textSizePixels) {
         textPaint.setTextSize(textSizePixels);
         // It's not efficient to create a StaticLayout instance
         // every time when measuring, we can use StaticLayout.Builder
@@ -331,5 +337,9 @@ public class TextSticker extends Sticker {
      */
     private float convertSpToPx(float scaledPixels) {
         return scaledPixels * context.getResources().getDisplayMetrics().scaledDensity;
+    }
+
+    private float convertPxToSp(float scaledPixels) {
+        return scaledPixels / context.getResources().getDisplayMetrics().scaledDensity;
     }
 }

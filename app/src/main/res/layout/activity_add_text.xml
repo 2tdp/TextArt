@@ -127,6 +127,29 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/boder_text_clear"
+                android:fontFamily="@font/poppins_regular"
+                android:gravity="center"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:text="@string/clear"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp">
 
             <TextView

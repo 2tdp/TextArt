@@ -1,29 +1,43 @@
 package com.datnt.textart.model;
 
+import com.datnt.textart.customview.stickerview.DrawableSticker;
+import com.datnt.textart.customview.stickerview.TextSticker;
+
 import java.io.Serializable;
 
 public class StickerModel implements Serializable {
-    private String name;
-    private TextModel text;
 
-    public StickerModel(String name, TextModel text) {
-        this.name = name;
-        this.text = text;
+    private TextModel textModel;
+    private TextSticker textSticker;
+    private DrawableSticker drawableSticker;
+
+    public StickerModel(TextModel textModel, TextSticker textSticker, DrawableSticker drawableSticker) {
+        this.textModel = textModel;
+        this.textSticker = textSticker;
+        this.drawableSticker = drawableSticker;
     }
 
-    public String getName() {
-        return name;
+    public TextModel getTextModel() {
+        return textModel;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTextModel(TextModel textModel) {
+        this.textModel = textModel;
     }
 
-    public TextModel getText() {
-        return text;
+    public TextSticker getTextSticker() {
+        return textSticker;
     }
 
-    public void setText(TextModel text) {
-        this.text = text;
+    public void setTextSticker(TextSticker textSticker) {
+        this.textSticker = textSticker;
+    }
+
+    public DrawableSticker getDrawableSticker() {
+        return drawableSticker;
+    }
+
+    public void setDrawableSticker(DrawableSticker drawableSticker) {
+        this.drawableSticker = drawableSticker;
     }
 }

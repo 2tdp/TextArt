@@ -72,10 +72,10 @@ public class FontsAdapter extends RecyclerView.Adapter<FontsAdapter.FontHolder> 
             tvFont.setText(font.getNameFont());
             tvFont.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/"
                     + font.getNameFont().toLowerCase() + "/"
-                    + font.getNameFont().toLowerCase() + "_" + font.getLstStyle().get(0).getName().toLowerCase().trim() + ".ttf"));
+                    + font.getNameFont().toLowerCase() + "_"
+                    + font.getLstStyle().get(0).getName().toLowerCase().trim() + ".ttf"));
 
-            if (font.isSelected())
-                tvFont.setTextColor(context.getResources().getColor(R.color.pink));
+            if (font.isSelected()) tvFont.setTextColor(context.getResources().getColor(R.color.pink));
             else tvFont.setTextColor(context.getResources().getColor(R.color.black));
 
             if (checkFavorite(font.getNameFont()))

@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -31,13 +33,15 @@ import java.util.ArrayList;
 public class AddTextActivity extends AppCompatActivity {
 
     private ImageView ivBack, ivTick, ivLeft, ivCenter, ivRight;
-    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts;
+    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts, tvClear;
     private EditText etText;
     private RecyclerView rcvQuotes, rcvQuotesTitle, rcvFonts, rcvStyleFont;
     private RelativeLayout rlFonts, rlQuotes, rlText;
     private LinearLayout llStyleFont;
     private Animation animation;
     private FontModel font;
+    private TextModel textModel;
+    private StyleFontAdapter styleFontAdapter;
     private ArrayList<FontModel> lstFont;
     private int positionStyleFont, positionFont;
     private boolean check;
@@ -57,6 +61,7 @@ public class AddTextActivity extends AppCompatActivity {
 
     private void evenClick() {
         ivBack.setOnClickListener(v -> onBackPressed());
+        tvClear.setOnClickListener(v -> etText.setText(""));
 
         rlText.setOnClickListener(v -> Utils.hideKeyboard(this, etText));
 
@@ -72,6 +77,11 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void clickTick() {
+        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), -1);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("text", text);
+        setResult(Activity.RESULT_OK, returnIntent);
+        onBackPressed();
     }
 
     private void setUpQuotes() {
@@ -81,8 +91,9 @@ public class AddTextActivity extends AppCompatActivity {
     private void setUpFonts() {
         FontsAdapter fontsAdapter = new FontsAdapter(this, (o, pos) -> {
             font = (FontModel) o;
-            etText.setTypeface(getTypeFace(font.getNameFont(), font.getLstStyle().get(0).getName()));
+            etText.setTypeface(Utils.getTypeFace(font.getNameFont(), font.getLstStyle().get(0).getName(), this));
             font.getLstStyle().get(0).setSelected(true);
+            if (styleFontAdapter != null) styleFontAdapter.setCurrent(0);
             positionStyleFont = 0;
             check = true;
         });
@@ -95,23 +106,17 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void setUpStyle() {
-        StyleFontAdapter styleFontAdapter = new StyleFontAdapter(this, (o, pos) -> {
+        styleFontAdapter = new StyleFontAdapter(this, (o, pos) -> {
             StyleFontModel styleFont = (StyleFontModel) o;
-            etText.setTypeface(getTypeFace(styleFont.getFont(), styleFont.getName()));
+            etText.setTypeface(Utils.getTypeFace(styleFont.getFont(), styleFont.getName(), this));
             positionStyleFont = pos + 2;
+            check = true;
         });
         if (font != null) styleFontAdapter.setData(font.getLstStyle());
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rcvStyleFont.setLayoutManager(manager);
         rcvStyleFont.setAdapter(styleFontAdapter);
         rcvStyleFont.scrollToPosition(positionStyleFont);
-    }
-
-    private Typeface getTypeFace(String font, String style) {
-        return Typeface.createFromAsset(getAssets(), "fonts/"
-                + font.toLowerCase() + "/"
-                + font.toLowerCase() + "_"
-                + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
     }
 
     private void getCurrentStyleFont(ArrayList<FontModel> lstFont) {
@@ -291,15 +296,66 @@ public class AddTextActivity extends AppCompatActivity {
         rlQuotes = findViewById(R.id.rlQuotes);
         rlText = findViewById(R.id.rlText);
         llStyleFont = findViewById(R.id.llStyleFont);
+        tvClear = findViewById(R.id.tvClear);
 
-        changeStateText(0);
+        textModel = (TextModel) getIntent().getSerializableExtra("text");
+        if (textModel != null) setUpText();
+        else {
+            tvQuotes.setVisibility(View.VISIBLE);
+            tvClear.setVisibility(View.GONE);
+            lstFont = DataFont.getDataFont(this);
+            font = new FontModel("poppins", DataFont.getDataStyleFont(this, "poppins"), true, false, false, false);
+            for (StyleFontModel f : font.getLstStyle()) {
+                if (f.getName().equals("Regular")) f.setSelected(true);
+            }
+            changeStateText(0);
+        }
+    }
 
+    private void setUpText() {
+        tvQuotes.setVisibility(View.GONE);
+        tvClear.setVisibility(View.VISIBLE);
+        etText.setText(textModel.getContent());
+        etText.setGravity(textModel.getTypeAlign());
+        switch (textModel.getTypeAlign()) {
+            case Gravity.START:
+                changeStateAlignText(0);
+                break;
+            case Gravity.CENTER:
+                changeStateAlignText(1);
+                break;
+            case Gravity.END:
+                changeStateAlignText(2);
+                break;
+        }
+        for (int i = 0; i < textModel.getFontModel().getLstStyle().size(); i++) {
+            StyleFontModel f = textModel.getFontModel().getLstStyle().get(i);
+            if (f.isSelected()) {
+                positionStyleFont = i + 2;
+                etText.setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), this));
+                Log.d("2tdp", "font: " + textModel.getFontModel().getNameFont() + "......" + f.getName());
+                break;
+            }
+        }
         lstFont = DataFont.getDataFont(this);
+        for (int i = 0; i < lstFont.size(); i++) {
+            FontModel f = lstFont.get(i);
+            if (f.getNameFont().equals(textModel.getFontModel().getNameFont())) {
+                positionFont = i + 2;
+                f.setSelected(true);
+            }
+        }
+        font = textModel.getFontModel();
+        check = true;
+        setUpFonts();
+        setUpStyle();
+        changeStateText(0);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Utils.setAnimExit(this);
+        finish();
     }
 }

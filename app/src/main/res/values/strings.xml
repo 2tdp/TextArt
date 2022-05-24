@@ -7,6 +7,7 @@
     <string name="all">All</string>
     <string name="del">Delete</string>
     <string name="copy">Copy</string>
+    <string name="clear">Clear</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -61,12 +62,19 @@
     <string name="decor">Decor</string>
     <string name="size">Size</string>
 
-    //addtext
+    //addText
+    <string name="text">Text</string>
     <string name="input_text">Input Text</string>
     <string name="tap_to_edit">Tap to edit</string>
+    <string name="pls_pick_style">Please choose font!</string>
     <string name="quotes">Quotes</string>
     <string name="fonts">Fonts</string>
     <string name="style">Style</string>
+    <string name="et">Edit Text</string>
+    <string name="font_size">Font Size</string>
+    <string name="transform">Transform</string>
+    <string name="shadow">Shadow</string>
+    <string name="opacity">Opacity</string>
     <string name="favorite">Favorite</string>
     <string name="your_font">Your Fonts</string>
     <string name="new_font">New Fonts</string>
@@ -75,6 +83,8 @@
     <string name="semi_bold">SemiBold</string>
     <string name="bold">Bold</string>
     <string name="bold_italic">Bold Italic</string>
+    <string name="choose_sticker_text">Choose a sticker!</string>
+    <string name="px">px</string>
 
     //layer
     <string name="layer">Layer</string>

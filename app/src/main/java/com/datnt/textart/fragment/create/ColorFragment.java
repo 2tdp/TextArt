@@ -59,7 +59,7 @@ public class ColorFragment extends Fragment {
     private void setUpLayout() {
         ArrayList<ColorModel> lstColor = new ArrayList<>(setListColor());
 
-        ColorAdapter colorAdapter = new ColorAdapter(requireContext(), (o, pos) -> {
+        ColorAdapter colorAdapter = new ColorAdapter(requireContext(), R.layout.item_color, (o, pos) -> {
             if (pos == 0) pickColor();
             else {
                 ColorModel color = (ColorModel) o;
@@ -193,7 +193,7 @@ public class ColorFragment extends Fragment {
         }
     }
 
-    private void createGradient(GradientDrawable.Orientation direc, int start, int end){
+    private void createGradient(GradientDrawable.Orientation direc, int start, int end) {
         gradientDrawable = new GradientDrawable(direc, new int[]{start, end});
         gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         gradientDrawable.setCornerRadius(34f);

@@ -40,7 +40,7 @@ public class DataFont {
 
                     style = new StringBuilder(style.toString().substring(0, 2).toUpperCase() + style.toString().substring(2).toLowerCase());
                 }
-                lstStyle.add(new StyleFontModel(style.toString(), nameFont, false));
+                lstStyle.add(new StyleFontModel(style.toString().trim(), nameFont, false));
             }
         } catch (IOException e) {
             e.printStackTrace();

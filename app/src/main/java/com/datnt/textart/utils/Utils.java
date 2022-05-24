@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -80,8 +81,8 @@ public class Utils {
         activity.overridePendingTransition(R.anim.slide_in_left_small, R.anim.slide_out_right);
     }
 
-    public static void showToast(Activity activity, String msg) {
-        Toast toast = Toast.makeText(activity, msg, Toast.LENGTH_SHORT);
+    public static void showToast(Context context, String msg) {
+        Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
@@ -91,6 +92,13 @@ public class Utils {
         underLine.setSpan(new UnderlineSpan(), 0, underLine.length(), 0);
 
         return underLine;
+    }
+
+    public static Typeface getTypeFace(String font, String style, Context context) {
+        return Typeface.createFromAsset(context.getAssets(), "fonts/"
+                + font.toLowerCase() + "/"
+                + font.toLowerCase() + "_"
+                + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
     }
 
     public static GradientDrawable.Orientation setDirection(int pos) {
