@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,7 +34,9 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.ColorAdapter;
+import com.datnt.textart.customview.CustomSeekbar;
 import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.customview.OnSeekbarResult;
 import com.datnt.textart.customview.stickerview.BitmapStickerIcon;
 import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.customview.stickerview.FlipHorizontallyEvent;
@@ -58,13 +60,15 @@ public class EditActivity extends AppCompatActivity {
 
     private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo,
             ivLayer, ivImport, ivLook, ivLock, ivColor;
-    private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancel, tvTitleEditText;
+    private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancel,
+            tvTitleEditText, tvShearX, tvShearY, tvStretch;
     private SeekBar sbFontSize;
+    private CustomSeekbar sbStretch, sbShearX, sbShearY;
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
             rlEditText, rlEditFontSize, rlEditColor;
-    private LinearLayout llLayoutImport, llReUndo;
+    private LinearLayout llLayoutImport, llReUndo, llEditTransform;
     private HorizontalScrollView vSize, vOperation, vEditText;
     private CustomView vMain;
     private StickerView stickerView;
@@ -75,6 +79,7 @@ public class EditActivity extends AppCompatActivity {
     private ArrayList<StickerModel> lstSticker;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
+    private GradientDrawable gradientDrawable;
     private Animation animation;
 
     @Override
@@ -122,6 +127,21 @@ public class EditActivity extends AppCompatActivity {
 //                    stickerView.invalidate();
 //                }
                 if (sticker instanceof TextSticker) textSticker = (TextSticker) sticker;
+                for (StickerModel t : lstSticker) {
+                    if (t.getTextSticker() == textSticker && t.getTextModel().getColor() != null) {
+                        ColorModel color = t.getTextModel().getColor();
+                        GradientDrawable gradient;
+                        if (color.getColorStart() != color.getColorEnd())
+                            gradient = new GradientDrawable(Utils.setDirection(color.getDirec()), new int[]{color.getColorStart(), color.getColorEnd()});
+                        else
+                            gradient = new GradientDrawable(Utils.setDirection(0), new int[]{color.getColorStart(), color.getColorEnd()});
+                        Log.d("2tdp", "onStickerClicked: " + color.getColorStart());
+                        gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+                        gradient.setCornerRadius(10f);
+                        ivColor.setBackground(gradient);
+
+                    }
+                }
                 seekAndHideLayout(3);
                 Log.d("2tdp", "onStickerClicked");
             }
@@ -178,6 +198,7 @@ public class EditActivity extends AppCompatActivity {
         rlDuplicateText.setOnClickListener(v -> duplicateText());
         rlFontSize.setOnClickListener(v -> fontSize());
         rlColor.setOnClickListener(v -> color());
+        rlTransform.setOnClickListener(v -> transform());
 
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
@@ -200,11 +221,138 @@ public class EditActivity extends AppCompatActivity {
         }
     });
 
+    private void transform() {
+        setUpLayoutEditTransform(0);
+        tvCancel.setOnClickListener(v -> setUpLayoutEditTransform(1));
+
+        sbShearX.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                tvShearX.setText(String.valueOf(value));
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+        sbShearY.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                tvShearY.setText(String.valueOf(value));
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+        sbStretch.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                tvStretch.setText(String.valueOf(value));
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+    }
+
+    private void setUpLayoutEditTransform(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.VISIBLE) vEditText.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                llEditTransform.startAnimation(animation);
+                if (llEditTransform.getVisibility() == View.GONE) {
+                    llEditTransform.setVisibility(View.VISIBLE);
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvTitleEditText.setText(getString(R.string.transform));
+                    tvShearX.setText(String.valueOf(0));
+                    tvShearY.setText(String.valueOf(0));
+                    tvStretch.setText(String.valueOf(0));
+                    sbShearX.setMax(100);
+                    sbShearY.setMax(100);
+                    sbStretch.setMax(200);
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                llEditTransform.startAnimation(animation);
+                if (llEditTransform.getVisibility() == View.VISIBLE) {
+                    llEditTransform.setVisibility(View.GONE);
+                    tvCancel.setVisibility(View.GONE);
+                    tvTitleEditText.setText(getString(R.string.text));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                vEditText.clearAnimation();
+                rlEditFontSize.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    //color
     private void color() {
+        setUpLayoutEditColor(0);
+        tvCancel.setOnClickListener(v -> setUpLayoutEditColor(1));
+
         ArrayList<ColorModel> lstColor = new ArrayList<>(setListColor());
 
         ColorAdapter colorAdapter = new ColorAdapter(this, R.layout.item_color_edit, (o, pos) -> {
+            ColorModel color = (ColorModel) o;
             if (pos == 0) pickColor();
+            else {
+                if (color.getColorStart() == color.getColorEnd()) {
+                    addColorTextModel(textSticker, color);
+                    textSticker.setTextColor(color);
+                    stickerView.replace(textSticker, true);
+                    GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                            new int[]{color.getColorStart(), color.getColorStart()});
+                    gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+                    gradientDrawable.setCornerRadius(10f);
+                    ivColor.setBackground(gradientDrawable);
+                } else {
+                    pickDirection(color);
+                }
+            }
         });
         colorAdapter.setData(lstColor);
 
@@ -214,8 +362,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private ArrayList<ColorModel> setListColor() {
-        setUpLayoutEditColor(0);
-        tvCancel.setOnClickListener(v -> setUpLayoutEditColor(1));
         ArrayList<ColorModel> lstColor = new ArrayList<>();
 
         int[] arrColor = getResources().getIntArray(R.array.lstColor);
@@ -249,9 +395,7 @@ public class EditActivity extends AppCompatActivity {
                 if (rlEditColor.getVisibility() == View.GONE) {
                     rlEditColor.setVisibility(View.VISIBLE);
                     tvCancel.setVisibility(View.VISIBLE);
-                    tvTitleEditText.setText(getString(R.string.font_size));
-                    tvFontSize.setText(String.valueOf((int) textSticker.getTextSize()));
-                    sbFontSize.setProgress((int) textSticker.getTextSize());
+                    tvTitleEditText.setText(getString(R.string.color));
                 }
                 break;
             case 1:
@@ -287,6 +431,156 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    private void pickDirection(ColorModel color) {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_pick_direction, null);
+        ImageView iv_TB = view.findViewById(R.id.iv_TB);
+        ImageView ivTL_BR = view.findViewById(R.id.ivTL_BR);
+        ImageView ivLR = view.findViewById(R.id.ivLR);
+        ImageView ivBL_TR = view.findViewById(R.id.ivBL_TR);
+        ImageView ivBT = view.findViewById(R.id.ivBT);
+        ImageView ivRL = view.findViewById(R.id.ivRL);
+
+        ImageView ivShow = view.findViewById(R.id.ivShow);
+
+        TextView tvNo = view.findViewById(R.id.tvNo);
+        TextView tvYes = view.findViewById(R.id.tvYes);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
+        dialog.setView(view);
+        dialog.setCancelable(false);
+        dialog.show();
+
+        tvNo.setOnClickListener(v -> dialog.cancel());
+        tvYes.setOnClickListener(v -> {
+            addColorTextModel(textSticker, color);
+            textSticker.setTextColor(color);
+            stickerView.replace(textSticker, true);
+
+            GradientDrawable gradientDrawable = new GradientDrawable(Utils.setDirection(color.getDirec()),
+                    new int[]{color.getColorStart(), color.getColorEnd()});
+            gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+            gradientDrawable.setCornerRadius(10f);
+            ivColor.setBackground(gradientDrawable);
+            dialog.cancel();
+        });
+
+        clickDirec(color.getDirec(), color, ivShow);
+        checkPickDirec(color.getDirec(), iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+
+        iv_TB.setOnClickListener(v -> {
+            clickDirec(0, color, ivShow);
+            checkPickDirec(0, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+        ivTL_BR.setOnClickListener(v -> {
+            clickDirec(1, color, ivShow);
+            checkPickDirec(1, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+        ivLR.setOnClickListener(v -> {
+            clickDirec(2, color, ivShow);
+            checkPickDirec(2, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+        ivBL_TR.setOnClickListener(v -> {
+            clickDirec(3, color, ivShow);
+            checkPickDirec(3, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+        ivBT.setOnClickListener(v -> {
+            clickDirec(4, color, ivShow);
+            checkPickDirec(4, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+        ivRL.setOnClickListener(v -> {
+            clickDirec(5, color, ivShow);
+            checkPickDirec(5, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
+        });
+    }
+
+    private void clickDirec(int pos, ColorModel color, ImageView ivShow) {
+        switch (pos) {
+            case 0:
+                createGradient(GradientDrawable.Orientation.TOP_BOTTOM, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+            case 1:
+                createGradient(GradientDrawable.Orientation.TL_BR, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+            case 2:
+                createGradient(GradientDrawable.Orientation.LEFT_RIGHT, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+            case 3:
+                createGradient(GradientDrawable.Orientation.BL_TR, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+            case 4:
+                createGradient(GradientDrawable.Orientation.BOTTOM_TOP, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+            case 5:
+                createGradient(GradientDrawable.Orientation.RIGHT_LEFT, color.getColorStart(), color.getColorEnd());
+                ivShow.setBackground(gradientDrawable);
+                break;
+        }
+    }
+
+    private void createGradient(GradientDrawable.Orientation direc, int start, int end) {
+        gradientDrawable = new GradientDrawable(direc, new int[]{start, end});
+        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        gradientDrawable.setCornerRadius(34f);
+    }
+
+    private void checkPickDirec(int pos, ImageView iv_tb, ImageView ivTL_br, ImageView ivLR, ImageView ivBL_tr, ImageView ivBT, ImageView ivRL) {
+        switch (pos) {
+            case 0:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_check);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_uncheck);
+                ivLR.setImageResource(R.drawable.ic_left_right_uncheck);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_uncheck);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_uncheck);
+                ivRL.setImageResource(R.drawable.ic_right_left_uncheck);
+                break;
+            case 1:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_uncheck);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_check);
+                ivLR.setImageResource(R.drawable.ic_left_right_uncheck);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_uncheck);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_uncheck);
+                ivRL.setImageResource(R.drawable.ic_right_left_uncheck);
+                break;
+            case 2:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_uncheck);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_uncheck);
+                ivLR.setImageResource(R.drawable.ic_left_right_check);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_uncheck);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_uncheck);
+                ivRL.setImageResource(R.drawable.ic_right_left_uncheck);
+                break;
+            case 3:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_uncheck);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_uncheck);
+                ivLR.setImageResource(R.drawable.ic_left_right_uncheck);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_check);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_uncheck);
+                ivRL.setImageResource(R.drawable.ic_right_left_uncheck);
+                break;
+            case 4:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_uncheck);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_uncheck);
+                ivLR.setImageResource(R.drawable.ic_left_right_uncheck);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_uncheck);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_check);
+                ivRL.setImageResource(R.drawable.ic_right_left_uncheck);
+                break;
+            case 5:
+                iv_tb.setImageResource(R.drawable.ic_top_bottom_uncheck);
+                ivTL_br.setImageResource(R.drawable.ic_tl_br_uncheck);
+                ivLR.setImageResource(R.drawable.ic_left_right_uncheck);
+                ivBL_tr.setImageResource(R.drawable.ic_bl_tr_uncheck);
+                ivBT.setImageResource(R.drawable.ic_bottom_top_uncheck);
+                ivRL.setImageResource(R.drawable.ic_right_left_check);
+                break;
+        }
+    }
+
     private void pickColor() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_pick_color, null);
         ColorPickerView colorPicker = view.findViewById(R.id.pickColor);
@@ -300,12 +594,26 @@ public class EditActivity extends AppCompatActivity {
 
         tvNo.setOnClickListener(v -> dialog.cancel());
         tvYes.setOnClickListener(view1 -> {
-            textSticker.setTextColor(colorPicker.getSelectedColor());
+            ColorModel color = new ColorModel(colorPicker.getSelectedColor(), colorPicker.getSelectedColor(), 0, false);
+            addColorTextModel(textSticker, color);
+            textSticker.setTextColor(color);
             stickerView.replace(textSticker, true);
+            GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{colorPicker.getSelectedColor(), colorPicker.getSelectedColor()});
+            gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+            gradientDrawable.setCornerRadius(10f);
+            ivColor.setBackground(gradientDrawable);
             dialog.cancel();
         });
     }
 
+    private void addColorTextModel(TextSticker textSticker, ColorModel colorModel) {
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker() == textSticker) t.getTextModel().setColor(colorModel);
+            break;
+        }
+    }
+
+    //font size
     private void fontSize() {
         setUpLayoutEditFontSize(0);
         tvCancel.setOnClickListener(v -> setUpLayoutEditFontSize(1));
@@ -379,6 +687,7 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    //duplicate
     private void duplicateText() {
         if (textSticker == null) {
             Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
@@ -389,6 +698,7 @@ public class EditActivity extends AppCompatActivity {
             if (t.getTextSticker() == textSticker) {
                 setTextSticker(t.getTextModel(), text);
                 stickerView.addSticker(text);
+                textSticker = text;
                 break;
             }
         }
@@ -404,22 +714,24 @@ public class EditActivity extends AppCompatActivity {
                 break;
             }
         }
-        switch (textModel.getTypeAlign()) {
-            case Gravity.START:
-                textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
-                break;
-            case Gravity.CENTER:
-                textSticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-                break;
-            case Gravity.END:
-                textSticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
-                break;
-        }
+        if (textModel.getColor() != null) textSticker.setTextColor(textModel.getColor());
+            switch (textModel.getTypeAlign()) {
+                case Gravity.START:
+                    textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+                    break;
+                case Gravity.CENTER:
+                    textSticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+                    break;
+                case Gravity.END:
+                    textSticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                    break;
+            }
         lstSticker.add(new StickerModel(textModel, textSticker, null));
         seekAndHideLayout(3);
         Log.d("2tdp", "lstSticker: " + lstSticker.size());
     }
 
+    //edit text
     private void editText() {
         if (textSticker == null) {
             Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
@@ -430,6 +742,7 @@ public class EditActivity extends AppCompatActivity {
         launcher.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
     }
 
+    //del
     private void delStick() {
         if (textSticker == null && drawableSticker == null) {
             Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
@@ -743,8 +1056,20 @@ public class EditActivity extends AppCompatActivity {
         tvTitleEditText = findViewById(R.id.tvTitleEditText);
         rlEditColor = findViewById(R.id.rlEditColor);
         rcvEditColor = findViewById(R.id.rcvEditColor);
+        tvShearX = findViewById(R.id.tvShearX);
+        tvShearY = findViewById(R.id.tvShearY);
+        tvStretch = findViewById(R.id.tvStretch);
+        sbShearX = findViewById(R.id.sbShearX);
+        sbShearY = findViewById(R.id.sbShearY);
+        sbStretch = findViewById(R.id.sbStretch);
+        llEditTransform = findViewById(R.id.llEditTransform);
 
         lstSticker = new ArrayList<>();
+
+        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.parseColor("#575757"), Color.parseColor("#575757")});
+        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        gradientDrawable.setCornerRadius(10f);
+        ivColor.setBackground(gradientDrawable);
     }
 
     @Override

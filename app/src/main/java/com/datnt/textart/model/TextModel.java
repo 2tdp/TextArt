@@ -7,14 +7,14 @@ public class TextModel implements Serializable {
     private QuoteModel quoteModel;
     private FontModel fontModel;
     private int typeAlign;
-    private int colorText;
+    private ColorModel color;
 
-    public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, int typeAlign, int colorText) {
+    public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, int typeAlign, ColorModel color) {
         this.content = content;
         this.quoteModel = quoteModel;
         this.fontModel = fontModel;
         this.typeAlign = typeAlign;
-        this.colorText = colorText;
+        this.color = color;
     }
 
     public String getContent() {
@@ -49,11 +49,11 @@ public class TextModel implements Serializable {
         this.typeAlign = typeAlign;
     }
 
-    public int getColorText() {
-        return colorText;
+    public ColorModel getColor() {
+        return color;
     }
 
-    public void setColorText(int colorText) {
-        this.colorText = colorText;
+    public void setColor(ColorModel color) {
+        this.color = color;
     }
 }

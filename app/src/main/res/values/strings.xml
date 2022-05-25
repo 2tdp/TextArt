@@ -85,6 +85,9 @@
     <string name="bold_italic">Bold Italic</string>
     <string name="choose_sticker_text">Choose a sticker!</string>
     <string name="px">px</string>
+    <string name="shear_x">Shear X</string>
+    <string name="shear_y">Shear Y</string>
+    <string name="stretch">Stretch</string>
 
     //layer
     <string name="layer">Layer</string>

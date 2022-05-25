@@ -77,7 +77,7 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void clickTick() {
-        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), -1);
+        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("text", text);
         setResult(Activity.RESULT_OK, returnIntent);

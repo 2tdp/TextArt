@@ -2,8 +2,11 @@ package com.datnt.textart.customview.stickerview;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
@@ -19,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.datnt.textart.R;
+import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.model.ColorModel;
 
 import java.io.Serializable;
 
@@ -185,9 +190,49 @@ public class TextSticker extends Sticker {
     }
 
     @NonNull
-    public TextSticker setTextColor(@ColorInt int color) {
-        textPaint.setColor(color);
+    public TextSticker setTextColor(@NonNull ColorModel color) {
+        if (color.getColorStart() == color.getColorEnd()){
+            textPaint.setColor(color.getColorStart());
+        } else {
+            if (color.getDirec() == 4) {
+                int c = color.getColorStart();
+                color.setColorStart(color.getColorEnd());
+                color.setColorEnd(c);
+
+                color.setDirec(0);
+            } else if (color.getDirec() == 5) {
+                int c = color.getColorStart();
+                color.setColorStart(color.getColorEnd());
+                color.setColorEnd(c);
+
+                color.setDirec(2);
+            }
+
+            Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
+                    setDirection(color.getDirec())[1],
+                    setDirection(color.getDirec())[2],
+                    setDirection(color.getDirec())[3],
+                    new int[]{Color.parseColor(CustomView.toRGBString(color.getColorStart())), Color.parseColor(CustomView.toRGBString(color.getColorEnd()))},
+                    new float[]{0, 1}, Shader.TileMode.MIRROR);
+            textPaint.setShader(shader);
+        }
         return this;
+    }
+
+    private int[] setDirection(int direc) {
+        float w = getWidth();
+        float h = getHeight();
+        switch (direc) {
+            case 0:
+                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
+            case 1:
+                return new int[]{0, 0, (int) w, (int) h};
+            case 2:
+                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
+            case 3:
+                return new int[]{0, (int) h, (int) w, 0};
+        }
+        return new int[]{0, 0, 0, 0};
     }
 
     @NonNull
