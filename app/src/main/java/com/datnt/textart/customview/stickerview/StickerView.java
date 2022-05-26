@@ -24,6 +24,7 @@ import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.textart.R;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -78,6 +79,7 @@ public class StickerView extends FrameLayout {
     private final Matrix sizeMatrix = new Matrix();
     private final Matrix downMatrix = new Matrix();
     private final Matrix moveMatrix = new Matrix();
+    private final Matrix shearMatrix = new Matrix();
 
     // region storing variables
     private final float[] bitmapPoints = new float[8];
@@ -231,7 +233,6 @@ public class StickerView extends FrameLayout {
                     BitmapStickerIcon icon = icons.get(i);
                     switch (icon.getPosition()) {
                         case BitmapStickerIcon.LEFT_TOP:
-
                             configIconMatrix(icon, x1, y1, rotation);
                             break;
 
@@ -406,9 +407,7 @@ public class StickerView extends FrameLayout {
                     moveMatrix.set(downMatrix);
                     moveMatrix.postTranslate(event.getX() - downX, event.getY() - downY);
                     handlingSticker.setMatrix(moveMatrix);
-                    if (constrained) {
-                        constrainSticker(handlingSticker);
-                    }
+                    if (constrained) constrainSticker(handlingSticker);
                 }
                 break;
             case ActionMode.ZOOM_WITH_TWO_FINGER:
@@ -433,17 +432,32 @@ public class StickerView extends FrameLayout {
         }
     }
 
+    public void shear(@Nullable Sticker sticker, float sX, float sY) {
+        if (sticker != null) {
+            shearMatrix.reset();
+            shearMatrix.setSkew(sX, sY, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
+
+            sticker.getMatrix().reset();
+            sticker.setMatrix(shearMatrix);
+
+
+        }
+        invalidate();
+    }
+
     public void rotateCurrentSticker(@NonNull MotionEvent event) {
         rotateSticker(handlingSticker, event);
     }
 
     public void rotateSticker(@Nullable Sticker sticker, @NonNull MotionEvent event) {
         if (sticker != null) {
+
             float newRotation = calculateRotation(midPoint.x, midPoint.y, event.getX(), event.getY());
 
             moveMatrix.set(downMatrix);
             moveMatrix.postRotate(newRotation - oldRotation, midPoint.x, midPoint.y);
             handlingSticker.setMatrix(moveMatrix);
+
         }
     }
 

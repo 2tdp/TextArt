@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +15,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,6 +55,7 @@ import com.datnt.textart.utils.Utils;
 import com.flask.colorpicker.ColorPickerView;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -74,12 +77,12 @@ public class EditActivity extends AppCompatActivity {
     private StickerView stickerView;
     private RecyclerView rcvEditColor;
 
-    private TextModel textModel;
     private Bitmap bitmap;
     private ArrayList<StickerModel> lstSticker;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
     private GradientDrawable gradientDrawable;
+    private boolean check;
     private Animation animation;
 
     @Override
@@ -115,31 +118,26 @@ public class EditActivity extends AppCompatActivity {
         stickerView.setOnStickerOperationListener(new StickerView.OnStickerOperationListener() {
             @Override
             public void onStickerAdded(@NonNull Sticker sticker) {
+                if (sticker instanceof TextSticker) textSticker = (TextSticker) sticker;
                 Log.d("2tdp", "onStickerAdded");
             }
 
             @Override
             public void onStickerClicked(@NonNull Sticker sticker) {
-                //stickerView.removeAllSticker();
-//                if (sticker instanceof TextSticker) {
-//                    ((TextSticker) sticker).setTextColor(Color.RED);
-//                    stickerView.replace(sticker);
-//                    stickerView.invalidate();
-//                }
                 if (sticker instanceof TextSticker) textSticker = (TextSticker) sticker;
                 for (StickerModel t : lstSticker) {
-                    if (t.getTextSticker() == textSticker && t.getTextModel().getColor() != null) {
+                    if (t.getTextSticker().getId() == textSticker.getId() && t.getTextModel().getColor() != null) {
                         ColorModel color = t.getTextModel().getColor();
+
                         GradientDrawable gradient;
                         if (color.getColorStart() != color.getColorEnd())
                             gradient = new GradientDrawable(Utils.setDirection(color.getDirec()), new int[]{color.getColorStart(), color.getColorEnd()});
                         else
                             gradient = new GradientDrawable(Utils.setDirection(0), new int[]{color.getColorStart(), color.getColorEnd()});
-                        Log.d("2tdp", "onStickerClicked: " + color.getColorStart());
+
                         gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
                         gradient.setCornerRadius(10f);
                         ivColor.setBackground(gradient);
-
                     }
                 }
                 seekAndHideLayout(3);
@@ -203,20 +201,23 @@ public class EditActivity extends AppCompatActivity {
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
             launcher.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
+            check = true;
         });
     }
 
     private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK) {
             if (result.getData() != null) {
-                textModel = (TextModel) result.getData().getSerializableExtra("text");
-                if (textSticker == null) {
-                    textSticker = new TextSticker(this);
+                TextModel textModel = (TextModel) result.getData().getSerializableExtra("text");
+                if (check) {
+                    if (lstSticker.isEmpty()) textSticker = new TextSticker(this, 0);
+                    else
+                        textSticker = new TextSticker(this, lstSticker.get(lstSticker.size() - 1).getTextSticker().getId() + 1);
                     stickerView.addSticker(textSticker);
                 } else {
                     stickerView.replace(textSticker, true);
                 }
-                setTextSticker(textModel, textSticker);
+                setTextSticker(textSticker, textModel);
             }
         }
     });
@@ -234,6 +235,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearX.setText(String.valueOf(value));
+                stickerView.shear(textSticker, value / 100f, 0f);
             }
 
             @Override
@@ -250,6 +252,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearY.setText(String.valueOf(value));
+                stickerView.shear(textSticker, 0f, value / 100f);
             }
 
             @Override
@@ -341,9 +344,12 @@ public class EditActivity extends AppCompatActivity {
             if (pos == 0) pickColor();
             else {
                 if (color.getColorStart() == color.getColorEnd()) {
-                    addColorTextModel(textSticker, color);
+
+                    addColorTextModel(color);
+
                     textSticker.setTextColor(color);
                     stickerView.replace(textSticker, true);
+
                     GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                             new int[]{color.getColorStart(), color.getColorStart()});
                     gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
@@ -452,7 +458,9 @@ public class EditActivity extends AppCompatActivity {
 
         tvNo.setOnClickListener(v -> dialog.cancel());
         tvYes.setOnClickListener(v -> {
-            addColorTextModel(textSticker, color);
+
+            addColorTextModel(color);
+
             textSticker.setTextColor(color);
             stickerView.replace(textSticker, true);
 
@@ -595,9 +603,12 @@ public class EditActivity extends AppCompatActivity {
         tvNo.setOnClickListener(v -> dialog.cancel());
         tvYes.setOnClickListener(view1 -> {
             ColorModel color = new ColorModel(colorPicker.getSelectedColor(), colorPicker.getSelectedColor(), 0, false);
-            addColorTextModel(textSticker, color);
+
+            addColorTextModel(color);
+
             textSticker.setTextColor(color);
             stickerView.replace(textSticker, true);
+
             GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{colorPicker.getSelectedColor(), colorPicker.getSelectedColor()});
             gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
             gradientDrawable.setCornerRadius(10f);
@@ -606,10 +617,12 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
-    private void addColorTextModel(TextSticker textSticker, ColorModel colorModel) {
+    private void addColorTextModel(ColorModel colorModel) {
         for (StickerModel t : lstSticker) {
-            if (t.getTextSticker() == textSticker) t.getTextModel().setColor(colorModel);
-            break;
+            if (t.getTextSticker().getId() == textSticker.getId()) {
+                t.getTextModel().setColor(colorModel);
+                break;
+            }
         }
     }
 
@@ -693,10 +706,10 @@ public class EditActivity extends AppCompatActivity {
             Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
             return;
         }
-        TextSticker text = new TextSticker(this);
+        TextSticker text = new TextSticker(this, lstSticker.get(lstSticker.size() - 1).getTextSticker().getId() + 1);
         for (StickerModel t : lstSticker) {
-            if (t.getTextSticker() == textSticker) {
-                setTextSticker(t.getTextModel(), text);
+            if (t.getTextSticker().getId() == textSticker.getId()) {
+                setTextSticker(text, new TextModel(t.getTextModel()));
                 stickerView.addSticker(text);
                 textSticker = text;
                 break;
@@ -704,7 +717,7 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    private void setTextSticker(TextModel textModel, TextSticker textSticker) {
+    private void setTextSticker(TextSticker textSticker, TextModel textModel) {
         textSticker.setText(textModel.getContent());
         textSticker.resizeText();
         for (StyleFontModel f : textModel.getFontModel().getLstStyle()) {
@@ -715,17 +728,17 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         if (textModel.getColor() != null) textSticker.setTextColor(textModel.getColor());
-            switch (textModel.getTypeAlign()) {
-                case Gravity.START:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
-                    break;
-                case Gravity.CENTER:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-                    break;
-                case Gravity.END:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
-                    break;
-            }
+        switch (textModel.getTypeAlign()) {
+            case Gravity.START:
+                textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+                break;
+            case Gravity.CENTER:
+                textSticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+                break;
+            case Gravity.END:
+                textSticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                break;
+        }
         lstSticker.add(new StickerModel(textModel, textSticker, null));
         seekAndHideLayout(3);
         Log.d("2tdp", "lstSticker: " + lstSticker.size());
@@ -738,8 +751,14 @@ public class EditActivity extends AppCompatActivity {
             return;
         }
         Intent intent = new Intent(this, AddTextActivity.class);
-        intent.putExtra("text", textModel);
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker().getId() == textSticker.getId()) {
+                intent.putExtra("text", t.getTextModel());
+                break;
+            }
+        }
         launcher.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
+        check = false;
     }
 
     //del
@@ -751,7 +770,7 @@ public class EditActivity extends AppCompatActivity {
         if (textSticker != null) {
             StickerModel stickerModel = null;
             for (StickerModel st : lstSticker) {
-                if (st.getTextSticker() == textSticker) stickerModel = st;
+                if (st.getTextSticker().getId() == textSticker.getId()) stickerModel = st;
             }
             lstSticker.remove(stickerModel);
             stickerView.remove(textSticker);
@@ -777,7 +796,7 @@ public class EditActivity extends AppCompatActivity {
         vMain.setSize(0);
         if (strUri != null) {
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri));
+                bitmap = modifyOrientation(MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
                 if (bitmap != null) vMain.setData(bitmap, null);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -787,6 +806,35 @@ public class EditActivity extends AppCompatActivity {
             if (color != null) color.setDirec(getIntent().getIntExtra("direc", 0));
             vMain.setData(null, color);
         }
+    }
+
+    public Bitmap modifyOrientation(Bitmap bitmap, Uri uri) throws IOException {
+        InputStream is = getContentResolver().openInputStream(uri);
+        ExifInterface ei = new ExifInterface(is);
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        Log.e("2tdpppp", "modifyOrientation:  " + orientation);
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return rotateBitmap(bitmap, 90);
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return rotateBitmap(bitmap, 180);
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return rotateBitmap(bitmap, 270);
+//            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+//                ivFilter.setRotation(180);
+//                break;
+//            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+//                return flip(bitmap, false, true);
+            default:
+                return bitmap;
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
     private void seekAndHideLayout(int pos) {

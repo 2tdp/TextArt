@@ -125,6 +125,7 @@
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
 
+<!--    edit text-->
     <RelativeLayout
         android:id="@+id/rlExpandEditText"
         android:layout_width="match_parent"
@@ -563,6 +564,7 @@
         </HorizontalScrollView>
     </RelativeLayout>
 
+<!--    layer-->
     <RelativeLayout
         android:id="@+id/rlExpandLayer"
         android:layout_width="match_parent"
@@ -700,6 +702,7 @@
         </LinearLayout>
     </RelativeLayout>
 
+<!--    operation-->
     <HorizontalScrollView
         android:id="@+id/vOperation"
         android:layout_width="wrap_content"
@@ -931,6 +934,7 @@
 
     </HorizontalScrollView>
 
+<!--    size-->
     <HorizontalScrollView
         android:id="@+id/vSize"
         android:layout_width="wrap_content"

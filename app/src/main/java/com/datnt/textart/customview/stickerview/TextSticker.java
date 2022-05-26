@@ -46,6 +46,7 @@ public class TextSticker extends Sticker {
     private static final String mEllipsis = "\u2026";
 
     private final Context context;
+    private int id;
     private final Rect realBounds;
     private final Rect textRect;
     private final TextPaint textPaint;
@@ -75,8 +76,9 @@ public class TextSticker extends Sticker {
      */
     private float lineSpacingExtra = 0.0f;
 
-    public TextSticker(@NonNull Context context) {
+    public TextSticker(@NonNull Context context, int id) {
         this(context, null);
+        this.id = id;
     }
 
     public TextSticker(@NonNull Context context, @Nullable Drawable drawable) {
@@ -104,8 +106,8 @@ public class TextSticker extends Sticker {
             drawable.draw(canvas);
         }
         canvas.restore();
-
         canvas.save();
+
         canvas.concat(matrix);
         if (textRect.width() == getWidth()) {
             int dy = getHeight() / 2 - staticLayout.getHeight() / 2;
@@ -192,6 +194,7 @@ public class TextSticker extends Sticker {
     @NonNull
     public TextSticker setTextColor(@NonNull ColorModel color) {
         if (color.getColorStart() == color.getColorEnd()){
+            textPaint.setShader(null);
             textPaint.setColor(color.getColorStart());
         } else {
             if (color.getDirec() == 4) {
@@ -386,5 +389,13 @@ public class TextSticker extends Sticker {
 
     private float convertPxToSp(float scaledPixels) {
         return scaledPixels / context.getResources().getDisplayMetrics().scaledDensity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

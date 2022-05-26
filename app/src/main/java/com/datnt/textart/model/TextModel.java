@@ -9,6 +9,14 @@ public class TextModel implements Serializable {
     private int typeAlign;
     private ColorModel color;
 
+    public TextModel(TextModel textModel) {
+        this.content = textModel.getContent();
+        this.quoteModel = textModel.quoteModel;
+        this.fontModel = textModel.fontModel;
+        this.typeAlign = textModel.typeAlign;
+        this.color = textModel.color;
+    }
+
     public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, int typeAlign, ColorModel color) {
         this.content = content;
         this.quoteModel = quoteModel;

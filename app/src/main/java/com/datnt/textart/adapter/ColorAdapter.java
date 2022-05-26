@@ -72,7 +72,9 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
             itemView.setOnClickListener(v -> callBack.callBackItem(color, position));
 
             if (color.getColorStart() == 0) {
-                ivPick.setImageResource(R.drawable.ic_pick_color);
+                if (resourceLayout == R.layout.item_color)
+                    ivPick.setImageResource(R.drawable.ic_pick_color);
+                else ivPick.setImageResource(R.drawable.ic_pick_color_cir);
                 ivPick.setBackground(null);
             } else {
                 if (color.getColorStart() != color.getColorEnd())
@@ -80,7 +82,8 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
                 else
                     gradient = new GradientDrawable(Utils.setDirection(0), new int[]{color.getColorStart(), color.getColorEnd()});
                 gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-                gradient.setCornerRadius(34f);
+                if (resourceLayout == R.layout.item_color_edit) gradient.setCornerRadius(84f);
+                else gradient.setCornerRadius(34f);
                 ivPick.setImageResource(0);
                 ivPick.setBackground(gradient);
             }
