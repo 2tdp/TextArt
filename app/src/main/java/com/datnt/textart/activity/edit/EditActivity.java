@@ -36,7 +36,8 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.ColorAdapter;
-import com.datnt.textart.customview.CustomSeekbar;
+import com.datnt.textart.customview.CustomSeekbarRunText;
+import com.datnt.textart.customview.CustomSeekbarTwoWay;
 import com.datnt.textart.customview.CustomView;
 import com.datnt.textart.customview.OnSeekbarResult;
 import com.datnt.textart.customview.stickerview.BitmapStickerIcon;
@@ -62,16 +63,17 @@ import java.util.Arrays;
 public class EditActivity extends AppCompatActivity {
 
     private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo,
-            ivLayer, ivImport, ivLook, ivLock, ivColor;
+            ivLayer, ivImport, ivLook, ivLock, ivColor, ivColorBlur;
     private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancel,
-            tvTitleEditText, tvShearX, tvShearY, tvStretch;
+            tvTitleEditText, tvShearX, tvShearY, tvStretch, tvXPos, tvYPos, tvBlur;
     private SeekBar sbFontSize;
-    private CustomSeekbar sbStretch, sbShearX, sbShearY;
+    private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur;
+    private CustomSeekbarRunText sbOpacity;
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
-            rlEditText, rlEditFontSize, rlEditColor;
-    private LinearLayout llLayoutImport, llReUndo, llEditTransform;
+            rlEditText, rlEditFontSize, rlEditColor, rlEditOpacity;
+    private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow;
     private HorizontalScrollView vSize, vOperation, vEditText;
     private CustomView vMain;
     private StickerView stickerView;
@@ -197,6 +199,8 @@ public class EditActivity extends AppCompatActivity {
         rlFontSize.setOnClickListener(v -> fontSize());
         rlColor.setOnClickListener(v -> color());
         rlTransform.setOnClickListener(v -> transform());
+        rlShadow.setOnClickListener(v -> shadow());
+        rlOpacity.setOnClickListener(v -> opacity());
 
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
@@ -222,6 +226,144 @@ public class EditActivity extends AppCompatActivity {
         }
     });
 
+    //opacity
+    private void opacity() {
+        setUpLayoutEditOpacity(0);
+        tvCancel.setOnClickListener(v -> setUpLayoutEditOpacity(1));
+
+        sbOpacity.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                textSticker.setAlpha((int) (value * 255 / 100f));
+                Log.d("2tdp", "onMove: " + value);
+                stickerView.replace(textSticker, true);
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+    }
+
+    private void setUpLayoutEditOpacity(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.VISIBLE) vEditText.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                rlEditOpacity.startAnimation(animation);
+                if (rlEditOpacity.getVisibility() == View.GONE) {
+                    rlEditOpacity.setVisibility(View.VISIBLE);
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvTitleEditText.setText(getString(R.string.opacity));
+                    sbOpacity.setColorText(getResources().getColor(R.color.green));
+                    sbOpacity.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                    sbOpacity.setProgress(100);
+                    sbOpacity.setMax(100);
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                rlEditOpacity.startAnimation(animation);
+                if (rlEditOpacity.getVisibility() == View.VISIBLE) {
+                    rlEditOpacity.setVisibility(View.GONE);
+                    tvCancel.setVisibility(View.GONE);
+                    tvTitleEditText.setText(getString(R.string.text));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                vEditText.clearAnimation();
+                rlEditFontSize.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    //shadow
+    private void shadow() {
+        setUpLayoutEditShadow(0);
+        tvCancel.setOnClickListener(v -> setUpLayoutEditShadow(1));
+    }
+
+    private void setUpLayoutEditShadow(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.VISIBLE) vEditText.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                llEditShadow.startAnimation(animation);
+                if (llEditShadow.getVisibility() == View.GONE) {
+                    llEditShadow.setVisibility(View.VISIBLE);
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvTitleEditText.setText(getString(R.string.shadow));
+                    tvXPos.setText(String.valueOf(0));
+                    tvYPos.setText(String.valueOf(0));
+                    tvBlur.setText(String.valueOf(0));
+                    sbXPos.setMax(100);
+                    sbYPos.setMax(100);
+                    sbBlur.setMax(100);
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                llEditShadow.startAnimation(animation);
+                if (llEditShadow.getVisibility() == View.VISIBLE) {
+                    llEditShadow.setVisibility(View.GONE);
+                    tvCancel.setVisibility(View.GONE);
+                    tvTitleEditText.setText(getString(R.string.text));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                vEditText.startAnimation(animation);
+                if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                vEditText.clearAnimation();
+                rlEditFontSize.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    //transfrom
     private void transform() {
         setUpLayoutEditTransform(0);
         tvCancel.setOnClickListener(v -> setUpLayoutEditTransform(1));
@@ -235,7 +377,11 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearX.setText(String.valueOf(value));
-                stickerView.shear(textSticker, value / 100f, 0f);
+//                stickerView.shearSticker(textSticker, value / 100f, 0f);
+//                textSticker.getMatrix().setSkew(value / 100f, 0f, textSticker.getWidth() / 2f, textSticker.getHeight() / 2f);
+//                textSticker.setShear(textSticker, value, 0f, true);
+//                stickerView.replace(textSticker, true);
+//                stickerView.invalidate();
             }
 
             @Override
@@ -252,7 +398,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearY.setText(String.valueOf(value));
-                stickerView.shear(textSticker, 0f, value / 100f);
+//                stickerView.shear(textSticker, 0f, value / 100f);
             }
 
             @Override
@@ -1111,6 +1257,15 @@ public class EditActivity extends AppCompatActivity {
         sbShearY = findViewById(R.id.sbShearY);
         sbStretch = findViewById(R.id.sbStretch);
         llEditTransform = findViewById(R.id.llEditTransform);
+        llEditShadow = findViewById(R.id.llEditShadow);
+        tvXPos = findViewById(R.id.tvXPos);
+        tvYPos = findViewById(R.id.tvYPos);
+        tvBlur = findViewById(R.id.tvBlur);
+        sbXPos = findViewById(R.id.sbXPos);
+        sbYPos = findViewById(R.id.sbYPos);
+        sbBlur = findViewById(R.id.sbBlur);
+        rlEditOpacity = findViewById(R.id.rlEditOpacity);
+        sbOpacity = findViewById(R.id.sbOpacity);
 
         lstSticker = new ArrayList<>();
 

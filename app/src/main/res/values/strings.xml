@@ -8,6 +8,7 @@
     <string name="del">Delete</string>
     <string name="copy">Copy</string>
     <string name="clear">Clear</string>
+    <string name="percent">%  </string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -88,6 +89,9 @@
     <string name="shear_x">Shear X</string>
     <string name="shear_y">Shear Y</string>
     <string name="stretch">Stretch</string>
+    <string name="x_pos">X-Pos</string>
+    <string name="y_pos">Y-Pos</string>
+    <string name="blur">Blur</string>
 
     //layer
     <string name="layer">Layer</string>

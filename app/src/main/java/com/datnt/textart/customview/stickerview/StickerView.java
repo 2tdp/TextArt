@@ -421,7 +421,6 @@ public class StickerView extends FrameLayout {
                     moveMatrix.postRotate(newRotation - oldRotation, midPoint.x, midPoint.y);
                     handlingSticker.setMatrix(moveMatrix);
                 }
-
                 break;
 
             case ActionMode.ICON:
@@ -430,19 +429,6 @@ public class StickerView extends FrameLayout {
                 }
                 break;
         }
-    }
-
-    public void shear(@Nullable Sticker sticker, float sX, float sY) {
-        if (sticker != null) {
-            shearMatrix.reset();
-            shearMatrix.setSkew(sX, sY, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
-
-            sticker.getMatrix().reset();
-            sticker.setMatrix(shearMatrix);
-
-
-        }
-        invalidate();
     }
 
     public void rotateCurrentSticker(@NonNull MotionEvent event) {
@@ -457,7 +443,6 @@ public class StickerView extends FrameLayout {
             moveMatrix.set(downMatrix);
             moveMatrix.postRotate(newRotation - oldRotation, midPoint.x, midPoint.y);
             handlingSticker.setMatrix(moveMatrix);
-
         }
     }
 
@@ -740,17 +725,11 @@ public class StickerView extends FrameLayout {
         return addSticker(sticker, Sticker.Position.CENTER);
     }
 
-    public StickerView addSticker(@NonNull final Sticker sticker,
-                                  final @Sticker.Position int position) {
+    public StickerView addSticker(@NonNull final Sticker sticker, final @Sticker.Position int position) {
         if (ViewCompat.isLaidOut(this)) {
             addStickerImmediately(sticker, position);
         } else {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    addStickerImmediately(sticker, position);
-                }
-            });
+            post(() -> addStickerImmediately(sticker, position));
         }
         return this;
     }
@@ -758,12 +737,11 @@ public class StickerView extends FrameLayout {
     protected void addStickerImmediately(@NonNull Sticker sticker, @Sticker.Position int position) {
         setStickerPosition(sticker, position);
 
-
         float scaleFactor, widthScaleFactor, heightScaleFactor;
 
         widthScaleFactor = (float) getWidth() / sticker.getDrawable().getIntrinsicWidth();
         heightScaleFactor = (float) getHeight() / sticker.getDrawable().getIntrinsicHeight();
-        scaleFactor = widthScaleFactor > heightScaleFactor ? heightScaleFactor : widthScaleFactor;
+        scaleFactor = Math.min(widthScaleFactor, heightScaleFactor);
 
         sticker.getMatrix()
                 .postScale(scaleFactor / 2, scaleFactor / 2, getWidth() / 2f, getHeight() / 2f);

@@ -193,8 +193,7 @@ public abstract class Sticker {
         return pointF;
     }
 
-    public void getMappedCenterPoint(@NonNull PointF dst, @NonNull float[] mappedPoints,
-                                     @NonNull float[] src) {
+    public void getMappedCenterPoint(@NonNull PointF dst, @NonNull float[] mappedPoints, @NonNull float[] src) {
         getCenterPoint(dst);
         src[0] = dst.x;
         src[1] = dst.y;

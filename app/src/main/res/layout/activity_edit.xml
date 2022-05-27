@@ -125,7 +125,7 @@
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
 
-<!--    edit text-->
+    <!--    edit text-->
     <RelativeLayout
         android:id="@+id/rlExpandEditText"
         android:layout_width="match_parent"
@@ -181,6 +181,170 @@
                 android:src="@drawable/ic_bottom" />
         </RelativeLayout>
 
+        <!--        opacity-->
+        <RelativeLayout
+            android:id="@+id/rlEditOpacity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlEditText"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <com.datnt.textart.customview.CustomSeekbarRunText
+                android:id="@+id/sbOpacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_10sdp" />
+
+        </RelativeLayout>
+        <!--        shadow-->
+        <LinearLayout
+            android:id="@+id/llEditShadow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlEditText"
+            android:layout_margin="@dimen/_5sdp"
+            android:orientation="vertical"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/x_pos"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvXPos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.textart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbXPos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/y_pos"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvYPos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.textart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbYPos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_toStartOf="@+id/ivColorBlur"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/blur"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvBlur"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.textart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbBlur"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivColorBlur"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_pick_color_cir" />
+            </RelativeLayout>
+
+        </LinearLayout>
+        <!--        transform-->
         <LinearLayout
             android:id="@+id/llEditTransform"
             android:layout_width="match_parent"
@@ -226,7 +390,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.textart.customview.CustomSeekbar
+                    <com.datnt.textart.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbShearX"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -262,7 +426,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.textart.customview.CustomSeekbar
+                    <com.datnt.textart.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbShearY"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -298,7 +462,7 @@
                         android:textSize="@dimen/_10ssp" />
                 </RelativeLayout>
 
-                <com.datnt.textart.customview.CustomSeekbar
+                <com.datnt.textart.customview.CustomSeekbarTwoWay
                     android:id="@+id/sbStretch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -306,7 +470,7 @@
             </LinearLayout>
 
         </LinearLayout>
-
+        <!--        color-->
         <RelativeLayout
             android:id="@+id/rlEditColor"
             android:layout_width="match_parent"
@@ -324,7 +488,7 @@
                 android:scrollbars="none" />
 
         </RelativeLayout>
-
+        <!--        font size-->
         <RelativeLayout
             android:id="@+id/rlEditFontSize"
             android:layout_width="match_parent"
@@ -564,7 +728,7 @@
         </HorizontalScrollView>
     </RelativeLayout>
 
-<!--    layer-->
+    <!--    layer-->
     <RelativeLayout
         android:id="@+id/rlExpandLayer"
         android:layout_width="match_parent"
@@ -702,7 +866,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-<!--    operation-->
+    <!--    operation-->
     <HorizontalScrollView
         android:id="@+id/vOperation"
         android:layout_width="wrap_content"
@@ -934,7 +1098,7 @@
 
     </HorizontalScrollView>
 
-<!--    size-->
+    <!--    size-->
     <HorizontalScrollView
         android:id="@+id/vSize"
         android:layout_width="wrap_content"
