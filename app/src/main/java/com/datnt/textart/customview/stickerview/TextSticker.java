@@ -114,12 +114,10 @@ public class TextSticker extends Sticker {
             int dy = getHeight() / 2 - staticLayout.getHeight() / 2;
             // center vertical
             canvas.translate(0, dy);
-            Log.d("2tdppp", "draw: " + 0);
         } else {
             int dx = textRect.left;
             int dy = textRect.top + textRect.height() / 2 - staticLayout.getHeight() / 2;
             canvas.translate(dx, dy);
-            Log.d("2tdppp", "draw: " + dx + "......" + dy);
         }
         staticLayout.draw(canvas);
         canvas.restore();

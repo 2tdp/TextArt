@@ -1,5 +1,6 @@
 package com.datnt.textart.activity.edit;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -7,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,6 +39,8 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.ColorAdapter;
+import com.datnt.textart.adapter.TitleEmojiAdapter;
+import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.textart.customview.CustomSeekbarRunText;
 import com.datnt.textart.customview.CustomSeekbarTwoWay;
 import com.datnt.textart.customview.CustomView;
@@ -48,6 +53,8 @@ import com.datnt.textart.customview.stickerview.Sticker;
 import com.datnt.textart.customview.stickerview.StickerView;
 import com.datnt.textart.customview.stickerview.TextSticker;
 import com.datnt.textart.customview.stickerview.ZoomIconEvent;
+import com.datnt.textart.data.DataEmoji;
+import com.datnt.textart.fragment.emoji.EmojiBearFragment;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.model.StickerModel;
 import com.datnt.textart.model.StyleFontModel;
@@ -72,19 +79,22 @@ public class EditActivity extends AppCompatActivity {
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
-            rlEditText, rlEditFontSize, rlEditColor, rlEditOpacity;
+            rlEditText, rlEditFontSize, rlEditColor, rlEditOpacity, rlEditEmoji;
     private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow;
     private HorizontalScrollView vSize, vOperation, vEditText;
     private CustomView vMain;
     private StickerView stickerView;
-    private RecyclerView rcvEditColor;
+    private RecyclerView rcvEditColor, rcvTitleEmoji;
+    private ViewPager2 vpEmoji;
+    private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
 
+    private TitleEmojiAdapter emojiTitleAdapter;
     private Bitmap bitmap;
     private ArrayList<StickerModel> lstSticker;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
     private GradientDrawable gradientDrawable;
-    private boolean check;
+    private boolean check, isFirstEmoji;
     private Animation animation;
 
     @Override
@@ -201,6 +211,7 @@ public class EditActivity extends AppCompatActivity {
         rlTransform.setOnClickListener(v -> transform());
         rlShadow.setOnClickListener(v -> shadow());
         rlOpacity.setOnClickListener(v -> opacity());
+        rlSticker.setOnClickListener(v -> sticker());
 
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
@@ -209,7 +220,7 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
-    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result ->  {
         if (result.getResultCode() == Activity.RESULT_OK) {
             if (result.getData() != null) {
                 TextModel textModel = (TextModel) result.getData().getSerializableExtra("text");
@@ -225,6 +236,51 @@ public class EditActivity extends AppCompatActivity {
             }
         }
     });
+
+    //sticker
+    private void sticker() {
+        rlEditEmoji.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
+        seekAndHideLayout(4);
+        setUpTitleEmoji();
+        setUpDataEmoji();
+    }
+
+    private void setUpDataEmoji() {
+        addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+
+        createFragment();
+
+        vpEmoji.setAdapter(addFragmentsAdapter);
+        vpEmoji.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                emojiTitleAdapter.setCurrent(position);
+                rcvTitleEmoji.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    private void createFragment() {
+        EmojiBearFragment bearFragment = EmojiBearFragment.newInstance("bear");
+        addFragmentsAdapter.addFrag(bearFragment);
+    }
+
+    private void setUpTitleEmoji() {
+
+        emojiTitleAdapter = new TitleEmojiAdapter(this, (o, pos) -> {
+            emojiTitleAdapter.setCurrent(pos);
+            vpEmoji.setCurrentItem(pos, true);
+        });
+
+        emojiTitleAdapter.setData(DataEmoji.getTitleEmoji(this, "title"));
+        if (!isFirstEmoji) {
+            emojiTitleAdapter.setCurrent(0);
+            isFirstEmoji = true;
+        }
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvTitleEmoji.setLayoutManager(manager);
+        rcvTitleEmoji.setAdapter(emojiTitleAdapter);
+    }
 
     //opacity
     private void opacity() {
@@ -863,6 +919,7 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
+    //EditTextLayout
     private void setTextSticker(TextSticker textSticker, TextModel textModel) {
         textSticker.setText(textModel.getContent());
         textSticker.resizeText();
@@ -1004,6 +1061,11 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandLayer.setVisibility(View.GONE);
                 }
 
+                if (rlEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlEditEmoji.startAnimation(animation);
+                    rlEditEmoji.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vOperation.getVisibility() == View.GONE) {
                     vOperation.startAnimation(animation);
@@ -1029,6 +1091,11 @@ public class EditActivity extends AppCompatActivity {
                 if (rlExpandLayer.getVisibility() == View.VISIBLE) {
                     rlExpandLayer.startAnimation(animation);
                     rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlEditEmoji.startAnimation(animation);
+                    rlEditEmoji.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -1058,6 +1125,11 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditText.setVisibility(View.GONE);
                 }
 
+                if (rlEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlEditEmoji.startAnimation(animation);
+                    rlEditEmoji.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandLayer.getVisibility() == View.GONE) {
                     rlExpandLayer.startAnimation(animation);
@@ -1083,10 +1155,45 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandLayer.setVisibility(View.GONE);
                 }
 
+                if (rlEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlEditEmoji.startAnimation(animation);
+                    rlEditEmoji.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditText.getVisibility() == View.GONE) {
                     rlExpandEditText.startAnimation(animation);
                     rlExpandEditText.setVisibility(View.VISIBLE);
+                }
+                break;
+            case 4:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.startAnimation(animation);
+                    tvTitle.setVisibility(View.GONE);
+                    vSize.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.startAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                }
+
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.startAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditEmoji.getVisibility() == View.GONE) {
+                    rlEditEmoji.startAnimation(animation);
+                    rlEditEmoji.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -1103,6 +1210,7 @@ public class EditActivity extends AppCompatActivity {
                     vOperation.clearAnimation();
                     rlExpandEditText.clearAnimation();
                     rlExpandLayer.clearAnimation();
+                    rlEditEmoji.clearAnimation();
                 }
 
                 @Override
@@ -1246,7 +1354,7 @@ public class EditActivity extends AppCompatActivity {
         sbFontSize = findViewById(R.id.sbFontSize);
         tvFontSize = findViewById(R.id.tvFontSize);
         vEditText = findViewById(R.id.vEditText);
-        tvCancel = findViewById(R.id.tvCancel);
+        tvCancel = findViewById(R.id.tvCancelEditText);
         tvTitleEditText = findViewById(R.id.tvTitleEditText);
         rlEditColor = findViewById(R.id.rlEditColor);
         rcvEditColor = findViewById(R.id.rcvEditColor);
@@ -1266,6 +1374,9 @@ public class EditActivity extends AppCompatActivity {
         sbBlur = findViewById(R.id.sbBlur);
         rlEditOpacity = findViewById(R.id.rlEditOpacity);
         sbOpacity = findViewById(R.id.sbOpacity);
+        rlEditEmoji = findViewById(R.id.rlEditEmoji);
+        rcvTitleEmoji = findViewById(R.id.rcvTitleEmoji);
+        vpEmoji = findViewById(R.id.vpEmoji);
 
         lstSticker = new ArrayList<>();
 

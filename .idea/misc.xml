@@ -20,6 +20,8 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_create_project.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_project.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_text_template.xml" value="0.2075" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_title_emoji.xml" value="0.181" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_title_sticker.xml" value="0.181" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/border_unclick_font.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/custom_background_popupmenu.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_add_text.xml" value="0.2055" />
@@ -55,7 +57,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/tab_indicator_check.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_add_text.xml" value="0.3458333333333333" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_create_project.xml" value="0.35989583333333336" />
-        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_edit.xml" value="0.25" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_edit.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_main.xml" value="0.3416666666666667" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_projects.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/activity_settings.xml" value="0.35989583333333336" />
@@ -74,6 +76,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_color.xml" value="0.25" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_create_project.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_create_projects.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_emoji_bear.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_my_app.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_one_splash.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/fragment_projects.xml" value="0.35572916666666665" />
@@ -84,10 +87,13 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_bucket_pic.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_color.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_color_edit.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_emoji.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_emoji_title.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_font.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_picture.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_project.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_quotes.xml" value="0.35885416666666664" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_title_emoji.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/splash_activity.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/colorpickerview/src/main/res/layout/dialog_colorpicker_colorpickerview_skydoves.xml" value="0.35989583333333336" />
