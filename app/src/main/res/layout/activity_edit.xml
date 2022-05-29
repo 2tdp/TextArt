@@ -135,7 +135,7 @@
         android:visibility="gone">
 
         <RelativeLayout
-            android:id="@+id/rlSticker"
+            android:id="@+id/rlEmoji"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -144,7 +144,7 @@
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
-                android:id="@+id/tvCancelSticker"
+                android:id="@+id/tvCancelEmoji"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -184,7 +184,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/rlSticker">
+            android:layout_below="@id/rlEmoji">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/vpEmoji"

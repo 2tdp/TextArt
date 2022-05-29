@@ -9,6 +9,7 @@
     <string name="copy">Copy</string>
     <string name="clear">Clear</string>
     <string name="percent">%  </string>
+    <string name="success">Success</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>

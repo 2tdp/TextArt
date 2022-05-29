@@ -1,36 +1,29 @@
 package com.datnt.textart.fragment.emoji;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.datnt.textart.R;
+import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.EmojiAdapter;
 import com.datnt.textart.data.DataEmoji;
-import com.datnt.textart.model.EmojiModel;
-import com.datnt.textart.utils.Utils;
 
-import java.util.ArrayList;
-
-public class EmojiBearFragment extends Fragment {
+public class EmojiFaceFragment extends Fragment {
 
     private String nameEmoji;
     private EmojiAdapter emojiAdapter;
     private RecyclerView rcvEmoji;
 
-    private ArrayList<EmojiModel> lstEmoji;
-
-    public static EmojiBearFragment newInstance(String nameEmoji) {
-        EmojiBearFragment fragment = new EmojiBearFragment();
+    public static EmojiFaceFragment newInstance(String nameEmoji) {
+        EmojiFaceFragment fragment = new EmojiFaceFragment();
         Bundle args = new Bundle();
-        args.putString("bear", nameEmoji);
+        args.putString("face", nameEmoji);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,14 +33,13 @@ public class EmojiBearFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            nameEmoji = getArguments().getString("bear");
+            nameEmoji = getArguments().getString("face");
         }
     }
 
     private void setUpData(String nameEmoji) {
         emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
-            lstEmoji.add((EmojiModel) o);
-            Utils.showToast(requireContext(), getString(R.string.success));
+
         });
 
         emojiAdapter.setData(DataEmoji.getTitleEmoji(requireContext(), nameEmoji));
@@ -66,7 +58,5 @@ public class EmojiBearFragment extends Fragment {
 
     private void init(View view) {
         rcvEmoji = view.findViewById(R.id.rcvEmoji);
-
-        lstEmoji = new ArrayList<>();
     }
 }

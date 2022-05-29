@@ -7,7 +7,9 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -34,6 +36,7 @@ import com.datnt.textart.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 public class Utils {
@@ -99,6 +102,21 @@ public class Utils {
                 + font.toLowerCase() + "/"
                 + font.toLowerCase() + "_"
                 + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
+    }
+
+    public static Bitmap getBitmapFromAsset(Context context, String nameFolder, String nameEmoji) {
+        AssetManager assetManager = context.getAssets();
+
+        InputStream istr;
+        Bitmap bitmap = null;
+        try {
+            istr = assetManager.open("emoji/" + nameFolder + "/" + nameEmoji);
+            bitmap = BitmapFactory.decodeStream(istr);
+        } catch (IOException e) {
+            // handle exception
+        }
+
+        return bitmap;
     }
 
     public static GradientDrawable.Orientation setDirection(int pos) {
