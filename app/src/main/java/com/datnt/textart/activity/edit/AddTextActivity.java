@@ -81,6 +81,7 @@ public class AddTextActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("text", text);
         setResult(Activity.RESULT_OK, returnIntent);
+        Utils.hideKeyboard(this, ivTick);
         onBackPressed();
     }
 

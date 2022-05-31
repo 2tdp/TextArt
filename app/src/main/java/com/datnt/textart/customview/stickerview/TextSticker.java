@@ -148,6 +148,10 @@ public class TextSticker extends Sticker {
         return this;
     }
 
+    public int getAlpha(){
+        return textPaint.getAlpha();
+    }
+
     @NonNull
     @Override
     public Drawable getDrawable() {

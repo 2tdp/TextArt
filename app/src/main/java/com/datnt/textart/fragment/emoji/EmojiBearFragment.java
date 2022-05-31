@@ -22,9 +22,9 @@ import java.util.ArrayList;
 public class EmojiBearFragment extends Fragment {
 
     private String nameEmoji;
-    private EmojiAdapter emojiAdapter;
     private RecyclerView rcvEmoji;
 
+    private EmojiModel emoji;
     private ArrayList<EmojiModel> lstEmoji;
 
     public static EmojiBearFragment newInstance(String nameEmoji) {
@@ -45,8 +45,9 @@ public class EmojiBearFragment extends Fragment {
     }
 
     private void setUpData(String nameEmoji) {
-        emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
+        EmojiAdapter emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
             lstEmoji.add((EmojiModel) o);
+            emoji = (EmojiModel) o;
             Utils.showToast(requireContext(), getString(R.string.success));
         });
 
@@ -68,5 +69,14 @@ public class EmojiBearFragment extends Fragment {
         rcvEmoji = view.findViewById(R.id.rcvEmoji);
 
         lstEmoji = new ArrayList<>();
+    }
+
+    public ArrayList<EmojiModel> getEmoji() {
+        if (lstEmoji != null) return lstEmoji;
+        return null;
+    }
+
+    public EmojiModel replaceEmoji(){
+        return emoji;
     }
 }

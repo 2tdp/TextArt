@@ -13,12 +13,18 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.EmojiAdapter;
 import com.datnt.textart.data.DataEmoji;
+import com.datnt.textart.model.EmojiModel;
+import com.datnt.textart.utils.Utils;
+
+import java.util.ArrayList;
 
 public class EmojiFaceFragment extends Fragment {
 
     private String nameEmoji;
-    private EmojiAdapter emojiAdapter;
     private RecyclerView rcvEmoji;
+
+    private EmojiModel emoji;
+    private ArrayList<EmojiModel> lstEmoji;
 
     public static EmojiFaceFragment newInstance(String nameEmoji) {
         EmojiFaceFragment fragment = new EmojiFaceFragment();
@@ -38,8 +44,10 @@ public class EmojiFaceFragment extends Fragment {
     }
 
     private void setUpData(String nameEmoji) {
-        emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
-
+        EmojiAdapter emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
+            lstEmoji.add((EmojiModel) o);
+            emoji = (EmojiModel) o;
+            Utils.showToast(requireContext(), getString(R.string.success));
         });
 
         emojiAdapter.setData(DataEmoji.getTitleEmoji(requireContext(), nameEmoji));
@@ -58,5 +66,16 @@ public class EmojiFaceFragment extends Fragment {
 
     private void init(View view) {
         rcvEmoji = view.findViewById(R.id.rcvEmoji);
+
+        lstEmoji = new ArrayList<>();
+    }
+
+    public ArrayList<EmojiModel> getEmoji() {
+        if (lstEmoji != null) return lstEmoji;
+        return null;
+    }
+
+    public EmojiModel replaceEmoji() {
+        return emoji;
     }
 }

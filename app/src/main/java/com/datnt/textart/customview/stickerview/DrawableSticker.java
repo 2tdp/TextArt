@@ -14,20 +14,22 @@ import androidx.annotation.Nullable;
 public class DrawableSticker extends Sticker {
 
     private Drawable drawable;
+    private int id;
+    private boolean isImage;
     private Rect realBounds;
 
-    public DrawableSticker(Drawable drawable) {
+    public DrawableSticker(Drawable drawable, int id, boolean isImage) {
         this.drawable = drawable;
+        this.id = id;
+        this.isImage = isImage;
         realBounds = new Rect(0, 0, getWidth(), getHeight());
     }
 
     @NonNull
-    @Override
     public Drawable getDrawable() {
         return drawable;
     }
 
-    @Override
     public DrawableSticker setDrawable(@Nullable Drawable drawable) {
         this.drawable = drawable;
         return this;
@@ -49,6 +51,10 @@ public class DrawableSticker extends Sticker {
         return this;
     }
 
+    public int getAlpha() {
+        return drawable.getAlpha();
+    }
+
     @Override
     public int getWidth() {
         return drawable.getIntrinsicWidth();
@@ -57,6 +63,22 @@ public class DrawableSticker extends Sticker {
     @Override
     public int getHeight() {
         return drawable.getIntrinsicHeight();
+    }
+
+    public boolean isImage() {
+        return isImage;
+    }
+
+    public void setImage(boolean image) {
+        isImage = image;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

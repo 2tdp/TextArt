@@ -38,7 +38,7 @@ public class BitmapStickerIcon extends DrawableSticker implements StickerIconEve
     private StickerIconEvent iconEvent;
 
     public BitmapStickerIcon(Drawable drawable, @Gravity int gravity) {
-        super(drawable);
+        super(drawable, gravity, false);
         this.position = gravity;
     }
 
