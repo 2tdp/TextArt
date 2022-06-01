@@ -11,25 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
-import com.datnt.textart.model.FilterModel;
+import com.datnt.textart.model.FilterBlendModel;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 
-public class FilterImageAdapter extends RecyclerView.Adapter<FilterImageAdapter.FilterImageHolder> {
+public class FilterBlendImageAdapter extends RecyclerView.Adapter<FilterBlendImageAdapter.FilterImageHolder> {
 
     private Context context;
-    private ArrayList<FilterModel> lstFilter;
+    private ArrayList<FilterBlendModel> lstFilter;
     private ICallBackItem callBack;
     private int oldPosition = -1;
 
-    public FilterImageAdapter(Context context, ICallBackItem callBack) {
+    public FilterBlendImageAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
         this.callBack = callBack;
         lstFilter = new ArrayList<>();
     }
 
-    public void setData(ArrayList<FilterModel> lstFilter) {
+    public void setData(ArrayList<FilterBlendModel> lstFilter) {
         this.lstFilter = new ArrayList<>(lstFilter);
         changeNotify();
     }
@@ -61,21 +61,35 @@ public class FilterImageAdapter extends RecyclerView.Adapter<FilterImageAdapter.
         }
 
         public void onBind(int position) {
-            FilterModel filterModel = lstFilter.get(position);
-            if (filterModel == null) return;
+            FilterBlendModel filterBlendModel = lstFilter.get(position);
+            if (filterBlendModel == null) return;
 
-            if (filterModel.isCheck() && position == oldPosition)
+//            if (position == oldPosition)
+//                ivPic.setBorderColor(context.getResources().getColor(R.color.pink));
+//            else if (filterModel.isCheck())
+//                ivPic.setBorderColor(context.getResources().getColor(R.color.pink));
+//            else ivPic.setBorderColor(context.getResources().getColor(R.color.white));
+
+
+            if (filterBlendModel.isCheck())
                 ivPic.setBorderColor(context.getResources().getColor(R.color.pink));
             else
                 ivPic.setBorderColor(context.getResources().getColor(R.color.white));
 
             if (position == 0) ivPic.setImageResource(R.drawable.ic_none);
-            else ivPic.setImageBitmap(filterModel.getBitmap());
+            else ivPic.setImageBitmap(filterBlendModel.getBitmap());
 
             itemView.setOnClickListener(v -> {
-                callBack.callBackItem(filterModel, position);
+                callBack.callBackItem(filterBlendModel, position);
                 oldPosition = position;
             });
+        }
+    }
+
+    public void setCurrent(int pos) {
+        for (int i = 0; i < lstFilter.size(); i++) {
+            lstFilter.get(i).setCheck(i == pos);
+//            notifyItemChanged(i);
         }
     }
 

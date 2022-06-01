@@ -5,19 +5,27 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.util.Log;
 
 import com.datnt.textart.R;
 import com.datnt.textart.model.BucketPicModel;
 import com.datnt.textart.model.PicModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class DataPic {
 
     private static final String[] EXTERNAL_COLUMNS_PIC = new String[]{
             MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.TITLE,
+            MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.HEIGHT,
@@ -29,7 +37,7 @@ public class DataPic {
 
     private static final String[] EXTERNAL_COLUMNS_PIC_API_Q = new String[]{
             MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.TITLE,
+            MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.HEIGHT,
@@ -60,7 +68,7 @@ public class DataPic {
                 null,
                 MediaStore.Images.Media.DEFAULT_SORT_ORDER)) {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-            int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE);
+            int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
             int dateColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
             int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             int heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT);
@@ -80,34 +88,37 @@ public class DataPic {
 
                 Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(id));
 
-                lstAll.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
-                boolean check = false;
-                if (lstBucket.isEmpty()) {
-                    lstPic = new ArrayList<>();
-                    if (bucket != null) {
-                        lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
-                        lstBucket.add(new BucketPicModel(lstPic, bucket));
-                    } else {
-                        lstPic.add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
-                        lstBucket.add(new BucketPicModel(lstPic, ""));
-                    }
-                } else {
-                    for (int i = 0; i < lstBucket.size(); i++) {
-                        if (bucket == null) {
-                            lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
-                            check = true;
-                            break;
-                        }
-                        if (bucket.equals(lstBucket.get(i).getBucket())) {
-                            lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
-                            check = true;
-                            break;
-                        }
-                    }
-                    if (!check) {
+                File file = new File(data);
+                if (file.canRead()) {
+                    lstAll.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                    boolean check = false;
+                    if (lstBucket.isEmpty()) {
                         lstPic = new ArrayList<>();
-                        lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
-                        lstBucket.add(new BucketPicModel(lstPic, bucket));
+                        if (bucket != null) {
+                            lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                            lstBucket.add(new BucketPicModel(lstPic, bucket));
+                        } else {
+                            lstPic.add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
+                            lstBucket.add(new BucketPicModel(lstPic, ""));
+                        }
+                    } else {
+                        for (int i = 0; i < lstBucket.size(); i++) {
+                            if (bucket == null) {
+                                lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
+                                check = true;
+                                break;
+                            }
+                            if (bucket.equals(lstBucket.get(i).getBucket())) {
+                                lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                                check = true;
+                                break;
+                            }
+                        }
+                        if (!check) {
+                            lstPic = new ArrayList<>();
+                            lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                            lstBucket.add(new BucketPicModel(lstPic, bucket));
+                        }
                     }
                 }
             }
@@ -138,7 +149,7 @@ public class DataPic {
                 null,
                 MediaStore.Images.Media.DEFAULT_SORT_ORDER)) {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-            int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE);
+            int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
             int dateColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
             int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             int heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT);
@@ -158,7 +169,9 @@ public class DataPic {
 
                 Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(id));
 
-                lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                File file = new File(data);
+                if (file.canRead())
+                    lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
             }
         }
         return lstPic;

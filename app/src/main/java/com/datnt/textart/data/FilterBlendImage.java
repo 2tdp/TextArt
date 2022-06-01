@@ -3,39 +3,39 @@ package com.datnt.textart.data;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.datnt.textart.model.FilterModel;
+import com.datnt.textart.model.FilterBlendModel;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.util.ArrayList;
 
-public class FilterImage {
+public class FilterBlendImage {
 
-    public static ArrayList<FilterModel> getDataFilterBlend(Bitmap bitmap) {
-        ArrayList<FilterModel> lstFilter = new ArrayList<>();
+    public static ArrayList<FilterBlendModel> getDataBlend(Bitmap bitmap) {
+        ArrayList<FilterBlendModel> lstBlend = new ArrayList<>();
 
         int i = 0;
         Bitmap bm;
-        for (String s : EFFECT_CONFIGS) {
-            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 1.0f);
+        for (String s : EFFECT_CONFIGS_BLEND) {
+            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
             if (bm != null) {
-                lstFilter.add(new FilterModel(bm, "blend" + i, s, false));
+                lstBlend.add(new FilterBlendModel(bm, "blend" + i, s, false));
                 Log.d("2tdppp", "getDataFilter: " + i);
                 i++;
             }
         }
-        return lstFilter;
+        return lstBlend;
     }
 
-    public static ArrayList<FilterModel> getDataFilter(Bitmap bitmap) {
-        ArrayList<FilterModel> lstFilter = new ArrayList<>();
+    public static ArrayList<FilterBlendModel> getDataFilter(Bitmap bitmap) {
+        ArrayList<FilterBlendModel> lstFilter = new ArrayList<>();
 
         int i = 0;
         Bitmap bm;
         for (String s : EFFECT_CONFIGS) {
-            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 1.0f);
+            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
             if (bm != null) {
-                lstFilter.add(new FilterModel(bm, "filter" + i, s, false));
+                lstFilter.add(new FilterBlendModel(bm, "filter" + i, s, false));
                 Log.d("2tdppp", "getDataFilter: " + i);
                 i++;
             }
