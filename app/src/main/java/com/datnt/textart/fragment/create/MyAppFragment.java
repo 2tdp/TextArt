@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.MyAppAdapter;
 import com.datnt.textart.adapter.RecentAdapter;
+import com.datnt.textart.callback.ICheckTouch;
 import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.PicModel;
 
@@ -23,9 +24,13 @@ public class MyAppFragment extends Fragment {
     private RecyclerView rcvPicMyApp;
     private MyAppAdapter myAppAdapter;
 
-    public static MyAppFragment newInstance() {
+    private ICheckTouch clickTouch;
+    private boolean isBackground;
+
+    public static MyAppFragment newInstance(boolean isBG) {
         MyAppFragment fragment = new MyAppFragment();
         Bundle args = new Bundle();
+        args.putBoolean("isBG", isBG);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,6 +46,8 @@ public class MyAppFragment extends Fragment {
 
     private void init(View view) {
         rcvPicMyApp = view.findViewById(R.id.rcvPicMyApp);
+
+        if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 
         setUpLayout();
         evenClick();
@@ -59,5 +66,9 @@ public class MyAppFragment extends Fragment {
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvPicMyApp.setLayoutManager(manager);
         rcvPicMyApp.setAdapter(myAppAdapter);
+    }
+
+    public void finish(ICheckTouch clickTouch) {
+        this.clickTouch = clickTouch;
     }
 }

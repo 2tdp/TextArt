@@ -30,6 +30,8 @@ public class CustomView extends View {
     private Rect src;
     private int size;
     private float w, h;
+    private float brightness = 0f, contrast = 0f, exposure = 0f, highlight = 0f, shadow = 0f,
+            black = 0f, white = 0f, saturation = 0f, hue = 0f, warmth = 0f, vibrance = 0f, vignette = 0f;
 
     public CustomView(Context context) {
         super(context);
@@ -72,7 +74,10 @@ public class CustomView extends View {
 
     public void setData(Bitmap bitmap, ColorModel color) {
         if (bitmap != null) this.bitmap = bitmap;
-        else this.color = color;
+        else {
+            this.bitmap = null;
+            this.color = color;
+        }
         invalidate();
     }
 
@@ -88,9 +93,9 @@ public class CustomView extends View {
                 int hB = bitmap.getHeight();
 
                 if ((float) wB / hB > 1) {
-                    src = new Rect( (wB - hB) / 2, 0,  (wB + hB) / 2,  hB);
+                    src = new Rect((wB - hB) / 2, 0, (wB + hB) / 2, hB);
                 } else if ((float) wB / hB < 1) {
-                    src = new Rect(0,  (hB - wB) / 2,  wB,  (hB + wB) / 2);
+                    src = new Rect(0, (hB - wB) / 2, wB, (hB + wB) / 2);
                 }
                 break;
             case 2:
@@ -124,7 +129,7 @@ public class CustomView extends View {
         switch (size) {
             case 1:
                 if (w / h > 1) {
-                    return new RectF( (w - h) / 2, 0, (w + h) / 2, h);
+                    return new RectF((w - h) / 2, 0, (w + h) / 2, h);
                 } else if (w / h < 1) {
                     return new RectF(0, (h - w) / 2, w, (h + w) / 2);
                 }
@@ -156,7 +161,7 @@ public class CustomView extends View {
         RectF dst = new RectF();
 
         if (w / h < scale) {
-            dst.set(0, (h * (1 - 1 / scale)) / 2, w,  (h * (1 + 1 / scale)) / 2);
+            dst.set(0, (h * (1 - 1 / scale)) / 2, w, (h * (1 + 1 / scale)) / 2);
         } else if (w / h > scale) {
             dst.set((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h);
         }
@@ -199,31 +204,33 @@ public class CustomView extends View {
     }
 
     private void resetColor() {
-        if (color.getColorStart() == color.getColorEnd()) {
-            paint.setColor(color.getColorStart());
-        } else {
-            if (color.getDirec() == 4) {
-                int c = color.getColorStart();
-                color.setColorStart(color.getColorEnd());
-                color.setColorEnd(c);
+        if (color != null)
+            if (color.getColorStart() == color.getColorEnd()) {
+                paint.setColor(color.getColorStart());
+            } else {
+                if (color.getDirec() == 4) {
+                    int c = color.getColorStart();
+                    color.setColorStart(color.getColorEnd());
+                    color.setColorEnd(c);
 
-                color.setDirec(0);
-            } else if (color.getDirec() == 5) {
-                int c = color.getColorStart();
-                color.setColorStart(color.getColorEnd());
-                color.setColorEnd(c);
+                    color.setDirec(0);
+                } else if (color.getDirec() == 5) {
+                    int c = color.getColorStart();
+                    color.setColorStart(color.getColorEnd());
+                    color.setColorEnd(c);
 
-                color.setDirec(2);
+                    color.setDirec(2);
+                }
+
+                shader = new LinearGradient(setDirection(color.getDirec())[0],
+                        setDirection(color.getDirec())[1],
+                        setDirection(color.getDirec())[2],
+                        setDirection(color.getDirec())[3],
+                        new int[]{Color.parseColor(toRGBString(color.getColorStart())), Color.parseColor(toRGBString(color.getColorEnd()))},
+                        new float[]{0, 1}, Shader.TileMode.MIRROR);
+
+                paint.setShader(shader);
             }
-
-            shader = new LinearGradient(setDirection(color.getDirec())[0],
-                    setDirection(color.getDirec())[1],
-                    setDirection(color.getDirec())[2],
-                    setDirection(color.getDirec())[3],
-                    new int[]{Color.parseColor(toRGBString(color.getColorStart())), Color.parseColor(toRGBString(color.getColorEnd()))},
-                    new float[]{0, 1}, Shader.TileMode.MIRROR);
-        }
-        if (shader != null) paint.setShader(shader);
     }
 
     public static String toRGBString(int color) {
@@ -252,5 +259,101 @@ public class CustomView extends View {
                 return new int[]{0, (int) h, (int) w, 0};
         }
         return new int[]{0, 0, 0, 0};
+    }
+
+    public float getBrightness() {
+        return brightness;
+    }
+
+    public void setBrightness(float brightness) {
+        this.brightness = brightness;
+    }
+
+    public float getContrast() {
+        return contrast;
+    }
+
+    public void setContrast(float contrast) {
+        this.contrast = contrast;
+    }
+
+    public float getExposure() {
+        return exposure;
+    }
+
+    public void setExposure(float exposure) {
+        this.exposure = exposure;
+    }
+
+    public float getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(float highlight) {
+        this.highlight = highlight;
+    }
+
+    public float getShadow() {
+        return shadow;
+    }
+
+    public void setShadow(float shadow) {
+        this.shadow = shadow;
+    }
+
+    public float getBlack() {
+        return black;
+    }
+
+    public void setBlack(float black) {
+        this.black = black;
+    }
+
+    public float getWhite() {
+        return white;
+    }
+
+    public void setWhite(float white) {
+        this.white = white;
+    }
+
+    public float getSaturation() {
+        return saturation;
+    }
+
+    public void setSaturation(float saturation) {
+        this.saturation = saturation;
+    }
+
+    public float getHue() {
+        return hue;
+    }
+
+    public void setHue(float hue) {
+        this.hue = hue;
+    }
+
+    public float getWarmth() {
+        return warmth;
+    }
+
+    public void setWarmth(float warmth) {
+        this.warmth = warmth;
+    }
+
+    public float getVibrance() {
+        return vibrance;
+    }
+
+    public void setVibrance(float vibrance) {
+        this.vibrance = vibrance;
+    }
+
+    public float getVignette() {
+        return vignette;
+    }
+
+    public void setVignette(float vignette) {
+        this.vignette = vignette;
     }
 }

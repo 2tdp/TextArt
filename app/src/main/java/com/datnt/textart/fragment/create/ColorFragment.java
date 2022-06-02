@@ -18,7 +18,10 @@ import android.widget.TextView;
 import com.datnt.textart.R;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.ColorAdapter;
+import com.datnt.textart.callback.ICheckTouch;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.Utils;
 import com.flask.colorpicker.ColorPickerView;
 
 import java.util.ArrayList;
@@ -28,10 +31,14 @@ public class ColorFragment extends Fragment {
     private RecyclerView rcvColor;
     private GradientDrawable gradientDrawable;
     private int direc;
+    private ICheckTouch clickTouch;
 
-    public static ColorFragment newInstance() {
+    private boolean isBackground;
+
+    public static ColorFragment newInstance(boolean isBG) {
         ColorFragment fragment = new ColorFragment();
         Bundle args = new Bundle();
+        args.putBoolean("isBG", isBG);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,6 +54,8 @@ public class ColorFragment extends Fragment {
 
     private void init(View view) {
         rcvColor = view.findViewById(R.id.rcvColor);
+
+        if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 
         setUpLayout();
         evenClick();
@@ -64,9 +73,11 @@ public class ColorFragment extends Fragment {
             else {
                 ColorModel color = (ColorModel) o;
                 if (color.getColorStart() == color.getColorEnd()) {
-                    Intent intent = new Intent(requireActivity(), EditActivity.class);
-                    intent.putExtra("color", color);
-                    startActivity(intent);
+                    DataLocalManager.setColor(color, "color");
+                    DataLocalManager.setOption("", "bitmap");
+                    if (!isBackground)
+                        Utils.setIntent(requireActivity(), EditActivity.class.getName());
+                    else clickTouch.checkTouch(true);
                 } else {
                     pickDirection(color);
                 }
@@ -122,13 +133,15 @@ public class ColorFragment extends Fragment {
 
         tvNo.setOnClickListener(v -> dialog.cancel());
         tvYes.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), EditActivity.class);
-            intent.putExtra("color", color);
-            intent.putExtra("direc", direc);
-            startActivity(intent);
+            color.setDirec(direc);
+            DataLocalManager.setColor(color, "color");
+            DataLocalManager.setOption("", "bitmap");
+            if (!isBackground) Utils.setIntent(requireActivity(), EditActivity.class.getName());
+            else clickTouch.checkTouch(true);
             dialog.cancel();
         });
 
+        direc = color.getDirec();
         clickDirec(color.getDirec(), color, ivShow);
         checkPickDirec(color.getDirec(), iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
 
@@ -266,10 +279,16 @@ public class ColorFragment extends Fragment {
         tvNo.setOnClickListener(v -> dialog.cancel());
         tvYes.setOnClickListener(view1 -> {
             ColorModel color = new ColorModel(colorPicker.getSelectedColor(), colorPicker.getSelectedColor(), 0, false);
-            Intent intent = new Intent(requireActivity(), EditActivity.class);
-            intent.putExtra("color", color);
-            startActivity(intent);
+            DataLocalManager.setColor(color, "color");
+            DataLocalManager.setOption("", "bitmap");
+            if (!isBackground)
+                Utils.setIntent(requireActivity(), EditActivity.class.getName());
+            else clickTouch.checkTouch(true);
             dialog.cancel();
         });
+    }
+
+    public void finish(ICheckTouch clickTouch) {
+        this.clickTouch = clickTouch;
     }
 }

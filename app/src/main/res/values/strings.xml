@@ -104,6 +104,21 @@
     <string name="flip_x">Flip-X</string>
     <string name="flip_y">Flip-Y</string>
 
+    //background
+    <string name="adjust">Adjust</string>
+    <string name="brightness">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="exposure">Exposure</string>
+    <string name="highlight">HighLight</string>
+    <string name="shadows">Shadows</string>
+    <string name="blacks">Blacks</string>
+    <string name="whites">Whites</string>
+    <string name="saturation">Saturation</string>
+    <string name="hue">Hue</string>
+    <string name="warmth">Warmth</string>
+    <string name="vibrance">Vibrance</string>
+    <string name="vignette">Vignette</string>
+
     //layer
     <string name="layer">Layer</string>
     <string name="duplicate">Duplicate</string>

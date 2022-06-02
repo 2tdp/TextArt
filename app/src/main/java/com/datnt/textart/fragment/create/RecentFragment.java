@@ -21,15 +21,20 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.BucketAdapter;
 import com.datnt.textart.adapter.RecentAdapter;
+import com.datnt.textart.callback.ICheckTouch;
 import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.BucketPicModel;
 import com.datnt.textart.model.PicModel;
 import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
 
 public class RecentFragment extends Fragment {
+
+    private ArrayList<BucketPicModel> lstBucket;
+    private boolean isBackground;
 
     private RelativeLayout rlExpand;
     private RecyclerView rcvPicRecent, rcvBucket;
@@ -38,10 +43,12 @@ public class RecentFragment extends Fragment {
     private ImageView ivExpand;
     private Animation animation;
     private IClickFolder clickFolder;
+    private ICheckTouch clickTouch;
 
-    public static RecentFragment newInstance() {
+    public static RecentFragment newInstance(boolean isBG) {
         RecentFragment fragment = new RecentFragment();
         Bundle args = new Bundle();
+        args.putBoolean("isBG", isBG);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,6 +69,10 @@ public class RecentFragment extends Fragment {
         vBg = view.findViewById(R.id.viewBg);
 
         rlExpand.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 60 / 100;
+
+        lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
+
+        if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 
         setUpLayout();
         evenClick();
@@ -134,8 +145,6 @@ public class RecentFragment extends Fragment {
     }
 
     private void setUpBucket() {
-        ArrayList<BucketPicModel> lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
-
         BucketAdapter bucketAdapter = new BucketAdapter(requireContext(), (Object o, int pos) -> {
             BucketPicModel bucket = (BucketPicModel) o;
             recentAdapter.setData(bucket.getLstPic());
@@ -151,16 +160,14 @@ public class RecentFragment extends Fragment {
     }
 
     private void setUpPic() {
-        ArrayList<PicModel> lstPic = new ArrayList<>(DataPic.getAllPictureList(requireContext()));
-
         recentAdapter = new RecentAdapter(requireContext(), (Object o, int pos) -> {
             PicModel pic = (PicModel) o;
-            Intent intent = new Intent(requireActivity(), EditActivity.class);
-            intent.putExtra("bitmap", pic.getUri());
-            startActivity(intent, ActivityOptions.makeCustomAnimation(requireContext(), R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
-            DataLocalManager.setOption("bitmap", "bitmap");
+            DataLocalManager.setOption(pic.getUri(), "bitmap");
+            if (!isBackground)
+                Utils.setIntent(requireActivity(), EditActivity.class.getName());
+            else clickTouch.checkTouch(true);
         });
-        if (!lstPic.isEmpty()) recentAdapter.setData(lstPic);
+        if (!lstBucket.isEmpty()) recentAdapter.setData(lstBucket.get(0).getLstPic());
 
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvPicRecent.setLayoutManager(manager);
@@ -169,5 +176,9 @@ public class RecentFragment extends Fragment {
 
     public void changeFolder(IClickFolder clickFolder) {
         this.clickFolder = clickFolder;
+    }
+
+    public void finish(ICheckTouch clickTouch) {
+        this.clickTouch = clickTouch;
     }
 }

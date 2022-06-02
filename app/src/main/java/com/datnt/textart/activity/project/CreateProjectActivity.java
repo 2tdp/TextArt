@@ -16,12 +16,15 @@ import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.fragment.create.ColorFragment;
 import com.datnt.textart.fragment.create.MyAppFragment;
 import com.datnt.textart.fragment.create.RecentFragment;
+import com.datnt.textart.utils.Utils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Objects;
 
 public class CreateProjectActivity extends AppCompatActivity {
+
+    private boolean isBackground;
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
@@ -30,6 +33,8 @@ public class CreateProjectActivity extends AppCompatActivity {
     private View vRecent, vMyApp, vColor;
 
     private RecentFragment recentFragment;
+    private MyAppFragment myAppFragment;
+    private ColorFragment colorFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,7 @@ public class CreateProjectActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPage);
 
+        isBackground = getIntent().getBooleanExtra("pickBG", false);
         setUp();
     }
 
@@ -115,10 +121,13 @@ public class CreateProjectActivity extends AppCompatActivity {
     private void setUpViewPager() {
         ViewPagerAddFragmentsAdapter fragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
-        recentFragment = RecentFragment.newInstance();
+        recentFragment = RecentFragment.newInstance(isBackground);
         recentFragment.changeFolder(str -> tvRecent.setText(str));
-        MyAppFragment myAppFragment = MyAppFragment.newInstance();
-        ColorFragment colorFragment = ColorFragment.newInstance();
+        recentFragment.finish(check -> onBackPressed());
+        myAppFragment = MyAppFragment.newInstance(isBackground);
+        myAppFragment.finish(check -> onBackPressed());
+        colorFragment = ColorFragment.newInstance(isBackground);
+        colorFragment.finish(check -> onBackPressed());
 
         fragmentsAdapter.addFrag(recentFragment);
         fragmentsAdapter.addFrag(myAppFragment);
@@ -173,5 +182,6 @@ public class CreateProjectActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Utils.setAnimExit(this);
     }
 }

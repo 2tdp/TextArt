@@ -73,10 +73,11 @@ public class EmojiBearFragment extends Fragment {
 
     public ArrayList<EmojiModel> getEmoji() {
         if (lstEmoji != null) return lstEmoji;
-        return null;
+        return new ArrayList<>();
     }
 
     public EmojiModel replaceEmoji(){
-        return emoji;
+        if (emoji != null) return emoji;
+        return null;
     }
 }

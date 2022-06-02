@@ -83,31 +83,31 @@ public class DataLocalManager {
         return lstFont;
     }
 
-//    public static void setColor(ColorModel color, String key) {
-//        Gson gson = new Gson();
-//        JsonObject jsonObject = gson.toJsonTree(color).getAsJsonObject();
-//        String json = jsonObject.toString();
-//
-//        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
-//    }
-//
-//    public static ColorModel getColor(String key) {
-//        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
-//        ColorModel color = null;
-//
-//        Gson gson = new Gson();
-//
-//        JSONObject jsonObject = null;
-//        try {
-//            jsonObject = new JSONObject(strJson);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (jsonObject != null) {
-//            color = gson.fromJson(jsonObject.toString(), ColorModel.class);
-//        }
-//
-//        return color;
-////    }
+    public static void setColor(ColorModel color, String key) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.toJsonTree(color).getAsJsonObject();
+        String json = jsonObject.toString();
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static ColorModel getColor(String key) {
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        ColorModel color = null;
+
+        Gson gson = new Gson();
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(strJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (jsonObject != null) {
+            color = gson.fromJson(jsonObject.toString(), ColorModel.class);
+        }
+
+        return color;
+    }
 }
