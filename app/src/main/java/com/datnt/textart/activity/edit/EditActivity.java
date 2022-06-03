@@ -98,7 +98,7 @@ public class EditActivity extends AppCompatActivity {
     private SeekBar sbFontSize;
     private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur, sbXPosImage,
             sbYPosImage, sbBlurImage, sbAdjust;
-    private CustomSeekbarRunText sbOpacityText, sbOpacityEmoji, sbOpacityImage;
+    private CustomSeekbarRunText sbOpacityText, sbOpacityEmoji, sbOpacityImage, sbOpacityBackground;
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
@@ -109,7 +109,8 @@ public class EditActivity extends AppCompatActivity {
             rlEditOpacityImage, rlEditBlend, rlExpandEditBackground, rlEditBackground, rlDelBackground,
             rlReplaceBackground, rlAdjustBackground, rlFilterBackground, rlOpacityBackground, rlFlipYBackground,
             rlFlipXBackground, rlVignette, rlVibrance, rlWarmth, rlHue, rlSaturation, rlWhites, rlBlacks,
-            rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness, rlAdjust, rlEditFilterBackground;
+            rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness, rlAdjust, rlEditFilterBackground,
+            rlEditOpacityBackground;
     private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage;
     private HorizontalScrollView vSize, vOperation, vEditText, vEditImage, vEditBackground;
     private CustomView vMain;
@@ -130,6 +131,7 @@ public class EditActivity extends AppCompatActivity {
     private GradientDrawable gradientDrawable;
     private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground;
     private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0;
+    private float opacityBackground = 1;
     private Animation animation;
 
     @Override
@@ -343,6 +345,9 @@ public class EditActivity extends AppCompatActivity {
         rlReplaceBackground.setOnClickListener(v -> replaceBackground());
         rlAdjustBackground.setOnClickListener(v -> adjustBackground());
         rlFilterBackground.setOnClickListener(v -> filterBackground());
+        rlOpacityBackground.setOnClickListener(v -> opacityBackground());
+        rlFlipXBackground.setOnClickListener(v -> flipXBackground());
+        rlFlipYBackground.setOnClickListener(v -> flipYBackground());
 
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
@@ -450,6 +455,96 @@ public class EditActivity extends AppCompatActivity {
     private void background() {
         seekAndHideLayout(7);
         if (bitmap != null) setUpDataFilterBackground();
+    }
+
+    private void flipXBackground() {
+        bitmap = createFlippedBitmap(bitmap, true, false);
+        vMain.setData(bitmap, null);
+    }
+
+    private void flipYBackground() {
+        bitmap = createFlippedBitmap(bitmap, false, true);
+        vMain.setData(bitmap, null);
+    }
+
+    //opacity
+    private void opacityBackground() {
+        setUpLayoutEditOpacityBackground(0);
+        tvCancelEditBackground.setOnClickListener(v -> setUpLayoutEditOpacityBackground(1));
+
+        sbOpacityBackground.setProgress((int) (opacityBackground * 100));
+        sbOpacityBackground.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                vMain.setAlpha(value / 100f);
+                opacityBackground = value / 100f;
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+    }
+
+    private void setUpLayoutEditOpacityBackground(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                vEditBackground.startAnimation(animation);
+
+                if (vEditBackground.getVisibility() == View.VISIBLE)
+                    vEditBackground.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                rlEditOpacityBackground.startAnimation(animation);
+                if (rlEditOpacityBackground.getVisibility() == View.GONE) {
+                    rlEditOpacityBackground.setVisibility(View.VISIBLE);
+                    tvCancelEditBackground.setVisibility(View.VISIBLE);
+                    tvTitleEditBackground.setText(getString(R.string.opacity));
+                    sbOpacityBackground.setColorText(getResources().getColor(R.color.green));
+                    sbOpacityBackground.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                    sbOpacityBackground.setProgress(100);
+                    sbOpacityBackground.setMax(100);
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                rlEditOpacityBackground.startAnimation(animation);
+                if (rlEditOpacityBackground.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityBackground.setVisibility(View.GONE);
+                    tvCancelEditBackground.setVisibility(View.GONE);
+                    tvTitleEditBackground.setText(getString(R.string.bg));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                vEditBackground.startAnimation(animation);
+                if (vEditBackground.getVisibility() == View.GONE)
+                    vEditBackground.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rlEditOpacityBackground.clearAnimation();
+                vEditBackground.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     //filter
@@ -597,6 +692,7 @@ public class EditActivity extends AppCompatActivity {
                 sbAdjust.setProgress((int) vMain.getVignette());
                 break;
         }
+
         tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
 
         sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
@@ -2381,10 +2477,16 @@ public class EditActivity extends AppCompatActivity {
     private void getData() {
         String strUri = DataLocalManager.getOption("bitmap");
         if (!isBackground) vMain.setSize(0);
-        else vMain.setSize(sizeMain);
+        else {
+            vMain.setSize(sizeMain);
+            vMain.setAlpha(opacityBackground);
+        }
         if (!strUri.equals("")) {
             try {
                 bitmap = modifyOrientation(MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
+                if (bitmap != null && isBackground) setUpDataFilterBackground();
+                if (isBackground)
+                    bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterBlendImage.EFFECT_CONFIGS[positionFilterBackground], 0.8f);
                 if (bitmap != null) vMain.setData(bitmap, null);
 
             } catch (IOException e) {
@@ -3000,6 +3102,8 @@ public class EditActivity extends AppCompatActivity {
         tvVignette = findViewById(R.id.tvVignette);
         rcvEditFilterBackground = findViewById(R.id.rcvEditFilterBackground);
         rlEditFilterBackground = findViewById(R.id.rlEditFilterBackground);
+        sbOpacityBackground = findViewById(R.id.sbOpacityBackground);
+        rlEditOpacityBackground = findViewById(R.id.rlEditOpacityBackground);
 
         lstSticker = new ArrayList<>();
         lstFilterBlend = new ArrayList<>();

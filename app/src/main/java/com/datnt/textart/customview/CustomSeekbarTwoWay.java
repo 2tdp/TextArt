@@ -100,14 +100,16 @@ public class CustomSeekbarTwoWay extends View {
     }
 
     public void setProgress(int progress) {
-        if (progress < max / 2) this.progress = -progress;
-        else this.progress = max / 2 + progress;
+        if (progress == 0) {
+            this.progress = max / 2;
+        } else {
+            this.progress = max / 2 + progress;
+        }
         invalidate();
     }
 
     public int getProgress() {
-        if (progress < max / 2) return -progress;
-        else return progress;
+        return progress - max / 2;
     }
 
     public int getMax() {

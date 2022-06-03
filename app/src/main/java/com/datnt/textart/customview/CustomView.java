@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -12,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -19,13 +22,15 @@ import androidx.annotation.Nullable;
 
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.Utils;
+import com.datnt.textart.utils.UtilsAdjust;
 
 public class CustomView extends View {
 
     private Path path;
     private Paint paint;
     private Shader shader;
-    private Bitmap bitmap;
+    private Bitmap bitmap, bitmapRoot;
     private ColorModel color;
     private Rect src;
     private int size;
@@ -73,8 +78,10 @@ public class CustomView extends View {
     }
 
     public void setData(Bitmap bitmap, ColorModel color) {
-        if (bitmap != null) this.bitmap = bitmap;
-        else {
+        if (bitmap != null) {
+            this.bitmap = bitmap;
+            this.bitmapRoot = bitmap;
+        } else {
             this.bitmap = null;
             this.color = color;
         }
@@ -262,27 +269,46 @@ public class CustomView extends View {
     }
 
     public float getBrightness() {
-        return brightness;
+        if (brightness == 0) return 0;
+        else return brightness;
     }
 
     public void setBrightness(float brightness) {
         this.brightness = brightness;
+        bitmap = UtilsAdjust.adjustBrightness(bitmapRoot, brightness * 255 / 100f);
+        invalidate();
     }
 
     public float getContrast() {
-        return contrast;
+        if (contrast == 0) return 0;
+        else return contrast;
     }
 
     public void setContrast(float contrast) {
         this.contrast = contrast;
+        if (contrast > 1) {
+            contrast = contrast / 50 + 1;
+        } else if (contrast < 1) {
+            contrast = 1 + contrast / 50;
+        }
+        bitmap = UtilsAdjust.adjustContrast(bitmapRoot, contrast);
+        invalidate();
     }
 
     public float getExposure() {
-        return exposure;
+        if (exposure == 0) return 0;
+        else return exposure;
     }
 
     public void setExposure(float exposure) {
         this.exposure = exposure;
+        if (exposure > 1) {
+            exposure = exposure / 50 + 1;
+        } else if (exposure < 1) {
+            exposure = 1 + exposure / 50;
+        }
+        bitmap = UtilsAdjust.adjustExposure(bitmapRoot, exposure);
+        invalidate();
     }
 
     public float getHighlight() {
@@ -318,19 +344,31 @@ public class CustomView extends View {
     }
 
     public float getSaturation() {
-        return saturation;
+        if (saturation == 0) return 0;
+        else return saturation;
     }
 
     public void setSaturation(float saturation) {
         this.saturation = saturation;
+//        if (saturation > 1) {
+//            saturation = saturation / 50 + 1;
+//        } else if (saturation < 1) {
+//            saturation = 1 + saturation / 50;
+//        }
+        Log.d("2tdp", "setSaturation: " + saturation);
+        bitmap = UtilsAdjust.adjustSaturation(bitmapRoot, saturation * 255 / 100f);
+        invalidate();
     }
 
     public float getHue() {
-        return hue;
+        if (hue == 0) return 0;
+        else return hue;
     }
 
     public void setHue(float hue) {
         this.hue = hue;
+        bitmap = UtilsAdjust.adjustHue(bitmapRoot, hue * 255 / 100f);
+        invalidate();
     }
 
     public float getWarmth() {
