@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -31,6 +32,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Layout;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +49,8 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.project.CreateProjectActivity;
 import com.datnt.textart.adapter.ColorAdapter;
 import com.datnt.textart.adapter.FilterBlendImageAdapter;
+import com.datnt.textart.adapter.OverlayAdapter;
+import com.datnt.textart.adapter.TitleDecorAdapter;
 import com.datnt.textart.adapter.TitleEmojiAdapter;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.textart.customview.CustomSeekbarRunText;
@@ -61,14 +65,21 @@ import com.datnt.textart.customview.stickerview.Sticker;
 import com.datnt.textart.customview.stickerview.StickerView;
 import com.datnt.textart.customview.stickerview.TextSticker;
 import com.datnt.textart.customview.stickerview.ZoomIconEvent;
+import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.data.DataEmoji;
-import com.datnt.textart.data.DataPic;
+import com.datnt.textart.data.DataOverlay;
 import com.datnt.textart.data.FilterBlendImage;
+import com.datnt.textart.fragment.decor.DecorBoxFragment;
+import com.datnt.textart.fragment.decor.DecorDrawFragment;
+import com.datnt.textart.fragment.decor.DecorFrameFragment;
+import com.datnt.textart.fragment.decor.DecorShapeFragment;
 import com.datnt.textart.fragment.emoji.EmojiBearFragment;
 import com.datnt.textart.fragment.emoji.EmojiFaceFragment;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.model.DecorModel;
 import com.datnt.textart.model.EmojiModel;
 import com.datnt.textart.model.FilterBlendModel;
+import com.datnt.textart.model.OverlayModel;
 import com.datnt.textart.model.StickerModel;
 import com.datnt.textart.model.StyleFontModel;
 import com.datnt.textart.model.TextModel;
@@ -94,11 +105,12 @@ public class EditActivity extends AppCompatActivity {
             tvTitleEmoji, tvCancelEditImage, tvTitleEditImage, tvXPosImage, tvYPosImage, tvBlurImage,
             tvCancelEditBackground, tvTitleEditBackground, tvAdjustBackground, tvVignette, tvVibrance,
             tvWarmth, tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure,
-            tvContrast, tvBrightness;
+            tvContrast, tvBrightness, tvTitleOverlay, tvTitleEditOverlay, tvCancelEditOverlay, tvTitleDecor;
     private SeekBar sbFontSize;
     private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur, sbXPosImage,
             sbYPosImage, sbBlurImage, sbAdjust;
-    private CustomSeekbarRunText sbOpacityText, sbOpacityEmoji, sbOpacityImage, sbOpacityBackground;
+    private CustomSeekbarRunText sbOpacityText, sbOpacityEmoji, sbOpacityImage, sbOpacityBackground,
+            sbOpacityOverlay;
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
@@ -110,18 +122,27 @@ public class EditActivity extends AppCompatActivity {
             rlReplaceBackground, rlAdjustBackground, rlFilterBackground, rlOpacityBackground, rlFlipYBackground,
             rlFlipXBackground, rlVignette, rlVibrance, rlWarmth, rlHue, rlSaturation, rlWhites, rlBlacks,
             rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness, rlAdjust, rlEditFilterBackground,
-            rlEditOpacityBackground;
-    private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage;
+            rlEditOpacityBackground, rlPickOverlay, rlExpandOverlay, rlFlipXOverlay, rlFlipYOverlay, rlOpacityOverlay,
+            rlReplaceOverlay, rlDelOverlay, rlEditOpacityOverlay, rlEditOverlay, rlExpandEditOverlay,
+            rlExpandDecor, rlPickDecor;
+    private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage,
+            llEditOverlay;
     private HorizontalScrollView vSize, vOperation, vEditText, vEditImage, vEditBackground;
     private CustomView vMain;
     private StickerView stickerView;
-    private RecyclerView rcvEditColor, rcvTitleEmoji, rcvEditFilter, rcvEditBlend, rcvEditFilterBackground;
-    private ViewPager2 vpEmoji;
+    private RecyclerView rcvEditColor, rcvTitleEmoji, rcvEditFilter, rcvEditBlend, rcvEditFilterBackground,
+            rcvOverlay, rcvTitleDecor;
+    private ViewPager2 vpEmoji, vpDecor;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
 
     private EmojiFaceFragment faceFragment;
     private EmojiBearFragment bearFragment;
+    private DecorShapeFragment shapeFragment;
+    private DecorBoxFragment boxFragment;
+    private DecorFrameFragment frameFragment;
+    private DecorDrawFragment drawFragment;
     private TitleEmojiAdapter emojiTitleAdapter;
+    private TitleDecorAdapter titleDecorAdapter;
     private FilterBlendImageAdapter filterBlendImageAdapter;
     private Bitmap bitmap, bitmapDrawable, bitmapFilterBlend;
     private ArrayList<StickerModel> lstSticker;
@@ -129,7 +150,8 @@ public class EditActivity extends AppCompatActivity {
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
     private GradientDrawable gradientDrawable;
-    private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground;
+    private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground,
+            replaceOverlay, replaceDecor;
     private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0;
     private float opacityBackground = 1;
     private Animation animation;
@@ -170,8 +192,9 @@ public class EditActivity extends AppCompatActivity {
                 if (sticker instanceof DrawableSticker) {
                     drawableSticker = (DrawableSticker) sticker;
                     textSticker = null;
-                    if (!drawableSticker.isImage()) seekAndHideLayout(5);
-                    else image();
+                    if (!drawableSticker.isImage() && !drawableSticker.isOverlay())
+                        seekAndHideLayout(5);
+                    else if (drawableSticker.isImage()) image();
                 } else if (sticker instanceof TextSticker) {
                     textSticker = (TextSticker) sticker;
                     drawableSticker = null;
@@ -185,8 +208,9 @@ public class EditActivity extends AppCompatActivity {
                 if (sticker instanceof DrawableSticker) {
                     drawableSticker = (DrawableSticker) sticker;
                     textSticker = null;
-                    if (!drawableSticker.isImage()) seekAndHideLayout(5);
-                    else {
+                    if (!drawableSticker.isImage() && !drawableSticker.isOverlay())
+                        seekAndHideLayout(5);
+                    else if (drawableSticker.isImage()) {
                         for (StickerModel st : lstSticker) {
                             if (st.getDrawableSticker() != null)
                                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
@@ -232,8 +256,9 @@ public class EditActivity extends AppCompatActivity {
                 if (sticker instanceof DrawableSticker) {
                     drawableSticker = (DrawableSticker) sticker;
                     textSticker = null;
-                    if (!drawableSticker.isImage()) seekAndHideLayout(5);
-                    else {
+                    if (!drawableSticker.isImage() && !drawableSticker.isOverlay())
+                        seekAndHideLayout(5);
+                    else if (drawableSticker.isImage()) {
                         for (StickerModel st : lstSticker) {
                             if (st.getDrawableSticker() != null)
                                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
@@ -295,6 +320,8 @@ public class EditActivity extends AppCompatActivity {
         });
         rlEditImage.setOnClickListener(v -> seekAndHideLayout(0));
         rlEditBackground.setOnClickListener(v -> seekAndHideLayout(0));
+        rlPickOverlay.setOnClickListener(v -> seekAndHideLayout(0));
+        rlEditOverlay.setOnClickListener(v -> seekAndHideLayout(0));
 
         //text
         rlDelText.setOnClickListener(v -> delStick());
@@ -349,6 +376,23 @@ public class EditActivity extends AppCompatActivity {
         rlFlipXBackground.setOnClickListener(v -> flipXBackground());
         rlFlipYBackground.setOnClickListener(v -> flipYBackground());
 
+        //overlay
+        rlBlend.setOnClickListener(v -> overlay());
+        rlDelOverlay.setOnClickListener(v -> delStick());
+        rlReplaceOverlay.setOnClickListener(v -> {
+            replaceOverlay = true;
+            overlay();
+        });
+        rlOpacityOverlay.setOnClickListener(v -> opacityOverlay());
+        rlFlipXOverlay.setOnClickListener(v -> flipXOverlay());
+        rlFlipYOverlay.setOnClickListener(v -> flipYOverlay());
+
+        //decor
+        rlDecor.setOnClickListener(v -> {
+            decor();
+            replaceDecor = false;
+        });
+
         rlAddText.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddTextActivity.class);
             launcherEditText.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
@@ -363,7 +407,7 @@ public class EditActivity extends AppCompatActivity {
                 case 0:
                     Bitmap bitmap = null;
                     Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
-                    DrawableSticker sticker = new DrawableSticker(drawable, getId(), true);
+                    DrawableSticker sticker = new DrawableSticker(drawable, getId(), true, false);
                     for (StickerModel st : lstSticker) {
                         if (st.getDrawableSticker() != null)
                             if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
@@ -391,7 +435,6 @@ public class EditActivity extends AppCompatActivity {
                         }
                         stickerView.replace(sticker, true);
                     }
-                    image();
                     break;
                 case 1:
                     if (filterBlendImageAdapter != null) {
@@ -437,10 +480,11 @@ public class EditActivity extends AppCompatActivity {
                 new Thread(() -> {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        if (bitmap != null)
+                        if (bitmap != null) {
                             bitmapFilterBlend = Bitmap.createBitmap(modifyOrientation(
                                     Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
-                        else Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
+                        } else
+                            Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -450,6 +494,280 @@ public class EditActivity extends AppCompatActivity {
             }
         }
     });
+
+    //decor
+    private void decor() {
+        rlExpandDecor.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
+        seekAndHideLayout(10);
+        setUpTitleDecor();
+        setUpDataDecor();
+    }
+
+    private void setUpDataDecor() {
+        if (addFragmentsAdapter == null)
+            addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+
+        createFragmentDecor();
+
+        vpDecor.setAdapter(addFragmentsAdapter);
+        vpDecor.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                titleDecorAdapter.setCurrent(position);
+                rcvTitleDecor.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    private void createFragmentDecor() {
+
+        //create fragment theo a - z
+
+        boxFragment = DecorBoxFragment.newInstance("box");
+        addFragmentsAdapter.addFrag(boxFragment);
+
+        drawFragment = DecorDrawFragment.newInstance("draw");
+        addFragmentsAdapter.addFrag(drawFragment);
+
+        frameFragment = DecorFrameFragment.newInstance("frame");
+        addFragmentsAdapter.addFrag(frameFragment);
+
+        shapeFragment = DecorShapeFragment.newInstance("shape");
+        addFragmentsAdapter.addFrag(shapeFragment);
+    }
+
+    private void setUpTitleDecor() {
+
+        titleDecorAdapter = new TitleDecorAdapter(this, (o, pos) -> {
+            titleDecorAdapter.setCurrent(pos);
+            vpDecor.setCurrentItem(pos, true);
+        });
+
+        titleDecorAdapter.setData(DataDecor.getTitleDecor(this, "title"));
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvTitleDecor.setLayoutManager(manager);
+        rcvTitleDecor.setAdapter(titleDecorAdapter);
+    }
+
+    //replace
+    private void replaceDecor() {
+        seekAndHideLayout(4);
+        replaceDecor = true;
+    }
+
+    private void addDecor(int pos) {
+        boolean existEmoji = false;
+        switch (pos) {
+            case 0:
+                if (!bearFragment.getEmoji().isEmpty()) {
+                    for (EmojiModel emoji : bearFragment.getEmoji()) {
+                        addNewEmoji(getId(), emoji, 0);
+                    }
+                    existEmoji = true;
+                }
+
+                if (!faceFragment.getEmoji().isEmpty()) {
+                    for (EmojiModel emoji : faceFragment.getEmoji()) {
+                        addNewEmoji(getId(), emoji, 0);
+                    }
+                    existEmoji = true;
+                }
+                break;
+            case 1:
+                if (bearFragment.replaceEmoji() != null) {
+                    addNewEmoji(drawableSticker.getId(), bearFragment.replaceEmoji(), pos);
+                    existEmoji = true;
+                }
+
+                if (faceFragment.replaceEmoji() != null) {
+                    addNewEmoji(drawableSticker.getId(), faceFragment.replaceEmoji(), pos);
+                    existEmoji = true;
+                }
+                break;
+        }
+        if (existEmoji) seekAndHideLayout(5);
+        else seekAndHideLayout(0);
+        bitmapDrawable = null;
+    }
+
+    private void addNewDecor(int id, EmojiModel emoji, int pos) {
+        bitmapDrawable = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji(), true);
+        Drawable drawable = new BitmapDrawable(getResources(), bitmapDrawable);
+        DrawableSticker sticker = new DrawableSticker(drawable, id, false, false);
+
+        for (StickerModel st : lstSticker) {
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId() && !st.getDrawableSticker().isImage()) {
+                    sticker.setAlpha(drawableSticker.getAlpha());
+                }
+        }
+
+        switch (pos) {
+            case 0:
+                stickerView.addSticker(sticker);
+            case 1:
+                stickerView.replace(sticker, true);
+                break;
+        }
+        lstSticker.add(new StickerModel(null, null, bitmapDrawable, null, sticker, -1, -1));
+    }
+
+    //overlay
+    private void overlay() {
+        rlExpandOverlay.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
+        seekAndHideLayout(8);
+        setUpDataOverlay();
+    }
+
+    private void flipXOverlay() {
+        for (StickerModel st : lstSticker) {
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
+                    Bitmap bitmap = createFlippedBitmap(st.getBitmap(), true, false);
+                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false, true));
+                    st.setBitmap(bitmap);
+                    break;
+                }
+        }
+    }
+
+    private void flipYOverlay() {
+        for (StickerModel st : lstSticker) {
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
+                    Bitmap bitmap = createFlippedBitmap(st.getBitmap(), false, true);
+                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false, true));
+                    st.setBitmap(bitmap);
+                    break;
+                }
+        }
+    }
+
+    //opacity
+    private void opacityOverlay() {
+        setUpLayoutEditOpacityOverlay(0);
+        tvCancelEditOverlay.setOnClickListener(v -> setUpLayoutEditOpacityOverlay(1));
+
+        for (StickerModel st : lstSticker) {
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay())
+                    sbOpacityOverlay.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
+        }
+        sbOpacityOverlay.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                if (drawableSticker != null) drawableSticker.setAlpha((int) (value * 255 / 100f));
+                Log.d("2tdp", "onMove: " + value);
+                stickerView.replace(drawableSticker, true);
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+    }
+
+    private void setUpLayoutEditOpacityOverlay(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                llEditOverlay.startAnimation(animation);
+
+                if (llEditOverlay.getVisibility() == View.VISIBLE)
+                    llEditOverlay.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                rlEditOpacityOverlay.startAnimation(animation);
+                if (rlEditOpacityOverlay.getVisibility() == View.GONE) {
+                    rlEditOpacityOverlay.setVisibility(View.VISIBLE);
+                    tvCancelEditOverlay.setVisibility(View.VISIBLE);
+                    tvTitleEditOverlay.setText(getString(R.string.opacity));
+                    sbOpacityOverlay.setColorText(getResources().getColor(R.color.green));
+                    sbOpacityOverlay.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                    sbOpacityOverlay.setProgress(100);
+                    sbOpacityOverlay.setMax(100);
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                rlEditOpacityOverlay.startAnimation(animation);
+                if (rlEditOpacityOverlay.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityOverlay.setVisibility(View.GONE);
+                    tvCancelEditOverlay.setVisibility(View.GONE);
+                    tvTitleEditOverlay.setText(getString(R.string.overlay));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                llEditOverlay.startAnimation(animation);
+                if (llEditOverlay.getVisibility() == View.GONE)
+                    llEditOverlay.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rlEditOpacityOverlay.clearAnimation();
+                llEditOverlay.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    private void addOverlay(int pos, OverlayModel overlay) {
+
+        DrawableSticker sticker = null;
+        bitmapDrawable = Utils.getBitmapFromAsset(this, overlay.getNameFolder(), overlay.getNameOverlay(), false);
+
+        switch (pos) {
+            case 0:
+                sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmapDrawable), getId(), false, true);
+                stickerView.addSticker(sticker);
+                break;
+            case 1:
+                for (StickerModel st : lstSticker) {
+                    if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
+                        sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmapDrawable),
+                                drawableSticker.getId(), false, true);
+                        stickerView.replace(sticker, true);
+                    }
+                }
+                break;
+        }
+        lstSticker.add(new StickerModel(null, null, bitmapDrawable, null, sticker, -1, -1));
+    }
+
+    private void setUpDataOverlay() {
+        ArrayList<OverlayModel> lstOverlay = new ArrayList<>(DataOverlay.getOverlay(this, "overlay"));
+
+        OverlayAdapter overlayAdapter = new OverlayAdapter(this, (o, pos) -> {
+            OverlayModel overlay = (OverlayModel) o;
+
+            seekAndHideLayout(9);
+
+            if (replaceOverlay) addOverlay(1, overlay);
+            else addOverlay(0, overlay);
+        });
+        if (!lstOverlay.isEmpty()) overlayAdapter.setData(lstOverlay);
+
+        GridLayoutManager manager = new GridLayoutManager(this, 3);
+        rcvOverlay.setLayoutManager(manager);
+        rcvOverlay.setAdapter(overlayAdapter);
+    }
 
     //background
     private void background() {
@@ -1188,7 +1506,7 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.changeNotify();
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
-            DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmap), getId(), true);
+            DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmap), getId(), true, false);
             Bitmap bm = null;
 
             for (StickerModel st : lstSticker) {
@@ -1431,7 +1749,7 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.changeNotify();
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
-            DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmap), getId(), true);
+            DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), bitmap), getId(), true, false);
             Bitmap bm = null;
 
             for (StickerModel st : lstSticker) {
@@ -1526,7 +1844,7 @@ public class EditActivity extends AppCompatActivity {
         for (StickerModel st : lstSticker) {
             if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                    DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), st.getBitmap()), getId(), true);
+                    DrawableSticker sticker = new DrawableSticker(new BitmapDrawable(getResources(), st.getBitmap()), getId(), true, false);
                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
                     stickerView.addSticker(sticker);
                     lstSticker.add(new StickerModel(null, st.getBitmapRoot(), st.getBitmap(), null, sticker, st.getPositionFilter(), st.getPositionBlend()));
@@ -1547,7 +1865,7 @@ public class EditActivity extends AppCompatActivity {
             if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
                     Bitmap bitmap = createFlippedBitmap(st.getBitmap(), true, false);
-                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false));
+                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false, false));
                     st.setBitmap(bitmap);
                     break;
                 }
@@ -1559,7 +1877,7 @@ public class EditActivity extends AppCompatActivity {
             if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
                     Bitmap bitmap = createFlippedBitmap(st.getBitmap(), false, true);
-                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false));
+                    stickerView.replace(new DrawableSticker(new BitmapDrawable(getResources(), bitmap), st.getDrawableSticker().getId(), false, false));
                     st.setBitmap(bitmap);
                     break;
                 }
@@ -1697,9 +2015,9 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void addNewEmoji(int id, EmojiModel emoji, int pos) {
-        bitmapDrawable = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji());
+        bitmapDrawable = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji(), true);
         Drawable drawable = new BitmapDrawable(getResources(), bitmapDrawable);
-        DrawableSticker sticker = new DrawableSticker(drawable, id, false);
+        DrawableSticker sticker = new DrawableSticker(drawable, id, false, false);
 
         for (StickerModel st : lstSticker) {
             if (st.getDrawableSticker() != null)
@@ -1719,7 +2037,8 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void setUpDataEmoji() {
-        addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+        if (addFragmentsAdapter == null)
+            addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
         createFragment();
 
@@ -2576,6 +2895,21 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditBackground.setVisibility(View.GONE);
                 }
 
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vOperation.getVisibility() == View.GONE) {
                     vOperation.startAnimation(animation);
@@ -2608,6 +2942,36 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEmoji.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.startAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vSize.getVisibility() == View.GONE) {
                     vSize.startAnimation(animation);
@@ -2638,6 +3002,36 @@ public class EditActivity extends AppCompatActivity {
                 if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
                     rlExpandEmoji.startAnimation(animation);
                     rlExpandEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.startAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2680,6 +3074,26 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditImage.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditText.getVisibility() == View.GONE) {
                     rlExpandEditText.startAnimation(animation);
@@ -2700,19 +3114,44 @@ public class EditActivity extends AppCompatActivity {
                     vOperation.setVisibility(View.GONE);
                 }
 
-                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
-                    rlExpandLayer.startAnimation(animation);
-                    rlExpandLayer.setVisibility(View.GONE);
-                }
-
                 if (rlExpandEditText.getVisibility() == View.VISIBLE) {
                     rlExpandEditText.startAnimation(animation);
                     rlExpandEditText.setVisibility(View.GONE);
                 }
 
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
                 if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
                     rlExpandEditEmoji.startAnimation(animation);
                     rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2729,19 +3168,44 @@ public class EditActivity extends AppCompatActivity {
                     vOperation.setVisibility(View.GONE);
                 }
 
-                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
-                    rlExpandEmoji.startAnimation(animation);
-                    rlExpandEmoji.setVisibility(View.GONE);
-                }
-
                 if (rlExpandEditText.getVisibility() == View.VISIBLE) {
                     rlExpandEditText.startAnimation(animation);
                     rlExpandEditText.setVisibility(View.GONE);
                 }
 
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.startAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
                 if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
                     rlExpandEditImage.startAnimation(animation);
                     rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2758,19 +3222,44 @@ public class EditActivity extends AppCompatActivity {
                     vOperation.setVisibility(View.GONE);
                 }
 
-                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
-                    rlExpandEmoji.startAnimation(animation);
-                    rlExpandEmoji.setVisibility(View.GONE);
-                }
-
                 if (rlExpandEditText.getVisibility() == View.VISIBLE) {
                     rlExpandEditText.startAnimation(animation);
                     rlExpandEditText.setVisibility(View.GONE);
                 }
 
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.startAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
                 if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
                     rlExpandEditEmoji.startAnimation(animation);
                     rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2793,6 +3282,11 @@ public class EditActivity extends AppCompatActivity {
                     vOperation.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.startAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
                 if (rlExpandLayer.getVisibility() == View.VISIBLE) {
                     rlExpandLayer.startAnimation(animation);
                     rlExpandLayer.setVisibility(View.GONE);
@@ -2813,15 +3307,199 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditImage.setVisibility(View.GONE);
                 }
 
-                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
-                    rlExpandEditText.startAnimation(animation);
-                    rlExpandEditText.setVisibility(View.GONE);
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditBackground.getVisibility() == View.GONE) {
                     rlExpandEditBackground.startAnimation(animation);
                     rlExpandEditBackground.setVisibility(View.VISIBLE);
+                }
+                break;
+            case 8:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.startAnimation(animation);
+                    tvTitle.setVisibility(View.GONE);
+                    vSize.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.startAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                }
+
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.startAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.startAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.startAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandOverlay.getVisibility() == View.GONE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.VISIBLE);
+                }
+                break;
+            case 9:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.startAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.startAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.startAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.startAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandEditOverlay.getVisibility() == View.GONE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.VISIBLE);
+                }
+                break;
+            case 10:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.startAnimation(animation);
+                    tvTitle.setVisibility(View.GONE);
+                    vSize.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.startAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.startAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+                    rlExpandLayer.startAnimation(animation);
+                    rlExpandLayer.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.startAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.startAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.startAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandOverlay.startAnimation(animation);
+                    rlExpandOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.startAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandDecor.getVisibility() == View.GONE) {
+                    rlExpandDecor.startAnimation(animation);
+                    rlExpandDecor.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -2843,6 +3521,9 @@ public class EditActivity extends AppCompatActivity {
                     vEditImage.clearAnimation();
                     vEditBackground.clearAnimation();
                     rlExpandEditBackground.clearAnimation();
+                    rlExpandOverlay.clearAnimation();
+                    rlExpandEditOverlay.clearAnimation();
+                    rlExpandDecor.clearAnimation();
                 }
 
                 @Override
@@ -3104,6 +3785,26 @@ public class EditActivity extends AppCompatActivity {
         rlEditFilterBackground = findViewById(R.id.rlEditFilterBackground);
         sbOpacityBackground = findViewById(R.id.sbOpacityBackground);
         rlEditOpacityBackground = findViewById(R.id.rlEditOpacityBackground);
+        rcvOverlay = findViewById(R.id.rcvOverlay);
+        rlPickOverlay = findViewById(R.id.rlPickOverlay);
+        tvTitleOverlay = findViewById(R.id.tvTitleOverlay);
+        rlExpandOverlay = findViewById(R.id.rlExpandOverlay);
+        tvTitleEditOverlay = findViewById(R.id.tvTitleEditOverlay);
+        tvCancelEditOverlay = findViewById(R.id.tvCancelEditOverlay);
+        rlFlipXOverlay = findViewById(R.id.rlFlipXOverlay);
+        rlFlipYOverlay = findViewById(R.id.rlFlipYOverlay);
+        rlOpacityOverlay = findViewById(R.id.rlOpacityOverlay);
+        rlReplaceOverlay = findViewById(R.id.rlReplaceOverlay);
+        rlDelOverlay = findViewById(R.id.rlDelOverlay);
+        rlEditOpacityOverlay = findViewById(R.id.rlEditOpacityOverlay);
+        rlEditOverlay = findViewById(R.id.rlEditOverlay);
+        rlExpandEditOverlay = findViewById(R.id.rlExpandEditOverlay);
+        llEditOverlay = findViewById(R.id.llEditOverlay);
+        sbOpacityOverlay = findViewById(R.id.sbOpacityOverlay);
+        rlExpandDecor = findViewById(R.id.rlExpandDecor);
+        rcvTitleDecor = findViewById(R.id.rcvTitleDecor);
+        vpDecor = findViewById(R.id.vpDecor);
+        rlPickDecor = findViewById(R.id.rlPickDecor);
 
         lstSticker = new ArrayList<>();
         lstFilterBlend = new ArrayList<>();

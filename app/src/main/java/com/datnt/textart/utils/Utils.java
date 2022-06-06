@@ -104,13 +104,14 @@ public class Utils {
                 + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
     }
 
-    public static Bitmap getBitmapFromAsset(Context context, String nameFolder, String nameEmoji) {
+    public static Bitmap getBitmapFromAsset(Context context, String nameFolder, String name, boolean isEmoji) {
         AssetManager assetManager = context.getAssets();
 
         InputStream istr;
         Bitmap bitmap = null;
         try {
-            istr = assetManager.open("emoji/" + nameFolder + "/" + nameEmoji);
+            if (isEmoji) istr = assetManager.open("emoji/" + nameFolder + "/" + name);
+            else istr = assetManager.open(nameFolder + "/" + name);
             bitmap = BitmapFactory.decodeStream(istr);
         } catch (IOException e) {
             // handle exception

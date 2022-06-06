@@ -37,7 +37,7 @@ public class TitleEmojiAdapter extends RecyclerView.Adapter<TitleEmojiAdapter.Ti
     @NonNull
     @Override
     public TitleEmojiHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new TitleEmojiHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_title_emoji, parent, false));
+        return new TitleEmojiHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_title, parent, false));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TitleEmojiAdapter extends RecyclerView.Adapter<TitleEmojiAdapter.Ti
             if (emoji == null) return;
 
             if (emoji.isSelected())
-                ivTitleEmoji.setBackgroundResource(R.drawable.border_title_emoji);
+                ivTitleEmoji.setBackgroundResource(R.drawable.border_title);
             else ivTitleEmoji.setBackgroundResource(R.color.white);
 
             Glide.with(context)

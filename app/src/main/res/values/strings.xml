@@ -119,6 +119,9 @@
     <string name="vibrance">Vibrance</string>
     <string name="vignette">Vignette</string>
 
+    //overlay
+    <string name="overlay">Overlay</string>
+
     //layer
     <string name="layer">Layer</string>
     <string name="duplicate">Duplicate</string>

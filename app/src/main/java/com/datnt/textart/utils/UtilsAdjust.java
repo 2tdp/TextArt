@@ -1,17 +1,22 @@
 package com.datnt.textart.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.util.Log;
 
 public class UtilsAdjust {
 
-    private static float lumR = 0.3086f; // or  0.2125
-    private static float lumG = 0.6094f;  // or  0.7154
-    private static float lumB = 0.0820f; // or  0.0721
+    private static final float lumR = 0.3086f; // or  0.2125
+    private static final float lumG = 0.6094f;  // or  0.7154
+    private static final float lumB = 0.0820f; // or  0.0721
 
     public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {
         brightness = cleanValue(brightness, 100);
@@ -42,6 +47,10 @@ public class UtilsAdjust {
 
         contrast = cleanValue(contrast, 100);
 
+        if (contrast == 0) {
+            return bmp;
+        }
+
         float scale = contrast + 1f;
         float translate = (-0.5f * scale + 0.5f) * 255f;
 
@@ -69,7 +78,7 @@ public class UtilsAdjust {
         exposure = cleanValue(exposure, 100);
 
         if (exposure == 0) {
-            return  bmp;
+            return bmp;
         }
         exposure = (float) Math.pow(2, exposure);
 
@@ -82,6 +91,37 @@ public class UtilsAdjust {
                 };
 
         ColorMatrix cm = new ColorMatrix(mat);
+
+        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+
+        Canvas canvas = new Canvas(ret);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return ret;
+    }
+
+    public static Bitmap adjustHighLight(Bitmap bmp, float highLight) {
+        highLight = cleanValue(highLight, 100);
+
+        if (highLight == 0) {
+            return bmp;
+        }
+        float x;
+        if (highLight > 0)
+            x = 1 + 3 * highLight / 100;
+        else
+            x = 3 * highLight / 100;
+
+        ColorMatrix cm = new ColorMatrix(new float[]
+                {
+                        lumR * (1 - x) + x, 0, 0, 0, 0,
+                        0, lumG * (1 - x) + x, 0, 0, 0,
+                        0, 0, lumB * (1 - x) + x, 0, 0,
+                        0, 0, 0, 1, 0,
+                });
 
         Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
 
@@ -131,13 +171,12 @@ public class UtilsAdjust {
         float cosVal = (float) Math.cos(value);
         float sinVal = (float) Math.sin(value);
 
-        float[] mat = new float[]
+        ColorMatrix cm = new ColorMatrix(new float[]
                 {
                         lumR + cosVal * (1 - lumR) + sinVal * (-lumR), lumG + cosVal * (-lumG) + sinVal * (-lumG), lumB + cosVal * (-lumB) + sinVal * (1 - lumB), 0, 0,
                         lumR + cosVal * (-lumR) + sinVal * (0.143f), lumG + cosVal * (1 - lumG) + sinVal * (0.140f), lumB + cosVal * (-lumB) + sinVal * (-0.283f), 0, 0,
                         lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)), lumG + cosVal * (-lumG) + sinVal * (lumG), lumB + cosVal * (1 - lumB) + sinVal * (lumB), 0, 0,
-                        0f, 0f, 0f, 1f, 0f};
-        ColorMatrix cm = new ColorMatrix(mat);
+                        0f, 0f, 0f, 1f, 0f});
 
         Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
 

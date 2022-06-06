@@ -312,11 +312,19 @@ public class CustomView extends View {
     }
 
     public float getHighlight() {
-        return highlight;
+        if (highlight == 0) return 0;
+        else return highlight;
     }
 
     public void setHighlight(float highlight) {
         this.highlight = highlight;
+        if (highlight > 1) {
+            highlight = highlight / 50 + 1;
+        } else if (highlight < 1) {
+            highlight = 1 + highlight / 50;
+        }
+        bitmap = UtilsAdjust.adjustHighLight(bitmapRoot, highlight);
+        invalidate();
     }
 
     public float getShadow() {

@@ -20,7 +20,6 @@ public class FilterBlendImage {
             bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
             if (bm != null) {
                 lstBlend.add(new FilterBlendModel(bm, "blend" + i, s, false));
-                Log.d("2tdppp", "getDataFilter: " + i);
                 i++;
             }
         }
@@ -36,7 +35,6 @@ public class FilterBlendImage {
             bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
             if (bm != null) {
                 lstFilter.add(new FilterBlendModel(bm, "filter" + i, s, false));
-                Log.d("2tdppp", "getDataFilter: " + i);
                 i++;
             }
         }

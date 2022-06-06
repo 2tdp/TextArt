@@ -15,13 +15,14 @@ public class DrawableSticker extends Sticker {
 
     private Drawable drawable;
     private int id;
-    private boolean isImage;
+    private boolean isImage, isOverlay;
     private Rect realBounds;
 
-    public DrawableSticker(Drawable drawable, int id, boolean isImage) {
+    public DrawableSticker(Drawable drawable, int id, boolean isImage, boolean isOverlay) {
         this.drawable = drawable;
         this.id = id;
         this.isImage = isImage;
+        this.isOverlay = isOverlay;
         realBounds = new Rect(0, 0, getWidth(), getHeight());
     }
 
@@ -63,6 +64,14 @@ public class DrawableSticker extends Sticker {
     @Override
     public int getHeight() {
         return drawable.getIntrinsicHeight();
+    }
+
+    public boolean isOverlay() {
+        return isOverlay;
+    }
+
+    public void setOverlay(boolean overlay) {
+        isOverlay = overlay;
     }
 
     public boolean isImage() {
