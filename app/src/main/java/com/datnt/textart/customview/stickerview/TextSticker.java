@@ -240,7 +240,7 @@ public class TextSticker extends Sticker {
             case 3:
                 return new int[]{0, (int) h, (int) w, 0};
         }
-        return new int[]{0, 0, 0, 0};
+        return new int[]{};
     }
 
     @NonNull

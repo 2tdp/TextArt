@@ -14,15 +14,17 @@ public class StickerModel implements Serializable {
     private Bitmap bitmap;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
+    private ColorModel color;
     private int positionFilter;
     private int positionBlend;
 
-    public StickerModel(TextModel textModel, Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker, DrawableSticker drawableSticker, int positionFilter, int positionBlend) {
+    public StickerModel(TextModel textModel, Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color, int positionFilter, int positionBlend) {
         this.textModel = textModel;
         this.bitmapRoot = bitmapRoot;
         this.bitmap = bitmap;
         this.textSticker = textSticker;
         this.drawableSticker = drawableSticker;
+        this.color = color;
         this.positionFilter = positionFilter;
         this.positionBlend = positionBlend;
     }
@@ -65,6 +67,14 @@ public class StickerModel implements Serializable {
 
     public void setDrawableSticker(DrawableSticker drawableSticker) {
         this.drawableSticker = drawableSticker;
+    }
+
+    public ColorModel getColor() {
+        return color;
+    }
+
+    public void setColor(ColorModel color) {
+        this.color = color;
     }
 
     public int getPositionFilter() {

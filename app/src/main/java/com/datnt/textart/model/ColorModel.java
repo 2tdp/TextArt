@@ -8,6 +8,9 @@ public class ColorModel implements Serializable {
     private int direc;
     private boolean isCheck;
 
+    public ColorModel() {
+    }
+
     public ColorModel(int colorStart, int colorEnd, int direc, boolean isCheck) {
         this.colorStart = colorStart;
         this.colorEnd = colorEnd;

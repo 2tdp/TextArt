@@ -83,6 +83,7 @@ public class CustomView extends View {
             this.bitmapRoot = bitmap;
         } else {
             this.bitmap = null;
+            this.bitmapRoot = bitmap;
             this.color = color;
         }
         invalidate();
@@ -375,7 +376,7 @@ public class CustomView extends View {
 
     public void setHue(float hue) {
         this.hue = hue;
-        bitmap = UtilsAdjust.adjustHue(bitmapRoot, hue * 255 / 100f);
+        bitmap = UtilsAdjust.adjustHue(bitmapRoot, hue * 360 / 100f);
         invalidate();
     }
 

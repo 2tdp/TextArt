@@ -164,7 +164,7 @@ public class UtilsAdjust {
     }
 
     public static Bitmap adjustHue(Bitmap bmp, float value) {
-        value = cleanValue(value, 255f) / 255f * (float) Math.PI;
+        value = cleanValue(value, 360f) / 360f * (float) Math.PI;
         if (value == 0) {
             return bmp;
         }
