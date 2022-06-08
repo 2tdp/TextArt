@@ -21,7 +21,6 @@ public class FilterBlendImageAdapter extends RecyclerView.Adapter<FilterBlendIma
     private Context context;
     private ArrayList<FilterBlendModel> lstFilter;
     private ICallBackItem callBack;
-    private int oldPosition = -1;
 
     public FilterBlendImageAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
@@ -79,10 +78,7 @@ public class FilterBlendImageAdapter extends RecyclerView.Adapter<FilterBlendIma
             if (position == 0) ivPic.setImageResource(R.drawable.ic_none);
             else ivPic.setImageBitmap(filterBlendModel.getBitmap());
 
-            itemView.setOnClickListener(v -> {
-                callBack.callBackItem(filterBlendModel, position);
-                oldPosition = position;
-            });
+            itemView.setOnClickListener(v -> callBack.callBackItem(filterBlendModel, position));
         }
     }
 

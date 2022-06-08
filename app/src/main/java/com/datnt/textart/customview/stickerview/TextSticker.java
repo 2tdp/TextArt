@@ -1,14 +1,19 @@
 package com.datnt.textart.customview.stickerview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -21,10 +26,12 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.datnt.textart.R;
 import com.datnt.textart.customview.CustomView;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.utils.UtilsAdjust;
 
 import java.io.Serializable;
 
@@ -51,6 +58,7 @@ public class TextSticker extends Sticker {
     private final Rect realBounds;
     private final Rect textRect;
     private final TextPaint textPaint;
+    private Paint paintText;
     private Drawable drawable;
     private StaticLayout staticLayout;
     private Layout.Alignment alignment;
@@ -148,7 +156,7 @@ public class TextSticker extends Sticker {
         return this;
     }
 
-    public int getAlpha(){
+    public int getAlpha() {
         return textPaint.getAlpha();
     }
 
@@ -196,6 +204,14 @@ public class TextSticker extends Sticker {
         return this;
     }
 
+    public Shader getShader() {
+        return textPaint.getShader();
+    }
+
+    public int getColor() {
+        return textPaint.getColor();
+    }
+
     @NonNull
     public TextSticker setTextColor(@NonNull ColorModel color) {
         if (color.getColorStart() == color.getColorEnd()) {
@@ -220,7 +236,7 @@ public class TextSticker extends Sticker {
                     setDirection(color.getDirec())[1],
                     setDirection(color.getDirec())[2],
                     setDirection(color.getDirec())[3],
-                    new int[]{Color.parseColor(CustomView.toRGBString(color.getColorStart())), Color.parseColor(CustomView.toRGBString(color.getColorEnd()))},
+                    new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
                     new float[]{0, 1}, Shader.TileMode.MIRROR);
             textPaint.setShader(shader);
         }

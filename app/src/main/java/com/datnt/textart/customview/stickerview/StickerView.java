@@ -24,6 +24,7 @@ import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.textart.R;
+import com.datnt.textart.model.LayerModel;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -46,7 +47,10 @@ public class StickerView extends FrameLayout {
     private final boolean bringToFrontCurrentSticker;
 
     @IntDef({
-            ActionMode.NONE, ActionMode.DRAG, ActionMode.ZOOM_WITH_TWO_FINGER, ActionMode.ICON,
+            ActionMode.NONE,
+            ActionMode.DRAG,
+            ActionMode.ZOOM_WITH_TWO_FINGER,
+            ActionMode.ICON,
             ActionMode.CLICK
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -70,8 +74,8 @@ public class StickerView extends FrameLayout {
     public static final int FLIP_HORIZONTALLY = 1;
     public static final int FLIP_VERTICALLY = 1 << 1;
 
-    private final List<Sticker> stickers = new ArrayList<>();
-    private final List<BitmapStickerIcon> icons = new ArrayList<>(4);
+    private final ArrayList<Sticker> stickers = new ArrayList<>();
+    private final ArrayList<BitmapStickerIcon> icons = new ArrayList<>(4);
 
     private final Paint borderPaint = new Paint();
     private final RectF stickerRect = new RectF();
@@ -79,7 +83,6 @@ public class StickerView extends FrameLayout {
     private final Matrix sizeMatrix = new Matrix();
     private final Matrix downMatrix = new Matrix();
     private final Matrix moveMatrix = new Matrix();
-    private final Matrix shearMatrix = new Matrix();
 
     // region storing variables
     private final float[] bitmapPoints = new float[8];
@@ -486,6 +489,11 @@ public class StickerView extends FrameLayout {
         sticker.getMatrix().postTranslate(moveX, moveY);
     }
 
+    public void setCurrentSticker(Sticker sticker) {
+        handlingSticker = sticker;
+        invalidate();
+    }
+
     @Nullable
     protected BitmapStickerIcon findCurrentIconTouched() {
         for (BitmapStickerIcon icon : icons) {
@@ -812,6 +820,14 @@ public class StickerView extends FrameLayout {
 
     public int getStickerCount() {
         return stickers.size();
+    }
+
+    public ArrayList<LayerModel> getListLayer() {
+        ArrayList<LayerModel> lstLayer = new ArrayList<>();
+        for (Sticker st : stickers) {
+            lstLayer.add(new LayerModel(st, false, false, false));
+        }
+        return lstLayer;
     }
 
     public boolean isNoneSticker() {

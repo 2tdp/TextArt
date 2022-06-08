@@ -27,6 +27,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/custom_background_popupmenu.xml" value="0.2075" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_add_text.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_adjust.xml" value="0.168" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bg_text.xml" value="0.1955" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_blacks.xml" value="0.168" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_blend.xml" value="0.18" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/ic_bottom.xml" value="0.2075" />
@@ -127,6 +128,7 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_emoji_title.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_font.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_image_filter.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_layer.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_picture.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_project.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_quotes.xml" value="0.35885416666666664" />

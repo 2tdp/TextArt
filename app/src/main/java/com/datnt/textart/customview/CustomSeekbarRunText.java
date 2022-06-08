@@ -15,6 +15,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.datnt.textart.R;
+import com.datnt.textart.utils.UtilsAdjust;
 
 public class CustomSeekbarRunText extends View {
 
@@ -85,7 +86,7 @@ public class CustomSeekbarRunText extends View {
 
         String str = String.valueOf(progress);
         paintText.setTextSize(getResources().getDimension(sizeText));
-        paintText.setColor(Color.parseColor(CustomView.toRGBString(colorText)));
+        paintText.setColor(Color.parseColor(UtilsAdjust.toRGBString(colorText)));
         paintText.getTextBounds(str, 0, str.length(), rectText);
         str = progress + getResources().getString(R.string.percent);
         canvas.drawText(str, p - rectText.width() / 2f, getHeight() / 2f - rectText.height(), paintText);

@@ -3,8 +3,11 @@ package com.datnt.textart.utils;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -12,11 +15,43 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.Log;
 
+import com.datnt.textart.model.ColorModel;
+
 public class UtilsAdjust {
 
     private static final float lumR = 0.3086f; // or  0.2125
     private static final float lumG = 0.6094f;  // or  0.7154
     private static final float lumB = 0.0820f; // or  0.0721
+
+    public static Bitmap createFlippedBitmap(Bitmap source, boolean xFlip, boolean yFlip) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(xFlip ? -1 : 1, yFlip ? -1 : 1, source.getWidth() / 2f, source.getHeight() / 2f);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    public static Bitmap changeBitmapColor(Bitmap sourceBitmap, ColorModel color) {
+        Bitmap resultBitmap = sourceBitmap.copy(sourceBitmap.getConfig(), true);
+        Paint paint = new Paint();
+        ColorFilter filter = new LightingColorFilter(color.getColorStart(), 1);
+        paint.setColorFilter(filter);
+        Canvas canvas = new Canvas(resultBitmap);
+        canvas.drawBitmap(resultBitmap, 0, 0, paint);
+        return resultBitmap;
+    }
+
+    public static String toRGBString(int color) {
+        // format: #RRGGBB
+        String red = Integer.toHexString(Color.red(color));
+        String green = Integer.toHexString(Color.green(color));
+        String blue = Integer.toHexString(Color.blue(color));
+        if (red.length() == 1)
+            red = "0" + red;
+        if (green.length() == 1)
+            green = "0" + green;
+        if (blue.length() == 1)
+            blue = "0" + blue;
+        return "#" + red + green + blue;
+    }
 
     public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {
         brightness = cleanValue(brightness, 100);
