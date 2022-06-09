@@ -107,7 +107,6 @@ public class StickerView extends FrameLayout {
 
     private Sticker handlingSticker;
 
-    private boolean locked;
     private boolean constrained;
 
     private OnStickerOperationListener onStickerOperationListener;
@@ -204,12 +203,11 @@ public class StickerView extends FrameLayout {
     protected void drawStickers(Canvas canvas) {
         for (int i = 0; i < stickers.size(); i++) {
             Sticker sticker = stickers.get(i);
-            if (sticker != null) {
-                sticker.draw(canvas);
-            }
+            if (sticker != null)
+                if (sticker.isLook()) sticker.draw(canvas);
         }
 
-        if (handlingSticker != null && !locked && (showBorder || showIcons)) {
+        if (handlingSticker != null && !handlingSticker.isLock() && (showBorder || showIcons)) {
 
             getStickerPoints(handlingSticker, bitmapPoints);
 
@@ -268,7 +266,8 @@ public class StickerView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (locked) return super.onInterceptTouchEvent(ev);
+        if (handlingSticker != null)
+            if (handlingSticker.isLock()) return super.onInterceptTouchEvent(ev);
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             downX = ev.getX();
@@ -282,9 +281,10 @@ public class StickerView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (locked) {
-            return super.onTouchEvent(event);
-        }
+        if (handlingSticker != null)
+            if (handlingSticker.isLock()) {
+                return super.onTouchEvent(event);
+            }
 
         int action = MotionEventCompat.getActionMasked(event);
 
@@ -638,14 +638,14 @@ public class StickerView extends FrameLayout {
         flip(handlingSticker, direction);
     }
 
-    public void flip(@Nullable Sticker sticker, @Flip int direction) {
+    public void flip(@Nullable Sticker sticker, int direction) {
         if (sticker != null) {
             sticker.getCenterPoint(midPoint);
-            if ((direction & FLIP_HORIZONTALLY) > 0) {
+            if (direction == 0) {
                 sticker.getMatrix().preScale(-1, 1, midPoint.x, midPoint.y);
                 sticker.setFlippedHorizontally(!sticker.isFlippedHorizontally());
             }
-            if ((direction & FLIP_VERTICALLY) > 0) {
+            if (direction == 1) {
                 sticker.getMatrix().preScale(1, -1, midPoint.x, midPoint.y);
                 sticker.setFlippedVertically(!sticker.isFlippedVertically());
             }
@@ -825,24 +825,13 @@ public class StickerView extends FrameLayout {
     public ArrayList<LayerModel> getListLayer() {
         ArrayList<LayerModel> lstLayer = new ArrayList<>();
         for (Sticker st : stickers) {
-            lstLayer.add(new LayerModel(st, false, false, false));
+            lstLayer.add(new LayerModel(st, true, false, false));
         }
         return lstLayer;
     }
 
     public boolean isNoneSticker() {
         return getStickerCount() == 0;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    @NonNull
-    public StickerView setLocked(boolean locked) {
-        this.locked = locked;
-        invalidate();
-        return this;
     }
 
     @NonNull

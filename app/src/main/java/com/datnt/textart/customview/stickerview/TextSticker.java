@@ -58,7 +58,6 @@ public class TextSticker extends Sticker {
     private final Rect realBounds;
     private final Rect textRect;
     private final TextPaint textPaint;
-    private Paint paintText;
     private Drawable drawable;
     private StaticLayout staticLayout;
     private Layout.Alignment alignment;

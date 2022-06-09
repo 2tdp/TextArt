@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.datnt.textart.R;
 
@@ -119,6 +121,7 @@ public class Utils {
             bitmap = BitmapFactory.decodeStream(istr);
         } catch (IOException e) {
             // handle exception
+            e.printStackTrace();
         }
 
         return bitmap;
@@ -141,6 +144,38 @@ public class Utils {
         c.rotate(v.getRotation(), (float) v.getWidth() / 2, (float) v.getHeight() / 2);
         v.draw(c);
         return b;
+    }
+
+    public static Bitmap modifyOrientation(Context context, Bitmap bitmap, Uri uri) throws IOException {
+        InputStream is = context.getContentResolver().openInputStream(uri);
+        ExifInterface ei = new ExifInterface(is);
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return rotateBitmap(bitmap, 90);
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return rotateBitmap(bitmap, 180);
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return rotateBitmap(bitmap, 270);
+//            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+//                ivFilter.setRotation(180);
+//                break;
+//            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+//                return flip(bitmap, false, true);
+            default:
+                return bitmap;
+        }
+    }
+
+    public static Bitmap rotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    public static Drawable getDrawableTransparent(Context context) {
+        return ContextCompat.getDrawable(context, R.drawable.sticker_transparent_background);
     }
 
     public static GradientDrawable.Orientation setDirection(int pos) {

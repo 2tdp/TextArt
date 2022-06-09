@@ -93,6 +93,14 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
                 ivLayer.setBorderColor(context.getResources().getColor(R.color.pink));
             else ivLayer.setBorderColor(context.getResources().getColor(R.color.white));
 
+            if (layer.getSticker().isLock())
+                ivLock.setVisibility(View.VISIBLE);
+            else ivLock.setVisibility(View.GONE);
+
+            if (layer.getSticker().isLook())
+                ivLook.setVisibility(View.GONE);
+            else ivLook.setVisibility(View.VISIBLE);
+
             if (layer.getSticker() instanceof DrawableSticker) {
                 DrawableSticker drawableSticker = (DrawableSticker) layer.getSticker();
                 ivLayer.setImageBitmap(((BitmapDrawable) drawableSticker.getDrawable()).getBitmap());
@@ -128,7 +136,7 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
 
     public void setCurrent(int pos) {
         for (int i = 0; i < lstLayer.size(); i++) lstLayer.get(i).setSelected(i == pos);
-        notifyDataSetChanged();
+        changeNotify();
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.DecorAdapter;
 import com.datnt.textart.adapter.EmojiAdapter;
+import com.datnt.textart.callback.ICallBackItem;
 import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.data.DataEmoji;
 import com.datnt.textart.model.DecorModel;
@@ -25,8 +26,7 @@ public class DecorShapeFragment extends Fragment {
     private String nameDecor;
     private RecyclerView rcvDecor;
 
-    private DecorModel decor;
-    private ArrayList<DecorModel> lstDecor;
+    private ICallBackItem callBack;
 
     public static DecorShapeFragment newInstance(String nameDecor) {
         DecorShapeFragment fragment = new DecorShapeFragment();
@@ -47,8 +47,7 @@ public class DecorShapeFragment extends Fragment {
 
     private void setUpData(String nameDecor) {
         DecorAdapter decorAdapter = new DecorAdapter(requireContext(), (o, pos) -> {
-            lstDecor.add((DecorModel) o);
-            decor = (DecorModel) o;
+            callBack.callBackItem(o, pos);
             Utils.showToast(requireContext(), getString(R.string.success));
         });
 
@@ -68,17 +67,9 @@ public class DecorShapeFragment extends Fragment {
 
     private void init(View view) {
         rcvDecor = view.findViewById(R.id.rcvDecor);
-
-        lstDecor = new ArrayList<>();
     }
 
-    public ArrayList<DecorModel> getDecor() {
-        if (lstDecor != null) return lstDecor;
-        return new ArrayList<>();
-    }
-
-    public DecorModel replaceDecor(){
-        if (decor != null) return decor;
-        return null;
+    public void getDecor(ICallBackItem callBack) {
+        this.callBack = callBack;
     }
 }

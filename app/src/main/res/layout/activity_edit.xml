@@ -526,6 +526,7 @@
                         android:id="@+id/ivColorDecor"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:src="@drawable/ic_color_decor"
                         android:layout_centerInParent="true"
                         android:scaleType="centerCrop" />
 

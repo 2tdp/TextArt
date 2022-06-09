@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.model.FontModel;
+import com.datnt.textart.model.TemplateModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -109,5 +110,37 @@ public class DataLocalManager {
         }
 
         return color;
+    }
+
+    public static void setTemp(TemplateModel temp, String key) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = null;
+        if (temp != null) jsonObject = gson.toJsonTree(temp).getAsJsonObject();
+
+        String json;
+        if (jsonObject != null) json = jsonObject.toString();
+        else json = "";
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static TemplateModel getTemp(String key) {
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        TemplateModel temp = null;
+
+        Gson gson = new Gson();
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(strJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (jsonObject != null) {
+            temp = gson.fromJson(jsonObject.toString(), TemplateModel.class);
+        }
+
+        return temp;
     }
 }

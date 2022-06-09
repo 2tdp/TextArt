@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.EmojiAdapter;
+import com.datnt.textart.callback.ICallBackItem;
 import com.datnt.textart.data.DataEmoji;
 import com.datnt.textart.model.EmojiModel;
 import com.datnt.textart.utils.Utils;
@@ -24,8 +25,7 @@ public class EmojiBearFragment extends Fragment {
     private String nameEmoji;
     private RecyclerView rcvEmoji;
 
-    private EmojiModel emoji;
-    private ArrayList<EmojiModel> lstEmoji;
+    private ICallBackItem callBack;
 
     public static EmojiBearFragment newInstance(String nameEmoji) {
         EmojiBearFragment fragment = new EmojiBearFragment();
@@ -46,8 +46,7 @@ public class EmojiBearFragment extends Fragment {
 
     private void setUpData(String nameEmoji) {
         EmojiAdapter emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
-            lstEmoji.add((EmojiModel) o);
-            emoji = (EmojiModel) o;
+            callBack.callBackItem(o, pos);
             Utils.showToast(requireContext(), getString(R.string.success));
         });
 
@@ -67,17 +66,9 @@ public class EmojiBearFragment extends Fragment {
 
     private void init(View view) {
         rcvEmoji = view.findViewById(R.id.rcvEmoji);
-
-        lstEmoji = new ArrayList<>();
     }
 
-    public ArrayList<EmojiModel> getEmoji() {
-        if (lstEmoji != null) return lstEmoji;
-        return new ArrayList<>();
-    }
-
-    public EmojiModel replaceEmoji(){
-        if (emoji != null) return emoji;
-        return null;
+    public void getEmoji(ICallBackItem callBack){
+        this.callBack = callBack;
     }
 }

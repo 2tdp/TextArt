@@ -40,6 +40,8 @@ public abstract class Sticker {
     private final Matrix matrix = new Matrix();
     private boolean isFlippedHorizontally;
     private boolean isFlippedVertically;
+    private boolean isLook = true;
+    private boolean isLock;
 
     public boolean isFlippedHorizontally() {
         return isFlippedHorizontally;
@@ -84,6 +86,24 @@ public abstract class Sticker {
 
     @NonNull
     public abstract Sticker setAlpha(@IntRange(from = 0, to = 255) int alpha);
+
+    public Sticker setLock(boolean isLock) {
+        this.isLock = isLock;
+        return this;
+    }
+
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public Sticker setLook(boolean isLook) {
+        this.isLook = isLook;
+        return this;
+    }
+
+    public boolean isLook() {
+        return isLook;
+    }
 
     public float[] getBoundPoints() {
         float[] points = new float[8];
