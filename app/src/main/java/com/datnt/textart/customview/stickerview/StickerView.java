@@ -1,5 +1,6 @@
 package com.datnt.textart.customview.stickerview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -207,7 +208,7 @@ public class StickerView extends FrameLayout {
                 if (sticker.isLook()) sticker.draw(canvas);
         }
 
-        if (handlingSticker != null && !handlingSticker.isLock() && (showBorder || showIcons)) {
+        if (handlingSticker != null && !handlingSticker.isLock() && handlingSticker.isLook() && (showBorder || showIcons)) {
 
             getStickerPoints(handlingSticker, bitmapPoints);
 
@@ -267,24 +268,23 @@ public class StickerView extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (handlingSticker != null)
-            if (handlingSticker.isLock()) return super.onInterceptTouchEvent(ev);
+            if (!handlingSticker.isLock()) return super.onInterceptTouchEvent(ev);
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             downX = ev.getX();
             downY = ev.getY();
-
-            return findCurrentIconTouched() != null || findHandlingSticker() != null;
+            handlingSticker = findHandlingSticker();
+            return findCurrentIconTouched() != null || handlingSticker != null;
         }
 
         return super.onInterceptTouchEvent(ev);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (handlingSticker != null)
-            if (handlingSticker.isLock()) {
-                return super.onTouchEvent(event);
-            }
+            if (handlingSticker.isLock()) return super.onTouchEvent(event);
 
         int action = MotionEventCompat.getActionMasked(event);
 

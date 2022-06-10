@@ -20,6 +20,7 @@ import com.datnt.textart.utils.Utils;
 
 public class TemplateActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +34,7 @@ public class TemplateActivity extends AppCompatActivity {
         ImageView ivBack = findViewById(R.id.ivBack);
         ivBack.setOnClickListener(v -> onBackPressed());
 
-        TemplateAdapter templateAdapter = new TemplateAdapter(this, (o, pos) -> {
+        TemplateAdapter templateAdapter = new TemplateAdapter(this, false, (o, pos) -> {
             TemplateModel template = (TemplateModel) o;
             DataLocalManager.setTemp(template, "temp");
             Utils.setIntent(this, EditActivity.class.getName());

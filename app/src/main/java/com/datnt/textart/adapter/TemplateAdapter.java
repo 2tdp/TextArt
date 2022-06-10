@@ -23,9 +23,11 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.Templa
     private Context context;
     private ArrayList<TemplateModel> lstTemp;
     private ICallBackItem callBack;
+    private boolean isText;
 
-    public TemplateAdapter(Context context, ICallBackItem callBack) {
+    public TemplateAdapter(Context context, boolean isText, ICallBackItem callBack) {
         this.context = context;
+        this.isText = isText;
         this.callBack = callBack;
         lstTemp = new ArrayList<>();
     }
@@ -65,9 +67,16 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.Templa
             TemplateModel template = lstTemp.get(position);
             if (template == null) return;
 
-            Glide.with(context)
-                    .load(Uri.parse("file:///android_asset/template/template/" + template.getName()))
-                    .into(ivTemp);
+            if (!isText)
+                Glide.with(context)
+                        .load(Uri.parse("file:///android_asset/template/template/" + template.getName()))
+                        .into(ivTemp);
+            else {
+                itemView.setBackgroundResource(R.drawable.border_item_layer_unselected);
+                Glide.with(context)
+                        .load(Uri.parse("file:///android_asset/template/template_text/" + template.getText()))
+                        .into(ivTemp);
+            }
 
             itemView.setOnClickListener(v -> callBack.callBackItem(template, position));
         }

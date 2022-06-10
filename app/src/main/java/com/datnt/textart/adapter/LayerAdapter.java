@@ -90,8 +90,9 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             if (layer == null) return;
 
             if (layer.isSelected())
-                ivLayer.setBorderColor(context.getResources().getColor(R.color.pink));
-            else ivLayer.setBorderColor(context.getResources().getColor(R.color.white));
+                itemView.setBackgroundResource(R.drawable.border_item_layer_selected);
+            else itemView.setBackgroundResource(R.drawable.border_item_layer_unselected);
+
 
             if (layer.getSticker().isLock())
                 ivLock.setVisibility(View.VISIBLE);

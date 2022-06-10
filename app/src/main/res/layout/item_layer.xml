@@ -2,22 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/_55sdp"
-    android:layout_height="@dimen/_55sdp"
-    android:layout_marginEnd="@dimen/_5sdp"
-    android:background="@color/trans">
+    android:layout_height="@dimen/_50sdp"
+    android:layout_marginEnd="@dimen/_5sdp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/ivLayer"
         android:layout_width="@dimen/_55sdp"
-        android:layout_height="@dimen/_55sdp"
-        android:scaleType="centerCrop"
-        app:riv_border_width="2dp"
-        app:riv_corner_radius="@dimen/_15sdp" />
+        android:layout_height="@dimen/_50sdp"
+        android:scaleType="centerCrop"/>
 
     <ImageView
         android:id="@+id/ivLock"
-        android:layout_width="@dimen/_20ssp"
-        android:layout_height="@dimen/_20ssp"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_2sdp"
         android:layout_marginEnd="@dimen/_2sdp"
         android:layout_toStartOf="@+id/ivLook"
@@ -26,8 +23,8 @@
 
     <ImageView
         android:id="@+id/ivLook"
-        android:layout_width="@dimen/_20ssp"
-        android:layout_height="@dimen/_20ssp"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/_2sdp"
