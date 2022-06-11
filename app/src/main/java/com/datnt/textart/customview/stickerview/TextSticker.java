@@ -30,6 +30,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.datnt.textart.R;
 import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.data.DataColor;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.utils.UtilsAdjust;
 
@@ -62,6 +63,7 @@ public class TextSticker extends Sticker {
     private StaticLayout staticLayout;
     private Layout.Alignment alignment;
     private String text;
+    private float radiusBlur = 0f, dx = 0f, dy = 0f;
 
     /**
      * Upper bounds for text size.
@@ -256,6 +258,28 @@ public class TextSticker extends Sticker {
                 return new int[]{0, (int) h, (int) w, 0};
         }
         return new int[]{};
+    }
+
+    public TextSticker setShadow(float radiusBlur, float dx, float dy, int color) {
+        this.radiusBlur = radiusBlur;
+        this.dx = dx;
+        this.dy = dy;
+        if (color != 0)
+            textPaint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
+        else textPaint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
+        return this;
+    }
+
+    public float getRadiusBlur() {
+        return radiusBlur;
+    }
+
+    public float getDx() {
+        return dx;
+    }
+
+    public float getDy() {
+        return dy;
     }
 
     @NonNull

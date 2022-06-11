@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
+import androidx.core.graphics.PathParser;
 
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.sharepref.DataLocalManager;

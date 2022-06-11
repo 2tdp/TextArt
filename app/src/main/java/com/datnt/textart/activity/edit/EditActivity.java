@@ -155,8 +155,8 @@ public class EditActivity extends AppCompatActivity {
     private DrawableSticker drawableSticker;
     private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground,
             replaceOverlay, replaceDecor, islLayer, isFirstLayer, isTemplate;
-    private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0;
-    private float opacityBackground = 1;
+    private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0, colorShadow = 0;
+    private float opacityBackground = 1, radiusBlur = 5f, dx = 0f, dy = 0f;
     private Animation animation;
 
     @Override
@@ -2359,6 +2359,89 @@ public class EditActivity extends AppCompatActivity {
     private void shadow() {
         setUpLayoutEditShadow(0);
         tvCancelEdittext.setOnClickListener(v -> setUpLayoutEditShadow(1));
+
+        sbXPos.setProgress((int) textSticker.getDx());
+        tvXPos.setText(String.valueOf((int) textSticker.getDx()));
+        sbYPos.setProgress((int) textSticker.getDy());
+        tvYPos.setText(String.valueOf((int) textSticker.getDy()));
+        if ((int) textSticker.getRadiusBlur() == 0)
+            tvBlur.setText(String.valueOf(0));
+        else
+            tvBlur.setText(String.valueOf((int) ((textSticker.getRadiusBlur() - 5) * 10f)));
+
+        float radius = textSticker.getRadiusBlur();
+        if (radius > 5) sbBlur.setProgress((int) ((textSticker.getRadiusBlur() - 5) * 10f));
+        else if (radius == 0f) sbBlur.setProgress(0);
+        else sbBlur.setProgress((int) ((5 - textSticker.getRadiusBlur()) * 10f));
+
+        sbXPos.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                dx = value;
+                tvXPos.setText(String.valueOf(value));
+                textSticker.setShadow(radiusBlur, dx, dy, colorShadow);
+                stickerView.invalidate();
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+
+        sbYPos.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                dy = value;
+                tvYPos.setText(String.valueOf(value));
+                textSticker.setShadow(radiusBlur, dx, dy, colorShadow);
+                stickerView.invalidate();
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+
+        sbBlur.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                if (value == -50) radiusBlur = 1f;
+                else if (value == 50) radiusBlur = 10f;
+                else if (value == 0) radiusBlur = 5f;
+                else radiusBlur = 5 + (value * 5 / 50f);
+                tvBlur.setText(String.valueOf(value));
+                textSticker.setShadow(radiusBlur, dx, dy, colorShadow);
+                stickerView.invalidate();
+            }
+
+            @Override
+            public void onUp(View v) {
+
+            }
+        });
+
+        ivColorBlur.setOnClickListener(v -> DataColor.pickColor(this, (color) -> {
+            colorShadow = color.getColorStart();
+            textSticker.setShadow(radiusBlur, dx, dy, colorShadow);
+            stickerView.invalidate();
+        }));
     }
 
     private void setUpLayoutEditShadow(int pos) {
@@ -4315,6 +4398,7 @@ public class EditActivity extends AppCompatActivity {
         sbXPos = findViewById(R.id.sbXPos);
         sbYPos = findViewById(R.id.sbYPos);
         sbBlur = findViewById(R.id.sbBlur);
+        ivColorBlur = findViewById(R.id.ivColorBlur);
         rlEditOpacityText = findViewById(R.id.rlEditOpacityText);
         sbOpacityText = findViewById(R.id.sbOpacityText);
         rlExpandEmoji = findViewById(R.id.rlExpandEmoji);
