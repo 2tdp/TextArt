@@ -108,6 +108,8 @@ public class TextSticker extends Sticker {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
+        if (staticLayout == null) return;
+
         Matrix matrix = getMatrix();
         canvas.save();
         canvas.concat(matrix);
@@ -119,6 +121,7 @@ public class TextSticker extends Sticker {
 
         canvas.save();
         canvas.concat(matrix);
+
         if (textRect.width() == getWidth()) {
             int dy = getHeight() / 2 - staticLayout.getHeight() / 2;
             // center vertical

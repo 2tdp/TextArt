@@ -1,20 +1,29 @@
 package com.datnt.textart.customview.stickerview;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.datnt.textart.utils.UtilsAdjust;
 
 /**
  * @author wupanjie
  */
 public class DrawableSticker extends Sticker {
 
+    private Path path;
+    private Paint paint;
     private Drawable drawable;
-    private int id;
+    private int id, color;
+    private float dx, dy, radiusBlur;
     private boolean isImage, isOverlay, isDecor, isTemplate;
     private Rect realBounds;
 
@@ -26,6 +35,8 @@ public class DrawableSticker extends Sticker {
         this.isDecor = isDecor;
         this.isTemplate = isTemplate;
         realBounds = new Rect(0, 0, getWidth(), getHeight());
+        path = new Path();
+        path.addRect(0, 0, realBounds.width(), realBounds.height(), Path.Direction.CW);
     }
 
     @NonNull
@@ -42,6 +53,8 @@ public class DrawableSticker extends Sticker {
     public void draw(@NonNull Canvas canvas) {
         canvas.save();
         canvas.concat(getMatrix());
+        if (paint != null)
+            canvas.drawPath(path, paint);
         drawable.setBounds(realBounds);
         drawable.draw(canvas);
         canvas.restore();
@@ -52,6 +65,30 @@ public class DrawableSticker extends Sticker {
     public DrawableSticker setAlpha(@IntRange(from = 0, to = 255) int alpha) {
         drawable.setAlpha(alpha);
         return this;
+    }
+
+    public void setShadow(float radiusBlur, float dx, float dy, int color) {
+        this.color = color;
+        this.dx = dx;
+        this.dy = dy;
+        this.radiusBlur = radiusBlur;
+
+        paint = new Paint();
+        if (color == 0) paint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
+        else
+            paint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
+    }
+
+    public float getRadiusBlur() {
+        return radiusBlur;
+    }
+
+    public float getDx() {
+        return dx;
+    }
+
+    public float getDy() {
+        return dy;
     }
 
     public int getAlpha() {
