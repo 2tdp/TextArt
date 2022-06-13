@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class StickerModel implements Serializable {
 
     private TextModel textModel;
+    private DecorModel decorModel;
     private Bitmap bitmapRoot;
     private Bitmap bitmap;
     private TextSticker textSticker;
@@ -18,8 +19,9 @@ public class StickerModel implements Serializable {
     private int positionFilter;
     private int positionBlend;
 
-    public StickerModel(TextModel textModel, Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color, int positionFilter, int positionBlend) {
+    public StickerModel(TextModel textModel, DecorModel decorModel, Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color, int positionFilter, int positionBlend) {
         this.textModel = textModel;
+        this.decorModel = decorModel;
         this.bitmapRoot = bitmapRoot;
         this.bitmap = bitmap;
         this.textSticker = textSticker;
@@ -35,6 +37,14 @@ public class StickerModel implements Serializable {
 
     public void setTextModel(TextModel textModel) {
         this.textModel = textModel;
+    }
+
+    public DecorModel getDecorModel() {
+        return decorModel;
+    }
+
+    public void setDecorModel(DecorModel decorModel) {
+        this.decorModel = decorModel;
     }
 
     public Bitmap getBitmapRoot() {

@@ -11,8 +11,11 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.PathParser;
 
 import com.datnt.textart.utils.UtilsAdjust;
+
+import java.util.ArrayList;
 
 /**
  * @author wupanjie
@@ -22,8 +25,8 @@ public class DrawableSticker extends Sticker {
     private Path path;
     private Paint paint;
     private Drawable drawable;
-    private int id, color;
-    private float dx, dy, radiusBlur;
+    private int id, colorShadow = 0;
+    private float dx = 0f, dy = 0f, radiusBlur = 0f;
     private boolean isImage, isOverlay, isDecor, isTemplate;
     private Rect realBounds;
 
@@ -36,7 +39,7 @@ public class DrawableSticker extends Sticker {
         this.isTemplate = isTemplate;
         realBounds = new Rect(0, 0, getWidth(), getHeight());
         path = new Path();
-        path.addRect(0, 0, realBounds.width(), realBounds.height(), Path.Direction.CW);
+        paint = new Paint();
     }
 
     @NonNull
@@ -53,8 +56,8 @@ public class DrawableSticker extends Sticker {
     public void draw(@NonNull Canvas canvas) {
         canvas.save();
         canvas.concat(getMatrix());
-        if (paint != null)
-            canvas.drawPath(path, paint);
+        UtilsAdjust.drawIconWithPath(canvas, path, paint, realBounds.width());
+
         drawable.setBounds(realBounds);
         drawable.draw(canvas);
         canvas.restore();
@@ -63,20 +66,27 @@ public class DrawableSticker extends Sticker {
     @NonNull
     @Override
     public DrawableSticker setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-        drawable.setAlpha(alpha);
+        paint.setAlpha(alpha);
         return this;
     }
 
-    public void setShadow(float radiusBlur, float dx, float dy, int color) {
-        this.color = color;
+    public void setShadow(float radiusBlur, float dx, float dy, int color, String pathData, boolean isDecorOrTemp) {
+        this.colorShadow = color;
         this.dx = dx;
         this.dy = dy;
         this.radiusBlur = radiusBlur;
 
-        paint = new Paint();
+        if (!isDecorOrTemp)
+            path.addRect(0, 0, realBounds.width(), realBounds.height(), Path.Direction.CW);
+        else path.addPath(PathParser.createPathFromPathData(pathData));
+
         if (color == 0) paint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
         else
             paint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
+    }
+
+    public int getColorShadow() {
+        return colorShadow;
     }
 
     public float getRadiusBlur() {

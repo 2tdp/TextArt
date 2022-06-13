@@ -3,6 +3,8 @@ package com.datnt.textart.data;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +15,12 @@ import com.datnt.textart.callback.ICallbackColor;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.utils.Utils;
 import com.flask.colorpicker.ColorPickerView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class DataColor {
@@ -135,8 +142,8 @@ public class DataColor {
 
     public static GradientDrawable createGradient(GradientDrawable.Orientation direc, int start, int end) {
         GradientDrawable gradientDrawable = new GradientDrawable(direc, new int[]{start, end});
-        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-        gradientDrawable.setCornerRadius(34f);
+        gradientDrawable.setShape(GradientDrawable.OVAL);
+//        gradientDrawable.setCornerRadius(34f);
 
         return gradientDrawable;
     }

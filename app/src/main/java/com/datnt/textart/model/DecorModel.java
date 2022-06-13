@@ -1,8 +1,11 @@
 package com.datnt.textart.model;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class DecorModel implements Serializable {
+    private Bitmap bm;
     private String nameDecor;
     private String nameFolder;
     private boolean isSelected;
@@ -11,6 +14,21 @@ public class DecorModel implements Serializable {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;
         this.isSelected = isSelected;
+    }
+
+    public DecorModel(Bitmap bm, String nameDecor, String nameFolder, boolean isSelected) {
+        this.bm = bm;
+        this.nameDecor = nameDecor;
+        this.nameFolder = nameFolder;
+        this.isSelected = isSelected;
+    }
+
+    public Bitmap getBm() {
+        return bm;
+    }
+
+    public void setBm(Bitmap bm) {
+        this.bm = bm;
     }
 
     public String getNameDecor() {

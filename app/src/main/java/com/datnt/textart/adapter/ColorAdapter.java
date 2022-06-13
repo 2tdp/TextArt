@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -82,7 +83,7 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorHolder>
                 else
                     gradient = new GradientDrawable(Utils.setDirection(0), new int[]{color.getColorStart(), color.getColorEnd()});
                 gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-                if (resourceLayout == R.layout.item_color_edit) gradient.setCornerRadius(84f);
+                if (resourceLayout == R.layout.item_color_edit) gradient.setShape(GradientDrawable.OVAL);
                 else gradient.setCornerRadius(34f);
                 ivPick.setImageResource(0);
                 ivPick.setBackground(gradient);

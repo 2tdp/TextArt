@@ -55,7 +55,7 @@ public class TextSticker extends Sticker {
     private static final String mEllipsis = "\u2026";
 
     private final Context context;
-    private int id;
+    private int id, colorShadow = 0;
     private final Rect realBounds;
     private final Rect textRect;
     private final TextPaint textPaint;
@@ -267,10 +267,15 @@ public class TextSticker extends Sticker {
         this.radiusBlur = radiusBlur;
         this.dx = dx;
         this.dy = dy;
+        this.colorShadow = color;
         if (color != 0)
             textPaint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
         else textPaint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
         return this;
+    }
+
+    public int getColorShadow() {
+        return colorShadow;
     }
 
     public float getRadiusBlur() {

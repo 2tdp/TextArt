@@ -2,6 +2,11 @@ package com.datnt.textart.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +14,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.PathParser;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
+import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.model.DecorModel;
 import com.datnt.textart.model.EmojiModel;
+import com.datnt.textart.utils.Utils;
+import com.datnt.textart.utils.UtilsAdjust;
 
 import java.util.ArrayList;
 
@@ -66,9 +75,20 @@ public class DecorAdapter extends RecyclerView.Adapter<DecorAdapter.DecorHolder>
             DecorModel decor = lstDecor.get(position);
             if (decor == null) return;
 
-            Glide.with(context)
-                    .load(Uri.parse("file:///android_asset/decor/" + decor.getNameFolder() + "/" + decor.getNameDecor()))
-                    .into(ivDecor);
+            Path path = new Path();
+            Bitmap bitmap = Utils.loadBitmapFromView(ivDecor);
+            Canvas canvas = new Canvas(bitmap);
+            ArrayList<String> lstPath = DataDecor.getPathDataDecor(context, decor);
+            for (String str : lstPath) {
+                path.addPath(PathParser.createPathFromPathData(str));
+            }
+            UtilsAdjust.drawIconWithPath(canvas, path, new Paint(Color.BLACK), bitmap.getWidth());
+
+//            Glide.with(context)
+//                    .load(Uri.parse("file:///android_asset/decor/" + decor.getNameFolder() + "/" + decor.getNameDecor()))
+//                    .into(ivDecor);
+            ivDecor.setImageBitmap(bitmap);
+            decor.setBm(bitmap);
 
             itemView.setOnClickListener(v -> callBack.callBackItem(decor, position));
         }
