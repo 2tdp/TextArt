@@ -19,7 +19,7 @@ public class DataDecor {
         ArrayList<DecorModel> lstDecor = new ArrayList<>();
         try {
             String[] f = context.getAssets().list("decor/decor_" + name + "/");
-            for (String s : f) lstDecor.add(new DecorModel(s, "decor_" + name, false));
+            for (String s : f) lstDecor.add(new DecorModel(s, "decor_" + name, getPathDataDecor(context, s), false));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,10 +27,14 @@ public class DataDecor {
         return lstDecor;
     }
 
-    public static ArrayList<String> getPathDataDecor(Context context, DecorModel decor) {
-        String tContents = "";
+    public static ArrayList<String> getPathDataDecor(Context context, String nameDecor) {
+        String tContents = "", nameFolder = "";
+        if (nameDecor.contains("box")) nameFolder = "json_box/";
+        if (nameDecor.contains("draw")) nameFolder = "json_draw/";
+        if (nameDecor.contains("frame")) nameFolder = "json_frame/";
+        if (nameDecor.contains("shape")) nameFolder = "json_shape/";
         try {
-            InputStream stream = context.getAssets().open("decor_json/json_box/" + decor.getNameDecor().replace(".png", ".json"));
+            InputStream stream = context.getAssets().open("decor_json/" + nameFolder + nameDecor.replace(".png", ".json"));
             int size = stream.available();
             byte[] buffer = new byte[size];
             stream.read(buffer);

@@ -1,34 +1,20 @@
 package com.datnt.textart.model;
 
-import android.graphics.Bitmap;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class DecorModel implements Serializable {
-    private Bitmap bm;
     private String nameDecor;
     private String nameFolder;
+    private ArrayList<String> lstPathData;
     private boolean isSelected;
 
-    public DecorModel(String nameDecor, String nameFolder, boolean isSelected) {
+    public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData, boolean isSelected) {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;
+        this.lstPathData = lstPathData;
         this.isSelected = isSelected;
-    }
-
-    public DecorModel(Bitmap bm, String nameDecor, String nameFolder, boolean isSelected) {
-        this.bm = bm;
-        this.nameDecor = nameDecor;
-        this.nameFolder = nameFolder;
-        this.isSelected = isSelected;
-    }
-
-    public Bitmap getBm() {
-        return bm;
-    }
-
-    public void setBm(Bitmap bm) {
-        this.bm = bm;
     }
 
     public String getNameDecor() {
@@ -45,6 +31,14 @@ public class DecorModel implements Serializable {
 
     public void setNameFolder(String nameFolder) {
         this.nameFolder = nameFolder;
+    }
+
+    public ArrayList<String> getLstPathData() {
+        return lstPathData;
+    }
+
+    public void setLstPathData(ArrayList<String> lstPathData) {
+        this.lstPathData = lstPathData;
     }
 
     public boolean isSelected() {

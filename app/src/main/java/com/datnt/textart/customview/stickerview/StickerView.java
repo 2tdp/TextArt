@@ -147,11 +147,11 @@ public class StickerView extends FrameLayout {
     }
 
     public void configDefaultIcons() {
-        BitmapStickerIcon rotate = new BitmapStickerIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_rotate), BitmapStickerIcon.LEFT_TOP);
+        BitmapStickerIcon rotate = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_rotate), BitmapStickerIcon.LEFT_TOP);
         rotate.setIconEvent(new RotateIconEvent());
-        BitmapStickerIcon zoom = new BitmapStickerIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_resize), BitmapStickerIcon.RIGHT_BOTTOM);
+        BitmapStickerIcon zoom = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_resize), BitmapStickerIcon.RIGHT_BOTTOM);
         zoom.setIconEvent(new ZoomIconEvent());
-        BitmapStickerIcon flip = new BitmapStickerIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_flip), BitmapStickerIcon.RIGHT_TOP);
+        BitmapStickerIcon flip = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_flip), BitmapStickerIcon.RIGHT_TOP);
         flip.setIconEvent(new FlipHorizontallyEvent());
 
         icons.clear();

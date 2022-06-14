@@ -142,8 +142,8 @@ public class DataColor {
 
     public static GradientDrawable createGradient(GradientDrawable.Orientation direc, int start, int end) {
         GradientDrawable gradientDrawable = new GradientDrawable(direc, new int[]{start, end});
-        gradientDrawable.setShape(GradientDrawable.OVAL);
-//        gradientDrawable.setCornerRadius(34f);
+        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        gradientDrawable.setCornerRadius(34f);
 
         return gradientDrawable;
     }

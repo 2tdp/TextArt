@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
+import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.model.DecorModel;
 import com.datnt.textart.model.EmojiModel;
@@ -76,19 +78,18 @@ public class DecorAdapter extends RecyclerView.Adapter<DecorAdapter.DecorHolder>
             if (decor == null) return;
 
             Path path = new Path();
+            RectF rectF = new RectF();
             Bitmap bitmap = Utils.loadBitmapFromView(ivDecor);
             Canvas canvas = new Canvas(bitmap);
-            ArrayList<String> lstPath = DataDecor.getPathDataDecor(context, decor);
-            for (String str : lstPath) {
+            for (String str : decor.getLstPathData()) {
                 path.addPath(PathParser.createPathFromPathData(str));
             }
-            UtilsAdjust.drawIconWithPath(canvas, path, new Paint(Color.BLACK), bitmap.getWidth());
+            path.computeBounds(rectF, true);
+            int x = (int) (bitmap.getWidth() / 2 - rectF.width() / 2);
+            int y = (int) (bitmap.getHeight() / 2 - rectF.height() / 2);
+            UtilsAdjust.drawIconWithPath(canvas, path, new Paint(Color.GRAY), bitmap.getWidth() / 2f, x, y);
 
-//            Glide.with(context)
-//                    .load(Uri.parse("file:///android_asset/decor/" + decor.getNameFolder() + "/" + decor.getNameDecor()))
-//                    .into(ivDecor);
             ivDecor.setImageBitmap(bitmap);
-            decor.setBm(bitmap);
 
             itemView.setOnClickListener(v -> callBack.callBackItem(decor, position));
         }

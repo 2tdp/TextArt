@@ -1,5 +1,6 @@
 package com.datnt.textart.customview.stickerview;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 /**
  * @author wupanjie
@@ -37,8 +39,8 @@ public class BitmapStickerIcon extends DrawableSticker implements StickerIconEve
 
     private StickerIconEvent iconEvent;
 
-    public BitmapStickerIcon(Drawable drawable, @Gravity int gravity) {
-        super(drawable, gravity, false, false, false, false);
+    public BitmapStickerIcon(Context context, Drawable drawable, @Gravity int gravity) {
+        super(context, drawable, new ArrayList<>(), gravity, false, false, false, false);
         this.position = gravity;
     }
 

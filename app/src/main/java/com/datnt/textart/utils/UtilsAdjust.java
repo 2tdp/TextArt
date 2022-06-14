@@ -24,12 +24,12 @@ public class UtilsAdjust {
     private static final float lumG = 0.6094f;  // or  0.7154
     private static final float lumB = 0.0820f; // or  0.0721
 
-    public static void drawIconWithPath(Canvas canvas, Path path, Paint paint, float size) {
+    public static void drawIconWithPath(Canvas canvas, Path path, Paint paint, float size, int x, int y) {
         RectF rectF = new RectF();
         path.computeBounds(rectF, true);
         float scale = size / rectF.width();
         canvas.save();
-//        canvas.translate(x, y);
+        canvas.translate(x, y);
         canvas.scale(scale, scale);
         canvas.drawPath(path, paint);
         canvas.restore();
