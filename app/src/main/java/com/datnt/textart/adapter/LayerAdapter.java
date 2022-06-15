@@ -7,7 +7,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.PathParser;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
+import com.datnt.textart.customview.CustomViewPathData;
 import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.customview.stickerview.Sticker;
 import com.datnt.textart.customview.stickerview.TextSticker;
@@ -39,10 +43,18 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
     private final Paint paintText;
     private final Rect rectText;
 
+    private Path path;
+    private RectF rectF;
+    private Canvas canvas;
+
     public LayerAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
         this.callBack = callBack;
         lstLayer = new ArrayList<>();
+
+        path = new Path();
+        rectF = new RectF();
+        canvas = new Canvas();
 
         paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintText.setStrokeJoin(Paint.Join.ROUND);
@@ -75,12 +87,14 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
     class LayerHolder extends RecyclerView.ViewHolder {
 
         private RoundedImageView ivLayer;
+        private CustomViewPathData ivPath;
         private ImageView ivLook, ivLock;
 
         public LayerHolder(@NonNull View itemView) {
             super(itemView);
 
             ivLayer = itemView.findViewById(R.id.ivLayer);
+            ivPath = itemView.findViewById(R.id.ivPath);
             ivLock = itemView.findViewById(R.id.ivLock);
             ivLook = itemView.findViewById(R.id.ivLook);
         }
@@ -104,7 +118,19 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
 
             if (layer.getSticker() instanceof DrawableSticker) {
                 DrawableSticker drawableSticker = (DrawableSticker) layer.getSticker();
-                ivLayer.setImageBitmap(((BitmapDrawable) drawableSticker.getDrawable()).getBitmap());
+                if (drawableSticker.isDecor()) {
+                    ivLayer.setVisibility(View.GONE);
+                    ivPath.setVisibility(View.VISIBLE);
+                    ivPath.setDataPath(drawableSticker.getListPathData(), true, false);
+                } else if (drawableSticker.isTemplate()) {
+                    ivLayer.setVisibility(View.GONE);
+                    ivPath.setVisibility(View.VISIBLE);
+                    ivPath.setDataPath(drawableSticker.getListPathData(), false, true);
+                } else {
+                    ivLayer.setVisibility(View.VISIBLE);
+                    ivPath.setVisibility(View.GONE);
+                    ivLayer.setImageBitmap(((BitmapDrawable) drawableSticker.getDrawable()).getBitmap());
+                }
             } else if (layer.getSticker() instanceof TextSticker) {
 
                 TextSticker textSticker = (TextSticker) layer.getSticker();

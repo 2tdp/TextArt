@@ -34,7 +34,7 @@ public class TemplateActivity extends AppCompatActivity {
         ImageView ivBack = findViewById(R.id.ivBack);
         ivBack.setOnClickListener(v -> onBackPressed());
 
-        TemplateAdapter templateAdapter = new TemplateAdapter(this, false, (o, pos) -> {
+        TemplateAdapter templateAdapter = new TemplateAdapter(this, R.layout.item_template, (o, pos) -> {
             TemplateModel template = (TemplateModel) o;
             DataLocalManager.setTemp(template, "temp");
             Utils.setIntent(this, EditActivity.class.getName());

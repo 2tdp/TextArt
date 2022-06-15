@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
+import com.datnt.textart.customview.CustomViewPathData;
 import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.model.DecorModel;
@@ -49,12 +50,13 @@ public class DecorAdapter extends RecyclerView.Adapter<DecorAdapter.DecorHolder>
     @NonNull
     @Override
     public DecorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new DecorHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_emoji, parent, false));
+        return new DecorHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_draw_path, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull DecorHolder holder, int position) {
         holder.onBind(position);
+
     }
 
     @Override
@@ -65,31 +67,19 @@ public class DecorAdapter extends RecyclerView.Adapter<DecorAdapter.DecorHolder>
 
     class DecorHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivDecor;
+        private CustomViewPathData ivPath;
 
         public DecorHolder(@NonNull View itemView) {
             super(itemView);
 
-            ivDecor = itemView.findViewById(R.id.ivEmoji);
+            ivPath = itemView.findViewById(R.id.ivPath);
         }
 
         public void onBind(int position) {
             DecorModel decor = lstDecor.get(position);
             if (decor == null) return;
 
-            Path path = new Path();
-            RectF rectF = new RectF();
-            Bitmap bitmap = Utils.loadBitmapFromView(ivDecor);
-            Canvas canvas = new Canvas(bitmap);
-            for (String str : decor.getLstPathData()) {
-                path.addPath(PathParser.createPathFromPathData(str));
-            }
-            path.computeBounds(rectF, true);
-            int x = (int) (bitmap.getWidth() / 2 - rectF.width() / 2);
-            int y = (int) (bitmap.getHeight() / 2 - rectF.height() / 2);
-            UtilsAdjust.drawIconWithPath(canvas, path, new Paint(Color.GRAY), bitmap.getWidth() / 2f, x, y);
-
-            ivDecor.setImageBitmap(bitmap);
+            ivPath.setDataPath(decor.getLstPathData(), true, false);
 
             itemView.setOnClickListener(v -> callBack.callBackItem(decor, position));
         }

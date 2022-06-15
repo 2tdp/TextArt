@@ -130,15 +130,17 @@
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_bucket_pic.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_color.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_color_edit.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_draw_path.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_emoji.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_emoji_title.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_font.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_image_filter.xml" value="0.35989583333333336" />
-        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_layer.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_layer.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_picture.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_project.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_quotes.xml" value="0.35885416666666664" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_template.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_template_text.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/item_title_emoji.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/layout/splash_activity.xml" value="0.33" />

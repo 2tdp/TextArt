@@ -35,6 +35,7 @@ public class DrawableSticker extends Sticker {
     private Path path;
     private Paint paint, paintShadow;
     private Drawable drawable;
+    private ArrayList<String> lstPathData;
     private int id, colorShadow = 0;
     private float dx = 0f, dy = 0f, radiusBlur = 0f;
     private boolean isImage, isOverlay, isDecor, isTemplate, isShadow;
@@ -46,6 +47,7 @@ public class DrawableSticker extends Sticker {
         if (drawable == null) {
             this.drawable = Utils.getDrawableTransparent(context);
         }
+        this.lstPathData = lstPathData;
         this.id = id;
         this.isImage = isImage;
         this.isOverlay = isOverlay;
@@ -53,11 +55,12 @@ public class DrawableSticker extends Sticker {
         this.isTemplate = isTemplate;
 
         path = new Path();
-
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.GRAY);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
+
+        if (isDecor) paint.setColor(Color.GRAY);
+        else if (isTemplate) paint.setColor(Color.WHITE);
 
         paintShadow = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintShadow.setStrokeJoin(Paint.Join.ROUND);
@@ -69,7 +72,6 @@ public class DrawableSticker extends Sticker {
             }
         }
         realBounds = new RectF(0, 0, getWidth(), getHeight());
-
     }
 
     @NonNull
@@ -105,10 +107,15 @@ public class DrawableSticker extends Sticker {
     }
 
     public void setPathData(ArrayList<String> lstPath) {
+        this.lstPathData = lstPath;
         path.reset();
         for (String pathData : lstPath) {
             path.addPath(PathParser.createPathFromPathData(pathData));
         }
+    }
+
+    public ArrayList<String> getListPathData() {
+        return lstPathData;
     }
 
     public void setShadow(float radiusBlur, float dx, float dy, int color, boolean isDecorOrTemp) {

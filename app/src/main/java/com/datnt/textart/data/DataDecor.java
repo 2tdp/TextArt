@@ -27,6 +27,18 @@ public class DataDecor {
         return lstDecor;
     }
 
+    public static ArrayList<DecorModel> getDataDecor(Context context, String name) {
+        ArrayList<DecorModel> lstDecor = new ArrayList<>();
+        try {
+            String[] f = context.getAssets().list("decor_json/json_" + name + "/");
+            for (String s : f) lstDecor.add(new DecorModel(s, "json" + name, getPathDataDecor(context, s), false));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lstDecor;
+    }
+
     public static ArrayList<String> getPathDataDecor(Context context, String nameDecor) {
         String tContents = "", nameFolder = "";
         if (nameDecor.contains("box")) nameFolder = "json_box/";

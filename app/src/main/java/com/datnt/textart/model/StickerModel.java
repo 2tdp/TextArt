@@ -11,6 +11,7 @@ public class StickerModel implements Serializable {
 
     private TextModel textModel;
     private DecorModel decorModel;
+    private TemplateModel templateModel;
     private Bitmap bitmapRoot;
     private Bitmap bitmap;
     private TextSticker textSticker;
@@ -19,9 +20,13 @@ public class StickerModel implements Serializable {
     private int positionFilter;
     private int positionBlend;
 
-    public StickerModel(TextModel textModel, DecorModel decorModel, Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color, int positionFilter, int positionBlend) {
+    public StickerModel(TextModel textModel, DecorModel decorModel, TemplateModel templateModel,
+                        Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker,
+                        DrawableSticker drawableSticker, ColorModel color,
+                        int positionFilter, int positionBlend) {
         this.textModel = textModel;
         this.decorModel = decorModel;
+        this.templateModel = templateModel;
         this.bitmapRoot = bitmapRoot;
         this.bitmap = bitmap;
         this.textSticker = textSticker;
@@ -45,6 +50,14 @@ public class StickerModel implements Serializable {
 
     public void setDecorModel(DecorModel decorModel) {
         this.decorModel = decorModel;
+    }
+
+    public TemplateModel getTemplateModel() {
+        return templateModel;
+    }
+
+    public void setTemplateModel(TemplateModel templateModel) {
+        this.templateModel = templateModel;
     }
 
     public Bitmap getBitmapRoot() {

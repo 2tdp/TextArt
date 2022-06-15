@@ -51,7 +51,7 @@ public class DecorShapeFragment extends Fragment {
             Utils.showToast(requireContext(), getString(R.string.success));
         });
 
-        decorAdapter.setData(DataDecor.getTitleDecor(requireContext(), nameDecor));
+        decorAdapter.setData(DataDecor.getDataDecor(requireContext(), nameDecor));
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvDecor.setLayoutManager(manager);
         rcvDecor.setAdapter(decorAdapter);
