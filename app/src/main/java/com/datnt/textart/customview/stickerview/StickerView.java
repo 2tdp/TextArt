@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.SystemClock;
@@ -21,11 +22,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.PathParser;
 import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.textart.R;
+import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.LayerModel;
+import com.datnt.textart.utils.UtilsAdjust;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -45,6 +49,8 @@ public class StickerView extends FrameLayout {
 
     private final boolean showIcons;
     private final boolean showBorder;
+    private boolean isCrop;
+    private int positionCrop;
     private final boolean bringToFrontCurrentSticker;
 
     @IntDef({
@@ -79,6 +85,7 @@ public class StickerView extends FrameLayout {
     private final ArrayList<BitmapStickerIcon> icons = new ArrayList<>(4);
 
     private final Paint borderPaint = new Paint();
+    private final Path pathCrop = new Path();
     private final RectF stickerRect = new RectF();
 
     private final Matrix sizeMatrix = new Matrix();
@@ -86,8 +93,8 @@ public class StickerView extends FrameLayout {
     private final Matrix moveMatrix = new Matrix();
 
     // region storing variables
-    private final float[] bitmapPoints = new float[8];
-    private final float[] bounds = new float[8];
+    private final float[] bitmapPoints = new float[14];
+    private final float[] bounds = new float[14];
     private final float[] point = new float[2];
     private final PointF currentCenterPoint = new PointF();
     private final float[] tmp = new float[2];
@@ -221,11 +228,25 @@ public class StickerView extends FrameLayout {
             float x4 = bitmapPoints[6];
             float y4 = bitmapPoints[7];
 
+            float x5 = bitmapPoints[8];
+            float y5 = bitmapPoints[9];
+            float x6 = bitmapPoints[10];
+            float y6 = bitmapPoints[11];
+            float x7 = bitmapPoints[12];
+            float y7 = bitmapPoints[13];
+
             if (showBorder) {
-                canvas.drawLine(x1, y1, x2, y2, borderPaint);
-                canvas.drawLine(x1, y1, x3, y3, borderPaint);
-                canvas.drawLine(x2, y2, x4, y4, borderPaint);
-                canvas.drawLine(x4, y4, x3, y3, borderPaint);
+                if (!isCrop) {
+                    canvas.drawLine(x1, y1, x2, y2, borderPaint);
+                    canvas.drawLine(x1, y1, x3, y3, borderPaint);
+                    canvas.drawLine(x2, y2, x4, y4, borderPaint);
+                    canvas.drawLine(x4, y4, x3, y3, borderPaint);
+                } else {
+                    RectF rectF = new RectF();
+                    pathCrop.computeBounds(rectF, true);
+                    int y = (int) (x2 * 0.5f * rectF.height() / rectF.width());
+                    UtilsAdjust.drawIconWithPath(canvas, pathCrop, borderPaint, x2, (int) x2 / 4, (int) (y2 - y) / 2);
+                }
             }
 
             //draw icons
@@ -235,11 +256,11 @@ public class StickerView extends FrameLayout {
                     BitmapStickerIcon icon = icons.get(i);
                     switch (icon.getPosition()) {
                         case BitmapStickerIcon.LEFT_TOP:
-                            configIconMatrix(icon, x1, y1, rotation);
+                            configIconMatrix(icon, x5, y5 + icon.getHeight(), rotation);
                             break;
 
                         case BitmapStickerIcon.RIGHT_TOP:
-                            configIconMatrix(icon, x2, y2, rotation);
+                            configIconMatrix(icon, x6, y6 + icon.getHeight(), rotation);
                             break;
 
                         case BitmapStickerIcon.LEFT_BOTTOM:
@@ -247,7 +268,7 @@ public class StickerView extends FrameLayout {
                             break;
 
                         case BitmapStickerIcon.RIGHT_BOTTOM:
-                            configIconMatrix(icon, x4, y4, rotation);
+                            configIconMatrix(icon, x7, y7 + icon.getHeight(), rotation);
                             break;
                     }
                     icon.draw(canvas, borderPaint);
@@ -263,6 +284,13 @@ public class StickerView extends FrameLayout {
 
         icon.getMatrix().postRotate(rotation, icon.getWidth() / 2f, icon.getHeight() / 2f);
         icon.getMatrix().postTranslate(x - icon.getWidth() / 2f, y - icon.getHeight() / 2f);
+    }
+
+    public void setCropImage(int positionCrop, boolean isCrop) {
+        this.isCrop = isCrop;
+
+        pathCrop.addPath(PathParser.createPathFromPathData(DataPic.getPathDataCrop(positionCrop)));
+        invalidate();
     }
 
     @Override

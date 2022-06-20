@@ -2028,6 +2028,25 @@
 
         </LinearLayout>
 
+        <!--        cropImage-->
+        <RelativeLayout
+            android:id="@+id/rlEditCrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlEditImage"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvEditCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/_5sdp"
+                android:scrollbars="none" />
+
+        </RelativeLayout>
+
         <!--        filter-->
         <RelativeLayout
             android:id="@+id/rlEditFilter"

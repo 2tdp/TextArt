@@ -45,6 +45,7 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.project.CreateProjectActivity;
 import com.datnt.textart.activity.template.TemplateActivity;
 import com.datnt.textart.adapter.ColorAdapter;
+import com.datnt.textart.adapter.CropImageAdapter;
 import com.datnt.textart.adapter.FilterBlendImageAdapter;
 import com.datnt.textart.adapter.LayerAdapter;
 import com.datnt.textart.adapter.OverlayAdapter;
@@ -68,6 +69,7 @@ import com.datnt.textart.data.DataColor;
 import com.datnt.textart.data.DataDecor;
 import com.datnt.textart.data.DataEmoji;
 import com.datnt.textart.data.DataOverlay;
+import com.datnt.textart.data.DataPic;
 import com.datnt.textart.data.DataTemplate;
 import com.datnt.textart.data.FilterBlendImage;
 import com.datnt.textart.fragment.decor.DecorBoxFragment;
@@ -136,15 +138,15 @@ public class EditActivity extends AppCompatActivity {
             rlExpandDecor, rlPickDecor, rlEditDecor, rlDelDecor, rlReplaceDecor, rlExpandEditDecor,
             rlDuplicateDecor, rlEditColorDecor, rlColorDecor, rlEditOpacityDecor, rlOpacityDecor, rlShadowDecor,
             rlFlipYDecor, rlFlipXDecor, rlExpandEditTemp, rlEditTemp, rlEditOpacityTemp, rlEditColorTemp,
-            rlDelTemp, rlReplaceTemp, rlDuplicateTemp, rlColorTemp, rlBackgroundTemp,
-            rlShadowTemp, rlOpacityTemp, rlFlipXTemp, rlFlipYTemp, rlExpandTemp, rlPickTextTemp;
+            rlDelTemp, rlReplaceTemp, rlDuplicateTemp, rlColorTemp, rlBackgroundTemp, rlShadowTemp,
+            rlOpacityTemp, rlFlipXTemp, rlFlipYTemp, rlExpandTemp, rlPickTextTemp, rlEditCrop;
     private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage,
             llEditOverlay, llEditShadowDecor, llEditShadowTemp;
     private HorizontalScrollView vSize, vOperation, vEditText, vEditImage, vEditBackground, vEditDecor, vEditTemp;
     private CustomView vMain;
     private StickerView stickerView;
     private RecyclerView rcvEditColor, rcvTitleEmoji, rcvEditFilter, rcvEditBlend, rcvEditFilterBackground,
-            rcvOverlay, rcvTitleDecor, rcvEditColorDecor, rcvLayer, rcvEditColorTemp, rcvTextTemp;
+            rcvOverlay, rcvTitleDecor, rcvEditColorDecor, rcvLayer, rcvEditColorTemp, rcvTextTemp, rcvEditCrop;
     private ViewPager2 vpEmoji, vpDecor;
 
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
@@ -430,6 +432,7 @@ public class EditActivity extends AppCompatActivity {
             isReplaceImage = true;
         });
         rlDuplicateImage.setOnClickListener(v -> duplicateImage());
+        rlCropImage.setOnClickListener(v -> cropImage());
         rlFilterImage.setOnClickListener(v -> {
             filterImage();
             isFilter = true;
@@ -2203,7 +2206,7 @@ public class EditActivity extends AppCompatActivity {
                 if (llEditShadowImage.getVisibility() == View.VISIBLE) {
                     llEditShadowImage.setVisibility(View.GONE);
                     tvCancelEditImage.setVisibility(View.GONE);
-                    tvTitleEditImage.setText(getString(R.string.text));
+                    tvTitleEditImage.setText(getString(R.string.image));
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2344,6 +2347,69 @@ public class EditActivity extends AppCompatActivity {
                     lstSticker.add(new StickerModel(null, null, null, st.getBitmapRoot(), st.getBitmap(), null, sticker, null, st.getPositionFilter(), st.getPositionBlend()));
                 }
         }
+    }
+
+    private void cropImage() {
+        setUpLayoutEditCropImage(0);
+        tvCancelEditImage.setOnClickListener(v -> setUpLayoutEditCropImage(1));
+
+        CropImageAdapter cropImageAdapter = new CropImageAdapter(this, (o, pos) -> {
+//            stickerView.setCropImage(pos, true);
+        });
+
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        cropImageAdapter.setData(Arrays.asList(DataPic.lstPathData));
+
+        rcvEditCrop.setLayoutManager(manager);
+        rcvEditCrop.setAdapter(cropImageAdapter);
+    }
+
+    private void setUpLayoutEditCropImage(int pos) {
+        switch (pos) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                vEditImage.startAnimation(animation);
+                if (vEditImage.getVisibility() == View.VISIBLE) vEditImage.setVisibility(View.GONE);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                rlEditCrop.startAnimation(animation);
+                if (rlEditCrop.getVisibility() == View.GONE) {
+                    rlEditCrop.setVisibility(View.VISIBLE);
+                    tvCancelEditImage.setVisibility(View.VISIBLE);
+                    tvTitleEditImage.setText(getString(R.string.crop));
+                }
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                rlEditCrop.startAnimation(animation);
+                if (rlEditCrop.getVisibility() == View.VISIBLE) {
+                    rlEditCrop.setVisibility(View.GONE);
+                    tvCancelEditImage.setVisibility(View.GONE);
+                    tvTitleEditImage.setText(getString(R.string.image));
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                vEditImage.startAnimation(animation);
+                if (vEditImage.getVisibility() == View.GONE) vEditImage.setVisibility(View.VISIBLE);
+                break;
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                vEditImage.clearAnimation();
+                rlEditCrop.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     //sticker
@@ -4944,6 +5010,8 @@ public class EditActivity extends AppCompatActivity {
         ivColorBlurImage = findViewById(R.id.ivColorBlurImage);
         rlEditOpacityImage = findViewById(R.id.rlEditOpacityImage);
         sbOpacityImage = findViewById(R.id.sbOpacityImage);
+        rlEditCrop = findViewById(R.id.rlEditCrop);
+        rcvEditCrop = findViewById(R.id.rcvEditCrop);
         rlEditBlend = findViewById(R.id.rlEditBlend);
         rcvEditBlend = findViewById(R.id.rcvEditBlend);
         rlExpandEditBackground = findViewById(R.id.rlExpandEditBackground);

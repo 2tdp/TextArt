@@ -5,6 +5,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -32,10 +33,10 @@ public abstract class Sticker {
     }
 
     private final float[] matrixValues = new float[9];
-    private final float[] unrotatedWrapperCorner = new float[8];
+    private final float[] unrotatedWrapperCorner = new float[14];
     private final float[] unrotatedPoint = new float[2];
-    private final float[] boundPoints = new float[8];
-    private final float[] mappedBounds = new float[8];
+    private final float[] boundPoints = new float[14];
+    private final float[] mappedBounds = new float[14];
     private final RectF trappedRect = new RectF();
     private final Matrix matrix = new Matrix();
     private boolean isFlippedHorizontally;
@@ -106,7 +107,7 @@ public abstract class Sticker {
     }
 
     public float[] getBoundPoints() {
-        float[] points = new float[8];
+        float[] points = new float[14];
         getBoundPoints(points);
         return points;
     }
@@ -122,6 +123,15 @@ public abstract class Sticker {
                 points[5] = getHeight();
                 points[6] = getWidth();
                 points[7] = getHeight();
+
+                points[8] = getWidth() / 4f;
+                points[9] = getHeight();
+
+                points[10] = getWidth() / 2f;
+                points[11] = getHeight();
+
+                points[12] = getWidth() * 3 / 4f;
+                points[13] = getHeight();
             } else {
                 points[0] = 0f;
                 points[1] = getHeight();
@@ -131,6 +141,15 @@ public abstract class Sticker {
                 points[5] = 0f;
                 points[6] = getWidth();
                 points[7] = 0f;
+
+                points[8] = getWidth() / 4f;
+                points[9] = 0f;
+
+                points[10] = getWidth() / 2f;
+                points[11] = 0f;
+
+                points[12] = getWidth() * 3 / 4f;
+                points[13] = 0f;
             }
         } else {
             if (!isFlippedVertically) {
@@ -142,6 +161,15 @@ public abstract class Sticker {
                 points[5] = getHeight();
                 points[6] = 0f;
                 points[7] = getHeight();
+
+                points[8] = getWidth() * 3 / 4f;
+                points[9] = getHeight();
+
+                points[10] = getWidth() / 2f;
+                points[11] = getHeight();
+
+                points[12] = getWidth() / 4f;
+                points[13] = getHeight();
             } else {
                 points[0] = getWidth();
                 points[1] = getHeight();
@@ -151,6 +179,15 @@ public abstract class Sticker {
                 points[5] = 0f;
                 points[6] = 0f;
                 points[7] = 0f;
+
+                points[8] = getWidth() * 3 / 4f;
+                points[9] = 0f;
+
+                points[10] = getWidth() / 2f;
+                points[11] = 0f;
+
+                points[12] = getWidth() / 4f;
+                points[13] = 0f;
             }
         }
     }

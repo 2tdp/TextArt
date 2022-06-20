@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.PathParser;
 
 import com.datnt.textart.R;
+import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.utils.Utils;
 import com.datnt.textart.utils.UtilsAdjust;
@@ -71,7 +72,8 @@ public class DrawableSticker extends Sticker {
                 path.addPath(PathParser.createPathFromPathData(pathData));
             }
         }
-        realBounds = new RectF(0, 0, getWidth(), getHeight());
+        path.addPath(PathParser.createPathFromPathData(DataPic.getPathDataCrop(2)));
+        path.computeBounds(realBounds, true);
     }
 
     @NonNull
@@ -92,6 +94,7 @@ public class DrawableSticker extends Sticker {
             UtilsAdjust.drawIconWithPath(canvas, path, paintShadow, realBounds.width(), 0, 0);
 
         UtilsAdjust.drawIconWithPath(canvas, path, paint, realBounds.width(), 0, 0);
+
 
         drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
