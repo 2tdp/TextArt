@@ -49,8 +49,6 @@ public class StickerView extends FrameLayout {
 
     private final boolean showIcons;
     private final boolean showBorder;
-    private boolean isCrop;
-    private int positionCrop;
     private final boolean bringToFrontCurrentSticker;
 
     @IntDef({
@@ -142,7 +140,7 @@ public class StickerView extends FrameLayout {
                     a.getBoolean(R.styleable.StickerView_bringToFrontCurrentSticker, false);
 
             borderPaint.setAntiAlias(true);
-            borderPaint.setColor(a.getColor(R.styleable.StickerView_borderColor, Color.BLACK));
+            borderPaint.setColor(a.getColor(R.styleable.StickerView_borderColor, Color.WHITE));
             borderPaint.setAlpha(a.getInteger(R.styleable.StickerView_borderAlpha, 128));
 
             configDefaultIcons();
@@ -236,17 +234,10 @@ public class StickerView extends FrameLayout {
             float y7 = bitmapPoints[13];
 
             if (showBorder) {
-                if (!isCrop) {
-                    canvas.drawLine(x1, y1, x2, y2, borderPaint);
-                    canvas.drawLine(x1, y1, x3, y3, borderPaint);
-                    canvas.drawLine(x2, y2, x4, y4, borderPaint);
-                    canvas.drawLine(x4, y4, x3, y3, borderPaint);
-                } else {
-                    RectF rectF = new RectF();
-                    pathCrop.computeBounds(rectF, true);
-                    int y = (int) (x2 * 0.5f * rectF.height() / rectF.width());
-                    UtilsAdjust.drawIconWithPath(canvas, pathCrop, borderPaint, x2, (int) x2 / 4, (int) (y2 - y) / 2);
-                }
+                canvas.drawLine(x1, y1, x2, y2, borderPaint);
+                canvas.drawLine(x1, y1, x3, y3, borderPaint);
+                canvas.drawLine(x2, y2, x4, y4, borderPaint);
+                canvas.drawLine(x4, y4, x3, y3, borderPaint);
             }
 
             //draw icons
@@ -284,13 +275,6 @@ public class StickerView extends FrameLayout {
 
         icon.getMatrix().postRotate(rotation, icon.getWidth() / 2f, icon.getHeight() / 2f);
         icon.getMatrix().postTranslate(x - icon.getWidth() / 2f, y - icon.getHeight() / 2f);
-    }
-
-    public void setCropImage(int positionCrop, boolean isCrop) {
-        this.isCrop = isCrop;
-
-        pathCrop.addPath(PathParser.createPathFromPathData(DataPic.getPathDataCrop(positionCrop)));
-        invalidate();
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.PathParser;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +18,10 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -29,6 +32,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Layout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -43,7 +47,6 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.activity.project.CreateProjectActivity;
-import com.datnt.textart.activity.template.TemplateActivity;
 import com.datnt.textart.adapter.ColorAdapter;
 import com.datnt.textart.adapter.CropImageAdapter;
 import com.datnt.textart.adapter.FilterBlendImageAdapter;
@@ -53,9 +56,11 @@ import com.datnt.textart.adapter.TemplateAdapter;
 import com.datnt.textart.adapter.TitleDecorAdapter;
 import com.datnt.textart.adapter.TitleEmojiAdapter;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.textart.customview.CropImage;
 import com.datnt.textart.customview.CustomSeekbarRunText;
 import com.datnt.textart.customview.CustomSeekbarTwoWay;
 import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.customview.CustomViewPathData;
 import com.datnt.textart.customview.OnSeekbarResult;
 import com.datnt.textart.customview.stickerview.BitmapStickerIcon;
 import com.datnt.textart.customview.stickerview.DrawableSticker;
@@ -91,14 +96,11 @@ import com.datnt.textart.model.TextModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.datnt.textart.utils.UtilsAdjust;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -115,13 +117,14 @@ public class EditActivity extends AppCompatActivity {
             tvWarmth, tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure,
             tvContrast, tvBrightness, tvTitleEditOverlay, tvCancelEditOverlay, tvCancelEditDecor,
             tvTitleEditDecor, tvCancelEditTemp, tvXPosDecor, tvYPosDecor, tvBlurDecor, tvTitleEditTemp,
-            tvXPosTemp, tvYPosTemp, tvBlurTemp;
+            tvXPosTemp, tvYPosTemp, tvBlurTemp, tvCancelCropImage, tvTitleCropImage;
     private SeekBar sbFontSize;
     private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur, sbXPosImage,
             sbYPosImage, sbBlurImage, sbAdjust, sbXPosDecor, sbYPosDecor, sbBlurDecor, sbXPosTemp,
             sbYPosTemp, sbBlurTemp;
     private CustomSeekbarRunText sbOpacityText, sbOpacityEmoji, sbOpacityImage, sbOpacityBackground,
             sbOpacityOverlay, sbOpacityDecor, sbOpacityTemp;
+    private CropImage pathCrop;
     private RelativeLayout rlAddText, rlSticker, rlImage, rlBackground, rlBlend, rlDecor, rlCrop,
             rlDelLayer, rlDuplicateLayer, rlLook, rlLock, rlLayer, rlExpandLayer, rlExpandEditText,
             rlET, rlDuplicateText, rlFontSize, rlColor, rlTransform, rlShadow, rlOpacity, rlDelText,
@@ -2350,11 +2353,16 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void cropImage() {
+        rlEditCrop.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
         setUpLayoutEditCropImage(0);
-        tvCancelEditImage.setOnClickListener(v -> setUpLayoutEditCropImage(1));
+        tvCancelCropImage.setOnClickListener(v -> setUpLayoutEditCropImage(1));
+
+        Bitmap bitmap = ((BitmapDrawable) drawableSticker.getDrawable()).getBitmap();
+        pathCrop.setBitmap(bitmap);
 
         CropImageAdapter cropImageAdapter = new CropImageAdapter(this, (o, pos) -> {
-//            stickerView.setCropImage(pos, true);
+            pathCrop.setPath((String) o);
+            Log.d("2tdp", "cropImage: " + (String) o);
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -5143,6 +5151,9 @@ public class EditActivity extends AppCompatActivity {
         rcvTextTemp = findViewById(R.id.rcvTextTemp);
         rlExpandTemp = findViewById(R.id.rlExpandTemp);
         rlPickTextTemp = findViewById(R.id.rlPickTextTemp);
+        tvCancelCropImage = findViewById(R.id.tvCancelCropImage);
+        tvTitleCropImage = findViewById(R.id.tvTitleCropImage);
+        pathCrop = findViewById(R.id.pathCrop);
 
         lstSticker = new ArrayList<>();
         lstFilterBlend = new ArrayList<>();

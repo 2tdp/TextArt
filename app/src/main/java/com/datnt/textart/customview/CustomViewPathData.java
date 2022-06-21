@@ -1,18 +1,24 @@
 package com.datnt.textart.customview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.graphics.PathParser;
 
+import com.datnt.textart.R;
 import com.datnt.textart.utils.UtilsAdjust;
+
 import java.util.List;
 
 public class CustomViewPathData extends View {
@@ -38,15 +44,18 @@ public class CustomViewPathData extends View {
 
     private void init() {
         path = new Path();
+
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
+
         rectF = new RectF();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         path.computeBounds(rectF, true);
         int y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
         UtilsAdjust.drawIconWithPath(canvas, path, paint, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);

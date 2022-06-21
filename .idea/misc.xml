@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_add_text.xml" value="0.17249240121580547" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_crop_image.xml" value="0.33" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_edit.xml" value="0.33" />
         <entry key="..\:/AndroidRemi/TextArt/app/src/main/res/layout/activity_edit.xml" value="0.209375" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable-v24/ic_text_align_center.xml" value="0.2055" />
         <entry key="..\:/AndroidStudio/AndroidApp/TextArt/app/src/main/res/drawable/boder_bottomsheet_dialog.xml" value="0.2055" />

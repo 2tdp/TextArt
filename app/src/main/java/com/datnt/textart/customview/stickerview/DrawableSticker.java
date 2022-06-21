@@ -33,8 +33,8 @@ public class DrawableSticker extends Sticker {
 
     private Context context;
 
-    private Path path;
-    private Paint paint, paintShadow;
+    private final Path path;
+    private final Paint paint, paintShadow;
     private Drawable drawable;
     private ArrayList<String> lstPathData;
     private int id, colorShadow = 0;
@@ -56,24 +56,25 @@ public class DrawableSticker extends Sticker {
         this.isTemplate = isTemplate;
 
         path = new Path();
+
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
 
-        if (isDecor) paint.setColor(Color.GRAY);
-        else if (isTemplate) paint.setColor(Color.WHITE);
-
         paintShadow = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintShadow.setStrokeJoin(Paint.Join.ROUND);
         paintShadow.setStrokeCap(Paint.Cap.ROUND);
+
+        if (isDecor) paint.setColor(Color.GRAY);
+        else if (isTemplate) paint.setColor(Color.WHITE);
 
         if (!lstPathData.isEmpty()) {
             for (String pathData : lstPathData) {
                 path.addPath(PathParser.createPathFromPathData(pathData));
             }
         }
-        path.addPath(PathParser.createPathFromPathData(DataPic.getPathDataCrop(2)));
-        path.computeBounds(realBounds, true);
+
+        realBounds = new RectF(0, 0, getWidth(), getHeight());
     }
 
     @NonNull
@@ -94,7 +95,6 @@ public class DrawableSticker extends Sticker {
             UtilsAdjust.drawIconWithPath(canvas, path, paintShadow, realBounds.width(), 0, 0);
 
         UtilsAdjust.drawIconWithPath(canvas, path, paint, realBounds.width(), 0, 0);
-
 
         drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);

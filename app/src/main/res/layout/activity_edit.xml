@@ -2028,24 +2028,6 @@
 
         </LinearLayout>
 
-        <!--        cropImage-->
-        <RelativeLayout
-            android:id="@+id/rlEditCrop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/rlEditImage"
-            android:padding="@dimen/_5sdp"
-            android:visibility="gone">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcvEditCrop"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:padding="@dimen/_5sdp"
-                android:scrollbars="none" />
-
-        </RelativeLayout>
 
         <!--        filter-->
         <RelativeLayout
@@ -2257,6 +2239,78 @@
                 </RelativeLayout>
             </LinearLayout>
         </HorizontalScrollView>
+    </RelativeLayout>
+
+    <!--        cropImage-->
+    <RelativeLayout
+        android:id="@+id/rlEditCrop"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/boder_layout_radius_top"
+        android:padding="@dimen/_5sdp"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/rlToolbarCropImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp">
+
+            <TextView
+                android:id="@+id/tvCancelCropImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/poppins_medium"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/cancel"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:id="@+id/tvTitleCropImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/crop_image"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13ssp" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:background="@drawable/border_custom"
+                android:padding="@dimen/_6sdp"
+                android:src="@drawable/ic_bottom" />
+        </RelativeLayout>
+
+        <com.datnt.textart.customview.CropImage
+            android:id="@+id/pathCrop"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_198sdp"
+            android:layout_centerInParent="true" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvEditCrop"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_84sdp"
+            android:layout_alignParentBottom="true"
+            android:padding="@dimen/_5sdp"
+            android:scrollbars="none" />
+
     </RelativeLayout>
 
     <!--    edit text-->

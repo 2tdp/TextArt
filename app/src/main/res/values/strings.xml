@@ -127,4 +127,7 @@
     <string name="duplicate">Duplicate</string>
     <string name="lock">Lock</string>
     <string name="look">Look</string>
+
+    //cropImage
+    <string name="crop_image">Crop Image</string>
 </resources>
