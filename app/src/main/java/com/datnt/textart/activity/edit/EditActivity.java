@@ -109,7 +109,7 @@ public class EditActivity extends AppCompatActivity {
     private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo,
             ivLayer, ivImport, ivLook, ivLock, ivColor, ivColorBlur, ivColorBlurImage, ivVignette, ivVibrance,
             ivWarmth, ivHue, ivSaturation, ivWhites, ivBlacks, ivShadows, ivHighLight, ivExposure,
-            ivContrast, ivBrightness, ivColorBlurDecor, ivColorBlurTemp;
+            ivContrast, ivBrightness, ivColorBlurDecor, ivColorBlurTemp, ivTickCropImage;
     private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancelEdittext,
             tvTitleEditText, tvShearX, tvShearY, tvStretch, tvXPos, tvYPos, tvBlur, tvCancelEditEmoji,
             tvTitleEmoji, tvCancelEditImage, tvTitleEditImage, tvXPosImage, tvYPosImage, tvBlurImage,
@@ -117,7 +117,7 @@ public class EditActivity extends AppCompatActivity {
             tvWarmth, tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure,
             tvContrast, tvBrightness, tvTitleEditOverlay, tvCancelEditOverlay, tvCancelEditDecor,
             tvTitleEditDecor, tvCancelEditTemp, tvXPosDecor, tvYPosDecor, tvBlurDecor, tvTitleEditTemp,
-            tvXPosTemp, tvYPosTemp, tvBlurTemp, tvCancelCropImage, tvTitleCropImage;
+            tvXPosTemp, tvYPosTemp, tvBlurTemp, tvCancelCropImage;
     private SeekBar sbFontSize;
     private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur, sbXPosImage,
             sbYPosImage, sbBlurImage, sbAdjust, sbXPosDecor, sbYPosDecor, sbBlurDecor, sbXPosTemp,
@@ -446,6 +446,7 @@ public class EditActivity extends AppCompatActivity {
             blendImage();
             isFilter = false;
         });
+        ivTickCropImage.setOnClickListener(v -> afterCropImage());
 
         //background
         rlBackground.setOnClickListener(v -> background());
@@ -498,7 +499,7 @@ public class EditActivity extends AppCompatActivity {
                     Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
                     DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable, new ArrayList<>(), getId(), true, false, false, false);
                     for (StickerModel st : lstSticker) {
-                        if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                        if (st.getDrawableSticker() != null)
                             if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
                                 sticker.setAlpha(st.getDrawableSticker().getAlpha());
                                 positionFilter = st.getPositionFilter();
@@ -2359,17 +2360,25 @@ public class EditActivity extends AppCompatActivity {
 
         Bitmap bitmap = ((BitmapDrawable) drawableSticker.getDrawable()).getBitmap();
         pathCrop.setBitmap(bitmap);
+        pathCrop.setPath(DataPic.getPathDataCrop(0));
 
         CropImageAdapter cropImageAdapter = new CropImageAdapter(this, (o, pos) -> {
             pathCrop.setPath((String) o);
-            Log.d("2tdp", "cropImage: " + (String) o);
         });
 
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        GridLayoutManager manager = new GridLayoutManager(this, 2, LinearLayoutManager.HORIZONTAL, false);
         cropImageAdapter.setData(Arrays.asList(DataPic.lstPathData));
 
         rcvEditCrop.setLayoutManager(manager);
         rcvEditCrop.setAdapter(cropImageAdapter);
+    }
+
+    private void afterCropImage() {
+        setUpLayoutEditCropImage(1);
+
+        isReplaceImage = true;
+        bitmapFilterBlend = pathCrop.getBitmapCreate();
+        handler.sendEmptyMessage(0);
     }
 
     private void setUpLayoutEditCropImage(int pos) {
@@ -2842,11 +2851,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearX.setText(String.valueOf(value));
-//                stickerView.shearSticker(textSticker, value / 100f, 0f);
-//                textSticker.getMatrix().setSkew(value / 100f, 0f, textSticker.getWidth() / 2f, textSticker.getHeight() / 2f);
-//                textSticker.setShear(textSticker, value, 0f, true);
-//                stickerView.replace(textSticker, true);
-//                stickerView.invalidate();
+                stickerView.shearSticker(textSticker, value / 100f, true, false);
             }
 
             @Override
@@ -2863,7 +2868,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearY.setText(String.valueOf(value));
-//                stickerView.shear(textSticker, 0f, value / 100f);
+                stickerView.shearSticker(textSticker, value / 100f, false, true);
             }
 
             @Override
@@ -5152,7 +5157,7 @@ public class EditActivity extends AppCompatActivity {
         rlExpandTemp = findViewById(R.id.rlExpandTemp);
         rlPickTextTemp = findViewById(R.id.rlPickTextTemp);
         tvCancelCropImage = findViewById(R.id.tvCancelCropImage);
-        tvTitleCropImage = findViewById(R.id.tvTitleCropImage);
+        ivTickCropImage = findViewById(R.id.ivTickCropImage);
         pathCrop = findViewById(R.id.pathCrop);
 
         lstSticker = new ArrayList<>();

@@ -19,6 +19,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.animation.RotateAnimation;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
@@ -63,7 +64,8 @@ public class TextSticker extends Sticker {
     private StaticLayout staticLayout;
     private Layout.Alignment alignment;
     private String text;
-    private float radiusBlur = 0f, dx = 0f, dy = 0f;
+    private float radiusBlur = 0f, shearX = 0f, shearY = 0f, rotate = 0f, dx = 0f, dy = 0f;
+    private boolean isShearX, isShearY;
 
     /**
      * Upper bounds for text size.
@@ -95,7 +97,7 @@ public class TextSticker extends Sticker {
         this.context = context;
         this.drawable = drawable;
         if (drawable == null) {
-            this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_background);
+            this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
         }
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         realBounds = new Rect(0, 0, getWidth(), getHeight());
@@ -119,6 +121,12 @@ public class TextSticker extends Sticker {
         }
         canvas.restore();
 
+//        if (isShearX) textPaint.setTextSkewX(shearX);
+//        if (isShearY) {
+//            textPaint.setTextSkewX(rotate);
+//            canvas.rotate(shearY, getWidth() / 2f, getHeight() / 2f);
+//        }
+
         canvas.save();
         canvas.concat(matrix);
 
@@ -131,8 +139,20 @@ public class TextSticker extends Sticker {
             int dy = textRect.top + textRect.height() / 2 - staticLayout.getHeight() / 2;
             canvas.translate(dx, dy);
         }
+
         staticLayout.draw(canvas);
         canvas.restore();
+    }
+
+    public void setShear(float value, boolean isShearX, boolean isShearY) {
+        textPaint.setTextSkewX(value);
+        this.isShearX = isShearX;
+        this.isShearY = isShearY;
+        if (isShearX) this.shearX = value;
+        if (isShearY) {
+            this.shearY = value * 100 * 360 / 100;
+            this.rotate = value - shearX;
+        }
     }
 
     @Override
@@ -399,9 +419,8 @@ public class TextSticker extends Sticker {
             }
         }
         textPaint.setTextSize(targetTextSizePixels);
-        staticLayout =
-                new StaticLayout(this.text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
-                        lineSpacingExtra, true);
+        staticLayout = new StaticLayout(this.text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                lineSpacingExtra, true);
         return this;
     }
 

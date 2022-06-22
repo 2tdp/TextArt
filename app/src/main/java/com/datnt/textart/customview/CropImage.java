@@ -21,14 +21,16 @@ import androidx.core.graphics.PathParser;
 public class CropImage extends View implements MatrixGestureDetector.OnMatrixChangeListener {
 
     private Path path;
-    private Paint paint;
+    private Paint paintLine, paintBitmap;
     private RectF rectF;
-
     private Bitmap bitmap;
-    private Matrix matrix = new Matrix();
-    private Matrix maskMatrix = new Matrix();
+    private final Matrix matrix = new Matrix();
+    private final Matrix maskMatrix = new Matrix();
     private MatrixGestureDetector detector;
-    private RectF clip = new RectF();
+    private final RectF clip = new RectF();
+
+    private int y = 1;
+    private float scale = 1;
 
     public CropImage(Context context) {
         super(context);
@@ -45,60 +47,68 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         init();
     }
 
-    Paint paintBitmap;
-
     private void init() {
         path = new Path();
 
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeCap(Paint.Cap.ROUND);
+        paintLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintLine.setColor(Color.parseColor("#E9E9E9"));
+        paintLine.setStrokeWidth(5);
+        paintLine.setStrokeCap(Paint.Cap.ROUND);
+        paintLine.setStrokeJoin(Paint.Join.ROUND);
 
         rectF = new RectF();
 
         detector = new MatrixGestureDetector(maskMatrix, this);
 
-        paintBitmap = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintBitmap.setStrokeJoin(Paint.Join.ROUND);
-        paintBitmap.setStrokeCap(Paint.Cap.ROUND);
-//        paintBitmap.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        paintBitmap = new Paint(Paint.FILTER_BITMAP_FLAG);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (bitmap != null) {
-            canvas.save();
-            canvas.drawBitmap(bitmap, maskMatrix, null);
-            canvas.restore();
+        canvas.drawLine(getWidth() / 3f, 0, getWidth() / 3f, getHeight(), paintLine);
+        canvas.drawLine(2 * getWidth() / 3f, 0, 2 * getWidth() / 3f, getHeight(), paintLine);
+        canvas.drawLine(0, 0, getWidth(), 0, paintLine);
+        canvas.drawLine(0, getHeight() / 3f, getWidth(), getHeight() / 3f, paintLine);
+        canvas.drawLine(0, 2 * getHeight() / 3f, getWidth(), 2 * getHeight() / 3f, paintLine);
+        canvas.drawLine(0, getHeight(), getWidth(), getHeight(), paintLine);
+
+        if (rectF != null) {
+            canvas.translate(getWidth() / 8f, (getHeight() - y) / 4f);
+            canvas.scale(scale, scale);
+            canvas.clipPath(path);
         }
-        path.computeBounds(rectF, true);
-        int y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
 
-        clipPath(canvas, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);
-
-        if (path != null) {
-//            drawIconWithPath(canvas, path, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);
-            clipPath(canvas, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);
+        if (bitmap != null) {
+            canvas.scale(1 / scale, 1 / scale);
+            canvas.drawBitmap(bitmap, maskMatrix, paintBitmap);
         }
     }
 
-    private void clipPath(Canvas canvas, float size, int x, int y) {
-        RectF rectF = new RectF();
-        path.computeBounds(rectF, true);
-        float scale = size / rectF.width();
-        canvas.save();
-        canvas.translate(x, y);
-        canvas.scale(scale, scale);
-        canvas.clipPath(path);
-        canvas.restore();
+    public Bitmap getBitmapCreate() {
+
+        Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+
+        if (rectF != null) {
+            canvas.translate(getWidth() / 8f, (getHeight() - y) / 4f);
+            canvas.scale(scale, scale);
+            canvas.clipPath(path);
+        }
+
+        if (bitmap != null) {
+            canvas.scale(1 / scale, 1 / scale);
+            canvas.drawBitmap(bitmap, maskMatrix, paintBitmap);
+        }
+
+        return bm;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         if (bitmap != null) {
-            RectF src = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            RectF src = new RectF(0, 0, bitmap.getWidth() * 2, bitmap.getHeight());
             RectF dst = new RectF(0, 0, w, h);
             matrix.setRectToRect(src, dst, Matrix.ScaleToFit.CENTER);
             matrix.mapRect(dst, src);
@@ -111,17 +121,6 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
         invalidate();
-    }
-
-    public void drawIconWithPath(Canvas canvas, Path path, float size, int x, int y) {
-        RectF rectF = new RectF();
-        path.computeBounds(rectF, true);
-        float scale = size / rectF.width();
-        canvas.save();
-        canvas.translate(x, y);
-        canvas.scale(scale, scale);
-        canvas.drawPath(path, paintBitmap);
-        canvas.restore();
     }
 
     @Override
@@ -146,6 +145,10 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
     public void setPath(String o) {
         path.reset();
         path.addPath(PathParser.createPathFromPathData(o));
+
+        path.computeBounds(rectF, true);
+        scale =  4 * getWidth() / (rectF.width() * 5f);
+        y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
         invalidate();
     }
 }

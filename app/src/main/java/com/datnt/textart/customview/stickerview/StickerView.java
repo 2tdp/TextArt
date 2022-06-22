@@ -83,7 +83,6 @@ public class StickerView extends FrameLayout {
     private final ArrayList<BitmapStickerIcon> icons = new ArrayList<>(4);
 
     private final Paint borderPaint = new Paint();
-    private final Path pathCrop = new Path();
     private final RectF stickerRect = new RectF();
 
     private final Matrix sizeMatrix = new Matrix();
@@ -639,6 +638,37 @@ public class StickerView extends FrameLayout {
         }
 
         sizeMatrix.postScale(scaleFactor / 2f, scaleFactor / 2f, width / 2f, height / 2f);
+
+        sticker.getMatrix().reset();
+        sticker.setMatrix(sizeMatrix);
+
+        invalidate();
+    }
+
+    public void shearSticker(Sticker sticker, float value, boolean isShearX, boolean isShearY) {
+        if (sticker == null) {
+            Log.e(TAG, "transformSticker: the bitmapSticker is null or the bitmapSticker bitmap is null");
+            return;
+        }
+
+        sizeMatrix.reset();
+
+        float width = getWidth();
+        float height = getHeight();
+        float stickerWidth = sticker.getWidth();
+        float stickerHeight = sticker.getHeight();
+
+        //step2
+        if (isShearX)
+            sizeMatrix.setSkew(value, 0, stickerWidth / 2f, stickerHeight / 2f);
+        else
+            sizeMatrix.setSkew(0, value, stickerWidth / 2f, stickerHeight / 2f);
+
+        //step 1
+        float offsetX = (width - stickerWidth) / 2;
+        float offsetY = (height - stickerHeight) / 2;
+
+        sizeMatrix.postTranslate(offsetX, offsetY);
 
         sticker.getMatrix().reset();
         sticker.setMatrix(sizeMatrix);

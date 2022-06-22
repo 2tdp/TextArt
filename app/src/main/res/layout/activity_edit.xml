@@ -2252,7 +2252,6 @@
         android:visibility="gone">
 
         <RelativeLayout
-            android:id="@+id/rlToolbarCropImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -2275,7 +2274,6 @@
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
-                android:id="@+id/tvTitleCropImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -2286,6 +2284,7 @@
                 android:textSize="@dimen/_13ssp" />
 
             <ImageView
+                android:id="@+id/ivTickCropImage"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_alignParentEnd="true"
@@ -2293,20 +2292,19 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:background="@drawable/border_custom"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_bottom" />
+                android:src="@drawable/ic_tick" />
         </RelativeLayout>
 
         <com.datnt.textart.customview.CropImage
             android:id="@+id/pathCrop"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_198sdp"
-            android:layout_centerInParent="true" />
+            android:layout_height="@dimen/_234sdp"
+            android:layout_marginTop="@dimen/_84sdp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcvEditCrop"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_84sdp"
+            android:layout_height="@dimen/_134sdp"
             android:layout_alignParentBottom="true"
             android:padding="@dimen/_5sdp"
             android:scrollbars="none" />

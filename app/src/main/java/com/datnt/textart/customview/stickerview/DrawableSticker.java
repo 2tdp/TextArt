@@ -75,6 +75,7 @@ public class DrawableSticker extends Sticker {
         }
 
         realBounds = new RectF(0, 0, getWidth(), getHeight());
+
     }
 
     @NonNull
