@@ -2842,6 +2842,17 @@ public class EditActivity extends AppCompatActivity {
         setUpLayoutEditTransform(0);
         tvCancelEdittext.setOnClickListener(v -> setUpLayoutEditTransform(1));
 
+        int shearX = (int) (stickerView.getShearX() * 100);
+        int shearY = (int) (stickerView.getShearY() * 100);
+        int stretch = (int) (stickerView.getStretch() * 100);
+
+        tvShearX.setText(String.valueOf(shearX));
+        sbShearX.setProgress(shearX);
+        tvShearY.setText(String.valueOf(shearY));
+        sbShearY.setProgress(shearY);
+        tvStretch.setText(String.valueOf(stretch));
+        sbStretch.setProgress(stretch);
+
         sbShearX.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -2851,7 +2862,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearX.setText(String.valueOf(value));
-                stickerView.shearSticker(textSticker, value / 100f, true, false);
+                stickerView.shearSticker(value / 100f, true);
             }
 
             @Override
@@ -2868,7 +2879,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvShearY.setText(String.valueOf(value));
-                stickerView.shearSticker(textSticker, value / 100f, false, true);
+                stickerView.shearSticker(value / 100f, false);
             }
 
             @Override
@@ -2885,6 +2896,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 tvStretch.setText(String.valueOf(value));
+                stickerView.stretchSticker(value / 100f);
             }
 
             @Override
@@ -3145,11 +3157,9 @@ public class EditActivity extends AppCompatActivity {
     //EditTextLayout
     private void setTextSticker(TextSticker sticker, TextModel textModel) {
         sticker.setText(textModel.getContent());
-        sticker.resizeText();
         for (StyleFontModel f : textModel.getFontModel().getLstStyle()) {
             if (f.isSelected()) {
                 textSticker.setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), this));
-                Log.d("2tdp", "font: " + textModel.getFontModel().getNameFont() + "......" + f.getName());
                 break;
             }
         }
@@ -3173,7 +3183,7 @@ public class EditActivity extends AppCompatActivity {
             lstSticker.add(new StickerModel(textModel, null, null, null, null, sticker, null, textModel.getColor(), -1, -1));
         else
             lstSticker.add(new StickerModel(textModel, null, null, null, null, sticker, null, null, -1, -1));
-
+        sticker.resizeText();
     }
 
     //edit text

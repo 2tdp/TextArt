@@ -39,9 +39,8 @@ import java.io.Serializable;
 
 /**
  * Customize your sticker with text and image background.
- * You can place some text into a given region, however,
- * you can also add a plain text sticker. To support text
- * auto resizing , I take most of the code from AutoResizeTextView.
+ * You can place some text into a given region, however, you can also add a plain text sticker.
+ * To support text auto resizing , I take most of the code from AutoResizeTextView.
  * See https://adilatwork.blogspot.com/2014/08/android-textview-which-resizes-its-text.html
  * Notice: It's not efficient to add long text due to too much of
  * StaticLayout object allocation.
@@ -64,8 +63,7 @@ public class TextSticker extends Sticker {
     private StaticLayout staticLayout;
     private Layout.Alignment alignment;
     private String text;
-    private float radiusBlur = 0f, shearX = 0f, shearY = 0f, rotate = 0f, dx = 0f, dy = 0f;
-    private boolean isShearX, isShearY;
+    private float radiusBlur = 0f, dx = 0f, dy = 0f;
 
     /**
      * Upper bounds for text size.
@@ -93,7 +91,7 @@ public class TextSticker extends Sticker {
         this.id = id;
     }
 
-    public TextSticker(@NonNull Context context, @Nullable Drawable drawable) {
+    public TextSticker(@NonNull Context context, Drawable drawable) {
         this.context = context;
         this.drawable = drawable;
         if (drawable == null) {
@@ -121,15 +119,8 @@ public class TextSticker extends Sticker {
         }
         canvas.restore();
 
-//        if (isShearX) textPaint.setTextSkewX(shearX);
-//        if (isShearY) {
-//            textPaint.setTextSkewX(rotate);
-//            canvas.rotate(shearY, getWidth() / 2f, getHeight() / 2f);
-//        }
-
         canvas.save();
         canvas.concat(matrix);
-
         if (textRect.width() == getWidth()) {
             int dy = getHeight() / 2 - staticLayout.getHeight() / 2;
             // center vertical
@@ -139,30 +130,18 @@ public class TextSticker extends Sticker {
             int dy = textRect.top + textRect.height() / 2 - staticLayout.getHeight() / 2;
             canvas.translate(dx, dy);
         }
-
         staticLayout.draw(canvas);
         canvas.restore();
     }
 
-    public void setShear(float value, boolean isShearX, boolean isShearY) {
-        textPaint.setTextSkewX(value);
-        this.isShearX = isShearX;
-        this.isShearY = isShearY;
-        if (isShearX) this.shearX = value;
-        if (isShearY) {
-            this.shearY = value * 100 * 360 / 100;
-            this.rotate = value - shearX;
-        }
-    }
-
     @Override
     public int getWidth() {
-        return drawable.getIntrinsicWidth();
+            return drawable.getIntrinsicWidth();
     }
 
     @Override
     public int getHeight() {
-        return drawable.getIntrinsicHeight();
+            return drawable.getIntrinsicHeight();
     }
 
     @Override
