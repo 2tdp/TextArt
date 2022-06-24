@@ -31,7 +31,7 @@ public class CustomView extends View {
     private Path path;
     private Paint paint;
     private Shader shader;
-    private Bitmap bitmap, bitmapRoot;
+    private Bitmap bitmap;
     private ColorModel color;
     private Rect src;
     private int size;
@@ -78,13 +78,20 @@ public class CustomView extends View {
         }
     }
 
+    public float getW() {
+        return bitmap.getWidth();
+    }
+
+    public float getH() {
+        return bitmap.getHeight();
+    }
+
     public void setData(Bitmap bitmap, ColorModel color) {
         if (bitmap != null) {
             this.bitmap = bitmap;
-            this.bitmapRoot = bitmap;
+            this.color = null;
         } else {
             this.bitmap = null;
-            this.bitmapRoot = bitmap;
             this.color = color;
         }
         invalidate();
@@ -98,14 +105,7 @@ public class CustomView extends View {
     private void setSRC(int size) {
         switch (size) {
             case 1:
-                int wB = bitmap.getWidth();
-                int hB = bitmap.getHeight();
-
-                if ((float) wB / hB > 1) {
-                    src = new Rect((wB - hB) / 2, 0, (wB + hB) / 2, hB);
-                } else if ((float) wB / hB < 1) {
-                    src = new Rect(0, (hB - wB) / 2, wB, (hB + wB) / 2);
-                }
+                createSRC(1f);
                 break;
             case 2:
                 createSRC(9 / 16f);
@@ -137,11 +137,12 @@ public class CustomView extends View {
     private RectF setDST(int size) {
         switch (size) {
             case 1:
-                if (w / h > 1) {
-                    return new RectF((w - h) / 2, 0, (w + h) / 2, h);
-                } else if (w / h < 1) {
-                    return new RectF(0, (h - w) / 2, w, (h + w) / 2);
-                }
+                return createDST(1f);
+//                if (w / h > 1) {
+//                    return new RectF((w - h) / 2, 0, (w + h) / 2, h);
+//                } else if (w / h < 1) {
+//                    return new RectF(0, (h - w) / 2, w, (h + w) / 2);
+//                }
             case 2:
                 return createDST(9 / 16f);
             case 3:
@@ -263,7 +264,7 @@ public class CustomView extends View {
 
     public void setBrightness(float brightness) {
         this.brightness = brightness;
-        bitmap = UtilsAdjust.adjustBrightness(bitmapRoot, brightness * 255 / 100f);
+        bitmap = UtilsAdjust.adjustBrightness(bitmap, brightness * 255 / 100f);
         invalidate();
     }
 
@@ -279,7 +280,7 @@ public class CustomView extends View {
         } else if (contrast < 1) {
             contrast = 1 + contrast / 50;
         }
-        bitmap = UtilsAdjust.adjustContrast(bitmapRoot, contrast);
+        bitmap = UtilsAdjust.adjustContrast(bitmap, contrast);
         invalidate();
     }
 
@@ -295,7 +296,7 @@ public class CustomView extends View {
         } else if (exposure < 1) {
             exposure = 1 + exposure / 50;
         }
-        bitmap = UtilsAdjust.adjustExposure(bitmapRoot, exposure);
+        bitmap = UtilsAdjust.adjustExposure(bitmap, exposure);
         invalidate();
     }
 
@@ -311,7 +312,7 @@ public class CustomView extends View {
         } else if (highlight < 1) {
             highlight = 1 + highlight / 50;
         }
-        bitmap = UtilsAdjust.adjustHighLight(bitmapRoot, highlight);
+        bitmap = UtilsAdjust.adjustHighLight(bitmap, highlight);
         invalidate();
     }
 
@@ -352,7 +353,7 @@ public class CustomView extends View {
 //            saturation = 1 + saturation / 50;
 //        }
         Log.d("2tdp", "setSaturation: " + saturation);
-        bitmap = UtilsAdjust.adjustSaturation(bitmapRoot, saturation * 255 / 100f);
+        bitmap = UtilsAdjust.adjustSaturation(bitmap, saturation * 255 / 100f);
         invalidate();
     }
 
@@ -363,7 +364,7 @@ public class CustomView extends View {
 
     public void setHue(float hue) {
         this.hue = hue;
-        bitmap = UtilsAdjust.adjustHue(bitmapRoot, hue * 360 / 100f);
+        bitmap = UtilsAdjust.adjustHue(bitmap, hue * 360 / 100f);
         invalidate();
     }
 

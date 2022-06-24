@@ -29,6 +29,7 @@ import androidx.core.view.ViewCompat;
 import com.datnt.textart.R;
 import com.datnt.textart.data.DataPic;
 import com.datnt.textart.model.LayerModel;
+import com.datnt.textart.utils.Utils;
 import com.datnt.textart.utils.UtilsAdjust;
 import com.google.gson.Gson;
 
@@ -675,6 +676,12 @@ public class StickerView extends FrameLayout {
         //step2
         shearMatrix.setSkew(shearX, shearY, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
 
+        if (stretch != 0f)
+            if (stretch < 0)
+                shearMatrix.postScale(-stretch, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+            else
+                shearMatrix.postScale(1, stretch, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+
         shearMatrix.postConcat(moveMatrix);
 
         handlingSticker.getMatrix().reset();
@@ -723,6 +730,9 @@ public class StickerView extends FrameLayout {
             stretchMatrix.setScale(-stretch, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
         else
             stretchMatrix.setScale(1, stretch, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+
+        if (shearX != 0f || shearY != 0f)
+            stretchMatrix.postSkew(shearX, shearY, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
 
         stretchMatrix.postConcat(moveMatrix);
 
@@ -900,6 +910,15 @@ public class StickerView extends FrameLayout {
         }
         sticker.getBoundPoints(bounds);
         sticker.getMappedPoints(dst, bounds);
+    }
+
+    public void saveImage(Context context){
+        handlingSticker = null;
+
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+        Utils.saveImage(context, bitmap, "");
     }
 
     public void save(@NonNull File file) {

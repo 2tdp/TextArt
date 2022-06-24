@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +37,7 @@ import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -94,12 +97,15 @@ import com.datnt.textart.model.StyleFontModel;
 import com.datnt.textart.model.TemplateModel;
 import com.datnt.textart.model.TextModel;
 import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.FileUtil;
 import com.datnt.textart.utils.Utils;
 import com.datnt.textart.utils.UtilsAdjust;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,7 +113,7 @@ import java.util.Arrays;
 public class EditActivity extends AppCompatActivity {
 
     private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo,
-            ivLayer, ivImport, ivLook, ivLock, ivColor, ivColorBlur, ivColorBlurImage, ivVignette, ivVibrance,
+            ivLayer, ivExport, ivLook, ivLock, ivColor, ivColorBlur, ivColorBlurImage, ivVignette, ivVibrance,
             ivWarmth, ivHue, ivSaturation, ivWhites, ivBlacks, ivShadows, ivHighLight, ivExposure,
             ivContrast, ivBrightness, ivColorBlurDecor, ivColorBlurTemp, ivTickCropImage;
     private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancelEdittext,
@@ -117,7 +123,7 @@ public class EditActivity extends AppCompatActivity {
             tvWarmth, tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure,
             tvContrast, tvBrightness, tvTitleEditOverlay, tvCancelEditOverlay, tvCancelEditDecor,
             tvTitleEditDecor, tvCancelEditTemp, tvXPosDecor, tvYPosDecor, tvBlurDecor, tvTitleEditTemp,
-            tvXPosTemp, tvYPosTemp, tvBlurTemp, tvCancelCropImage;
+            tvXPosTemp, tvYPosTemp, tvBlurTemp, tvCancelCropImage, tvDiscard, tvSave, tvCancel;
     private SeekBar sbFontSize;
     private CustomSeekbarTwoWay sbStretch, sbShearX, sbShearY, sbXPos, sbYPos, sbBlur, sbXPosImage,
             sbYPosImage, sbBlurImage, sbAdjust, sbXPosDecor, sbYPosDecor, sbBlurDecor, sbXPosTemp,
@@ -143,7 +149,7 @@ public class EditActivity extends AppCompatActivity {
             rlFlipYDecor, rlFlipXDecor, rlExpandEditTemp, rlEditTemp, rlEditOpacityTemp, rlEditColorTemp,
             rlDelTemp, rlReplaceTemp, rlDuplicateTemp, rlColorTemp, rlBackgroundTemp, rlShadowTemp,
             rlOpacityTemp, rlFlipXTemp, rlFlipYTemp, rlExpandTemp, rlPickTextTemp, rlEditCrop;
-    private LinearLayout llLayoutImport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage,
+    private LinearLayout llLayerExport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage,
             llEditOverlay, llEditShadowDecor, llEditShadowTemp;
     private HorizontalScrollView vSize, vOperation, vEditText, vEditImage, vEditBackground, vEditDecor, vEditTemp;
     private CustomView vMain;
@@ -246,7 +252,7 @@ public class EditActivity extends AppCompatActivity {
                     else if (drawableSticker.isOverlay()) seekAndHideLayout(9);
                     else if (drawableSticker.isImage()) {
                         for (StickerModel st : lstSticker) {
-                            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                            if (st.getDrawableSticker() != null)
                                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
                                     clearData();
                                     bitmapFilterBlend = st.getBitmapRoot();
@@ -339,9 +345,17 @@ public class EditActivity extends AppCompatActivity {
     private void evenClick() {
         ivBack.setOnClickListener(v -> onBackPressed());
 
+        ivExport.setOnClickListener(v -> exportPhoto());
         ivTick.setOnClickListener(v -> {
             if (isTemplate) seekAndHideLayout(13);
             else seekAndHideLayout(0);
+
+            stickerView.getLayoutParams().width = (int) vMain.getW();
+            stickerView.getLayoutParams().height = (int) vMain.getH();
+
+            Log.d("2tdp", "evenClick: " + vMain.getW() + "...." + vMain.getH());
+//            stickerView.getLayoutParams().width = 200;
+//            stickerView.getLayoutParams().height = 200;
         });
 
         rlLayer.setOnClickListener(v -> {
@@ -488,6 +502,25 @@ public class EditActivity extends AppCompatActivity {
 
         //size
         rlCrop.setOnClickListener(v -> seekAndHideLayout(12));
+    }
+
+    private void exportPhoto() {
+        @SuppressLint("InflateParams")
+        View v = LayoutInflater.from(this).inflate(R.layout.dialog_export, null);
+        RelativeLayout rlExport = v.findViewById(R.id.rlExport);
+        LinearLayout llSavePhoto = v.findViewById(R.id.llSavePhoto);
+        LinearLayout llRemove = v.findViewById(R.id.llRemovePhoto);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.SheetDialog);
+        dialog.setContentView(v);
+        dialog.setCancelable(true);
+        dialog.create();
+        dialog.show();
+
+        rlExport.setOnClickListener(vCancel -> dialog.cancel());
+        llSavePhoto.setOnClickListener(vSave -> {
+            stickerView.saveImage(this);
+        });
     }
 
     Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
@@ -3080,7 +3113,6 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
     }
@@ -3797,11 +3829,6 @@ public class EditActivity extends AppCompatActivity {
     private void getData() {
         String strUri = DataLocalManager.getOption("bitmap");
         TemplateModel template = DataLocalManager.getTemp("temp");
-        if (!isBackground) vMain.setSize(0);
-        else {
-            vMain.setSize(sizeMain);
-            vMain.setAlpha(opacityBackground);
-        }
         if (!strUri.equals("")) {
             try {
                 bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
@@ -3809,7 +3836,11 @@ public class EditActivity extends AppCompatActivity {
                 if (isBackground)
                     bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterBlendImage.EFFECT_CONFIGS[positionFilterBackground], 0.8f);
                 if (bitmap != null) vMain.setData(bitmap, null);
-
+                if (!isBackground) vMain.setSize(0);
+                else {
+                    vMain.setSize(sizeMain);
+                    vMain.setAlpha(opacityBackground);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -3905,7 +3936,7 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vOperation.getVisibility() == View.GONE) {
                     vOperation.startAnimation(animation);
-                    llLayoutImport.setVisibility(View.VISIBLE);
+                    llLayerExport.setVisibility(View.VISIBLE);
                     llReUndo.setVisibility(View.VISIBLE);
                     vOperation.setVisibility(View.VISIBLE);
                 }
@@ -3914,7 +3945,7 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
                 if (vOperation.getVisibility() == View.VISIBLE) {
                     vOperation.startAnimation(animation);
-                    llLayoutImport.setVisibility(View.GONE);
+                    llLayerExport.setVisibility(View.GONE);
                     llReUndo.setVisibility(View.GONE);
                     vOperation.setVisibility(View.GONE);
                 }
@@ -4664,7 +4695,7 @@ public class EditActivity extends AppCompatActivity {
                 if (vOperation.getVisibility() == View.VISIBLE) {
                     vOperation.startAnimation(animation);
                     vOperation.setVisibility(View.GONE);
-                    llLayoutImport.setVisibility(View.GONE);
+                    llLayerExport.setVisibility(View.GONE);
                     llReUndo.setVisibility(View.GONE);
                     vOperation.setVisibility(View.GONE);
                 }
@@ -4800,7 +4831,7 @@ public class EditActivity extends AppCompatActivity {
                 if (rlExpandEditTemp.getVisibility() == View.GONE) {
                     rlExpandEditTemp.startAnimation(animation);
                     rlExpandEditTemp.setVisibility(View.VISIBLE);
-                    llLayoutImport.setVisibility(View.VISIBLE);
+                    llLayerExport.setVisibility(View.VISIBLE);
                     llReUndo.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -4935,7 +4966,7 @@ public class EditActivity extends AppCompatActivity {
         ivUndo = findViewById(R.id.ivUndo);
         ivRedo = findViewById(R.id.ivRedo);
         ivLayer = findViewById(R.id.ivLayer);
-        ivImport = findViewById(R.id.ivImport);
+        ivExport = findViewById(R.id.ivExport);
         rlAddText = findViewById(R.id.rlAddText);
         rlSticker = findViewById(R.id.rlStick);
         rlImage = findViewById(R.id.rlImage);
@@ -4943,7 +4974,7 @@ public class EditActivity extends AppCompatActivity {
         rlBlend = findViewById(R.id.rlBlend);
         rlDecor = findViewById(R.id.rlDecor);
         rlCrop = findViewById(R.id.rlCrop);
-        llLayoutImport = findViewById(R.id.llLayerImport);
+        llLayerExport = findViewById(R.id.llLayerExport);
         vSize = findViewById(R.id.vSize);
         vOperation = findViewById(R.id.vOperation);
         llReUndo = findViewById(R.id.lLReUndo);
@@ -5200,9 +5231,96 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        clearData();
-        super.onBackPressed();
-        Utils.setAnimExit(this);
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+        if (vSize.getVisibility() == View.VISIBLE) {
+            vSize.startAnimation(animation);
+            tvTitle.setVisibility(View.GONE);
+            vSize.setVisibility(View.GONE);
+            ivTick.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+            rlExpandEditText.startAnimation(animation);
+            rlExpandEditText.setVisibility(View.GONE);
+        }
+
+        if (rlExpandLayer.getVisibility() == View.VISIBLE) {
+            rlExpandLayer.startAnimation(animation);
+            rlExpandLayer.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+            rlExpandEmoji.startAnimation(animation);
+            rlExpandEmoji.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+            rlExpandEditEmoji.startAnimation(animation);
+            rlExpandEditEmoji.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+            rlExpandEditImage.startAnimation(animation);
+            rlExpandEditImage.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+            rlExpandEditBackground.startAnimation(animation);
+            rlExpandEditBackground.setVisibility(View.GONE);
+        }
+
+        if (rlExpandOverlay.getVisibility() == View.VISIBLE) {
+            rlExpandOverlay.startAnimation(animation);
+            rlExpandOverlay.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+            rlExpandEditOverlay.startAnimation(animation);
+            rlExpandEditOverlay.setVisibility(View.GONE);
+        }
+
+        if (rlExpandDecor.getVisibility() == View.VISIBLE) {
+            rlExpandDecor.startAnimation(animation);
+            rlExpandDecor.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+            rlExpandEditDecor.startAnimation(animation);
+            rlExpandEditDecor.setVisibility(View.GONE);
+        }
+
+        if (rlExpandEditTemp.getVisibility() == View.VISIBLE) {
+            rlExpandEditTemp.startAnimation(animation);
+            rlExpandEditTemp.setVisibility(View.GONE);
+        }
+
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+        if (vOperation.getVisibility() == View.GONE) {
+            vOperation.startAnimation(animation);
+            llLayerExport.setVisibility(View.VISIBLE);
+            llReUndo.setVisibility(View.VISIBLE);
+            vOperation.setVisibility(View.VISIBLE);
+        } else {
+            @SuppressLint("InflateParams")
+            View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit, null);
+            tvCancel = v.findViewById(R.id.tvCancel);
+            tvDiscard = v.findViewById(R.id.tvDiscard);
+            tvSave = v.findViewById(R.id.tvSave);
+
+            AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
+            dialog.setView(v);
+            dialog.setCancelable(false);
+            dialog.show();
+
+            tvDiscard.setOnClickListener(vDiscard -> {
+                clearData();
+                super.onBackPressed();
+                Utils.setAnimExit(this);
+                dialog.cancel();
+            });
+
+            tvCancel.setOnClickListener(vCancel -> dialog.cancel());
+        }
     }
 
     @Override

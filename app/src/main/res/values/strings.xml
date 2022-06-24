@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">RemiTextArt</string>
 
+    <string name="done">Done!</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard Changes</string>
     <string name="cancel">Cancel</string>
     <string name="all">All</string>
     <string name="del">Delete</string>
@@ -35,6 +38,7 @@
     <string name="des_pro">Could Not Find Any Results!</string>
     <string name="dialog_title_del_pro">Delete this Project?</string>
     <string name="dialog_des_del_pro">Are you sure want to delete this Project?</string>
+    <string name="des_exit_1">Save Changes Before Closing?</string>
 
     //settings
     <string name="setting">Setting</string>
@@ -130,4 +134,11 @@
 
     //cropImage
     <string name="crop_image">Crop Image</string>
+
+    //export
+    <string name="export">Export</string>
+    <string name="save_photo">Save To Photos</string>
+    <string name="remove">Remove WaterMark</string>
+
+
 </resources>

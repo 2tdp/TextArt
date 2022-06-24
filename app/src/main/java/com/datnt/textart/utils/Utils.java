@@ -5,6 +5,8 @@ import android.app.ActivityOptions;
 import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -19,7 +21,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
@@ -37,12 +41,19 @@ import androidx.core.view.WindowCompat;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.datnt.textart.R;
+import com.datnt.textart.customview.CustomView;
+import com.datnt.textart.sharepref.DataLocalManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class Utils {
 
@@ -137,12 +148,12 @@ public class Utils {
         return bitmap;
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
-        Bitmap b = Bitmap.createBitmap(v.getLayoutParams().width, v.getLayoutParams().height, Bitmap.Config.ARGB_8888);
+    public static Bitmap loadBitmapFromView(View view) {
+        Bitmap b = Bitmap.createBitmap(view.getLayoutParams().width, view.getLayoutParams().height, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(b);
-        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        c.rotate(v.getRotation(), (float) v.getWidth() / 2, (float) v.getHeight() / 2);
-        v.draw(c);
+        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        c.rotate(view.getRotation(), (float) view.getWidth() / 2, (float) view.getHeight() / 2);
+        view.draw(c);
         return b;
     }
 
@@ -194,6 +205,71 @@ public class Utils {
                 return GradientDrawable.Orientation.RIGHT_LEFT;
         }
         return GradientDrawable.Orientation.TOP_BOTTOM;
+    }
+
+    public static void saveImage(Context context, Bitmap bitmap, String namePic) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (bitmap != null) {
+
+                String fileName = makeFilename(context, namePic);
+
+                File outFile = new File(fileName);
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.MediaColumns.DISPLAY_NAME, outFile.getName());
+                values.put(MediaStore.MediaColumns.MIME_TYPE, getMIMEType(outFile.getPath()));
+                values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+
+                ContentResolver contentResolver = context.getApplicationContext().getContentResolver();
+
+                Uri contentUri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL);
+
+                Uri newUri = null;
+
+                OutputStream output;
+                try {
+                    newUri = contentResolver.insert(contentUri, values);
+
+                    output = contentResolver.openOutputStream(newUri);
+
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                    showToast(context, context.getString(R.string.done));
+                } catch (IOException e) {
+                    contentResolver.delete(newUri, null, null);
+                }
+            }
+        } else {
+            if (bitmap != null) {
+                try {
+                    String fileName = makeFilename(context, namePic);
+
+                    File outFile = new File(fileName);
+
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, outFile.getName());
+                    values.put(MediaStore.Images.Media.MIME_TYPE, getMIMEType(outFile.getPath()));
+
+                    values.put(MediaStore.MediaColumns.DATA, outFile.getPath());
+
+                    ContentResolver contentResolver = context.getContentResolver();
+
+                    Uri uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                    OutputStream output;
+                    try {
+                        output = contentResolver.openOutputStream(uri);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                        showToast(context, context.getString(R.string.done));
+                    } catch (IOException e) {
+                        if (uri != null) {
+                            contentResolver.delete(uri, null, null);
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.d("onBtnSavePng", e.toString()); // java.io.IOException: Operation not permitted
+                }
+            }
+        }
     }
 
     private static String makeFilename(Context activity, String namePic) {
