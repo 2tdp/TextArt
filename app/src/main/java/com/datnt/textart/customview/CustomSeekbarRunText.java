@@ -96,7 +96,6 @@ public class CustomSeekbarRunText extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
-        int value;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (onSeekbarResult != null) onSeekbarResult.onDown(this);
@@ -110,7 +109,7 @@ public class CustomSeekbarRunText extends View {
                 if (onSeekbarResult != null) onSeekbarResult.onMove(this, progress);
                 break;
             case MotionEvent.ACTION_UP:
-                if (onSeekbarResult != null) onSeekbarResult.onUp(this);
+                if (onSeekbarResult != null) onSeekbarResult.onUp(this, progress);
                 break;
         }
         return true;

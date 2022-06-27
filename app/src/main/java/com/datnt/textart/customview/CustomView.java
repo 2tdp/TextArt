@@ -31,7 +31,7 @@ public class CustomView extends View {
     private Path path;
     private Paint paint;
     private Shader shader;
-    private Bitmap bitmap;
+    private Bitmap bitmap, bmR;
     private ColorModel color;
     private Rect src;
     private int size;
@@ -70,12 +70,16 @@ public class CustomView extends View {
 
         if (bitmap != null) {
             setSRC(size);
-            canvas.drawBitmap(bitmap, src, setDST(size), paint);
+            canvas.drawBitmap(bitmap, null, setDST(size), paint);
         } else {
             setSizeColor(size);
             resetColor();
             canvas.drawPath(path, paint);
         }
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
     }
 
     public float getW() {
@@ -87,8 +91,10 @@ public class CustomView extends View {
     }
 
     public void setData(Bitmap bitmap, ColorModel color) {
+
         if (bitmap != null) {
             this.bitmap = bitmap;
+            this.bmR = bitmap;
             this.color = null;
         } else {
             this.bitmap = null;
@@ -138,11 +144,6 @@ public class CustomView extends View {
         switch (size) {
             case 1:
                 return createDST(1f);
-//                if (w / h > 1) {
-//                    return new RectF((w - h) / 2, 0, (w + h) / 2, h);
-//                } else if (w / h < 1) {
-//                    return new RectF(0, (h - w) / 2, w, (h + w) / 2);
-//                }
             case 2:
                 return createDST(9 / 16f);
             case 3:
@@ -170,10 +171,14 @@ public class CustomView extends View {
     private RectF createDST(float scale) {
         RectF dst = new RectF();
 
-        if (w / h < scale) {
-            dst.set(0, (h * (1 - 1 / scale)) / 2, w, (h * (1 + 1 / scale)) / 2);
-        } else if (w / h > scale) {
-            dst.set((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h);
+//        if (w / h < scale) {
+//            dst.set(0, (h * (1 - 1 / scale)) / 2, w, (h * (1 + 1 / scale)) / 2);
+//        } else if (w / h > scale) {
+//            dst.set((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h);
+//        }
+        w =getWidth();
+        h = getHeight();
+        if (w/h <scale){
         }
 
         return dst;
@@ -264,7 +269,7 @@ public class CustomView extends View {
 
     public void setBrightness(float brightness) {
         this.brightness = brightness;
-        bitmap = UtilsAdjust.adjustBrightness(bitmap, brightness * 255 / 100f);
+        bitmap = UtilsAdjust.adjustBrightness(bmR, brightness * 2f);
         invalidate();
     }
 
@@ -280,7 +285,7 @@ public class CustomView extends View {
         } else if (contrast < 1) {
             contrast = 1 + contrast / 50;
         }
-        bitmap = UtilsAdjust.adjustContrast(bitmap, contrast);
+        bitmap = UtilsAdjust.adjustContrast(bmR, contrast);
         invalidate();
     }
 
@@ -291,12 +296,8 @@ public class CustomView extends View {
 
     public void setExposure(float exposure) {
         this.exposure = exposure;
-        if (exposure > 1) {
-            exposure = exposure / 50 + 1;
-        } else if (exposure < 1) {
-            exposure = 1 + exposure / 50;
-        }
-        bitmap = UtilsAdjust.adjustExposure(bitmap, exposure);
+
+        bitmap = UtilsAdjust.adjustExposure(bmR, exposure * 4f);
         invalidate();
     }
 
@@ -307,12 +308,11 @@ public class CustomView extends View {
 
     public void setHighlight(float highlight) {
         this.highlight = highlight;
-        if (highlight > 1) {
-            highlight = highlight / 50 + 1;
-        } else if (highlight < 1) {
-            highlight = 1 + highlight / 50;
-        }
-        bitmap = UtilsAdjust.adjustHighLight(bitmap, highlight);
+
+        if (highlight > 0)
+            bitmap = UtilsAdjust.adjustHighLight(bmR, highlight * 4f);
+        else if (highlight < 0)
+            bitmap = UtilsAdjust.adjustHighLight(bmR, highlight * 2f);
         invalidate();
     }
 
@@ -322,6 +322,12 @@ public class CustomView extends View {
 
     public void setShadow(float shadow) {
         this.shadow = shadow;
+
+        if (shadow < 0)
+            bitmap = UtilsAdjust.adjustShadow(bmR, shadow * 4f);
+        else if (shadow > 0)
+            bitmap = UtilsAdjust.adjustShadow(bmR, shadow * 2f);
+        invalidate();
     }
 
     public float getBlack() {
@@ -330,6 +336,9 @@ public class CustomView extends View {
 
     public void setBlack(float black) {
         this.black = black;
+
+        bitmap = UtilsAdjust.adjustBlacks(bmR, black * 2f);
+        invalidate();
     }
 
     public float getWhite() {
@@ -338,6 +347,9 @@ public class CustomView extends View {
 
     public void setWhite(float white) {
         this.white = white;
+
+        bitmap = UtilsAdjust.adjustWhites(bmR, white * 2f);
+        invalidate();
     }
 
     public float getSaturation() {
@@ -347,13 +359,9 @@ public class CustomView extends View {
 
     public void setSaturation(float saturation) {
         this.saturation = saturation;
-//        if (saturation > 1) {
-//            saturation = saturation / 50 + 1;
-//        } else if (saturation < 1) {
-//            saturation = 1 + saturation / 50;
-//        }
+
         Log.d("2tdp", "setSaturation: " + saturation);
-        bitmap = UtilsAdjust.adjustSaturation(bitmap, saturation * 255 / 100f);
+        bitmap = UtilsAdjust.adjustSaturation(bmR, saturation * 2f);
         invalidate();
     }
 
@@ -364,7 +372,7 @@ public class CustomView extends View {
 
     public void setHue(float hue) {
         this.hue = hue;
-        bitmap = UtilsAdjust.adjustHue(bitmap, hue * 360 / 100f);
+        bitmap = UtilsAdjust.adjustHue(bmR, hue * 360 / 100f);
         invalidate();
     }
 
@@ -374,6 +382,9 @@ public class CustomView extends View {
 
     public void setWarmth(float warmth) {
         this.warmth = warmth;
+
+        bitmap = UtilsAdjust.adjustWarmth(bmR, warmth * 2f);
+        invalidate();
     }
 
     public float getVibrance() {
@@ -382,6 +393,9 @@ public class CustomView extends View {
 
     public void setVibrance(float vibrance) {
         this.vibrance = vibrance;
+
+        bitmap = UtilsAdjust.adjustVibrance(bmR, vibrance * 2f);
+        invalidate();
     }
 
     public float getVignette() {
@@ -390,5 +404,8 @@ public class CustomView extends View {
 
     public void setVignette(float vignette) {
         this.vignette = vignette;
+
+        bitmap = UtilsAdjust.adjustVignette(bmR, vignette * 2f);
+        invalidate();
     }
 }

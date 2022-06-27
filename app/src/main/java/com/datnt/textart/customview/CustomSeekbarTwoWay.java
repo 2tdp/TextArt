@@ -17,7 +17,7 @@ public class CustomSeekbarTwoWay extends View {
 
     private Paint paint, paintProgress;
     private int progress;
-    private int max;
+    private int max, value;
     private float sizeThumb, sizeBg, sizePos;
     private OnSeekbarResult onSeekbarResult;
 
@@ -77,7 +77,6 @@ public class CustomSeekbarTwoWay extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
-        int value;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (onSeekbarResult != null) onSeekbarResult.onDown(this);
@@ -90,10 +89,11 @@ public class CustomSeekbarTwoWay extends View {
                 invalidate();
                 if (progress > max / 2) value = progress - max / 2;
                 else value = -(max / 2 - progress);
+
                 if (onSeekbarResult != null) onSeekbarResult.onMove(this, value);
                 break;
             case MotionEvent.ACTION_UP:
-                if (onSeekbarResult != null) onSeekbarResult.onUp(this);
+                if (onSeekbarResult != null) onSeekbarResult.onUp(this, value);
                 break;
         }
         return true;

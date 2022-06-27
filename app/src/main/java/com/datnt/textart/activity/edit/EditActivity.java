@@ -520,6 +520,7 @@ public class EditActivity extends AppCompatActivity {
         rlExport.setOnClickListener(vCancel -> dialog.cancel());
         llSavePhoto.setOnClickListener(vSave -> {
             stickerView.saveImage(this);
+            dialog.cancel();
         });
     }
 
@@ -605,7 +606,7 @@ public class EditActivity extends AppCompatActivity {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                         if (bitmap != null) {
                             bitmapFilterBlend = Bitmap.createBitmap(Utils.modifyOrientation(getBaseContext(),
-                                    Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
+                                    Bitmap.createScaledBitmap(bitmap, 512, 512 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
                         } else
                             Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
                     } catch (IOException e) {
@@ -739,7 +740,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -759,7 +760,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -782,7 +783,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -878,7 +879,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -1112,7 +1113,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -1250,7 +1251,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -1459,6 +1460,7 @@ public class EditActivity extends AppCompatActivity {
 
         tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
 
+        vMain.setData(vMain.getBitmap(), null);
         sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -1472,8 +1474,8 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
-
+            public void onUp(View v, int value) {
+//                setValueAdjust(value, pos);
             }
         });
     }
@@ -2062,7 +2064,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2158,7 +2160,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2178,7 +2180,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2201,7 +2203,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2493,7 +2495,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2659,7 +2661,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2757,7 +2759,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2777,7 +2779,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2800,7 +2802,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2899,7 +2901,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2916,7 +2918,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -2933,7 +2935,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -3494,7 +3496,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -3514,7 +3516,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -3537,7 +3539,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });
@@ -3632,7 +3634,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onUp(View v) {
+            public void onUp(View v, int value) {
 
             }
         });

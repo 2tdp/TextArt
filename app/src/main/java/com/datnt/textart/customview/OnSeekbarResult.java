@@ -8,6 +8,6 @@ public interface OnSeekbarResult {
 
     void onMove(View v, int value);
 
-    void onUp(View v);
+    void onUp(View v, int value);
 
 }

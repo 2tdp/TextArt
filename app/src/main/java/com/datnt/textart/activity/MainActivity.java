@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 Utils.setIntent(this, TemplateActivity.class.getName());
                 dialog.cancel();
             });
+
             ivCreate.setOnClickListener(v3 -> {
                 Utils.setIntent(this, CreateProjectActivity.class.getName());
                 dialog.cancel();

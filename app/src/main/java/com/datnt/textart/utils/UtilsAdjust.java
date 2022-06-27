@@ -18,11 +18,14 @@ import android.util.Log;
 
 import com.datnt.textart.model.ColorModel;
 
+import org.wysaid.nativePort.CGENativeLibrary;
+
 public class UtilsAdjust {
 
     private static final float lumR = 0.3086f; // or  0.2125
     private static final float lumG = 0.6094f;  // or  0.7154
     private static final float lumB = 0.0820f; // or  0.0721
+    private static final String TAG = "2tdp";
 
     public static void drawIconWithPath(Canvas canvas, Path path, Paint paint, float size, int x, int y) {
         RectF rectF = new RectF();
@@ -66,28 +69,8 @@ public class UtilsAdjust {
     }
 
     public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {
-        brightness = cleanValue(brightness, 100);
-        if (brightness == 0) {
-            return bmp;
-        }
-
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        1, 0, 0, 0, brightness,
-                        0, 1, 0, 0, brightness,
-                        0, 0, 1, 0, brightness,
-                        0, 0, 0, 1, 0,
-                });
-
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
+        Log.d(TAG, "adjustBrightness: " + brightness);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust brightness 0.5", brightness / 100f);
     }
 
     public static Bitmap adjustContrast(Bitmap bmp, float contrast) {
@@ -122,92 +105,33 @@ public class UtilsAdjust {
     }
 
     public static Bitmap adjustExposure(Bitmap bmp, float exposure) {
-        exposure = cleanValue(exposure, 100);
-
-        if (exposure == 0) {
-            return bmp;
-        }
-        exposure = (float) Math.pow(2, exposure);
-
-        float[] mat = new float[]
-                {
-                        exposure, 0, 0, 0, 0,
-                        0, exposure, 0, 0, 0,
-                        0, 0, exposure, 0, 0,
-                        0, 0, 0, 1, 0
-                };
-
-        ColorMatrix cm = new ColorMatrix(mat);
-
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
+        Log.d(TAG, "adjustExposure: " + exposure);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust exposure 0.62", exposure / 100f);
     }
 
     public static Bitmap adjustHighLight(Bitmap bmp, float highLight) {
-        highLight = cleanValue(highLight, 100);
+        Log.d(TAG, "adjustHighLight: " + highLight);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust shadowhighlight 0 200", highLight / 100);
+    }
 
-        if (highLight == 0) {
-            return bmp;
-        }
-        float x;
-        if (highLight > 0)
-            x = 1 + 3 * highLight / 100;
-        else
-            x = 3 * highLight / 100;
+    public static Bitmap adjustShadow(Bitmap bmp, float shadow) {
+        Log.d(TAG, "adjustShadow: " + shadow);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust shadowhighlight -99 0", shadow / 100);
+    }
 
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        lumR * (1 - x) + x, 0, 0, 0, 0,
-                        0, lumG * (1 - x) + x, 0, 0, 0,
-                        0, 0, lumB * (1 - x) + x, 0, 0,
-                        0, 0, 0, 1, 0,
-                });
+    public static Bitmap adjustBlacks(Bitmap bmp, float blacks) {
+        Log.d(TAG, "adjustBlacks: " + blacks);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@selcolor black(-50, -50, -50, -50)", -blacks / 100f);
+    }
 
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
+    public static Bitmap adjustWhites(Bitmap bmp, float whites) {
+        Log.d(TAG, "adjustWhites: " + whites);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@selcolor white(62, 62, 62, 62)", -whites / 100f);
     }
 
     public static Bitmap adjustSaturation(Bitmap bmp, float saturation) {
-        saturation = cleanValue(saturation, 100);
-        if (saturation == 0) {
-            return bmp;
-        }
-
-        float x = 1 + ((saturation > 0) ? 3 * saturation / 100 : saturation / 100);
-
-        float[] mat = new float[]
-                {
-                        lumR * (1 - x) + x, lumG * (1 - x), lumB * (1 - x), 0, 0,
-                        lumR * (1 - x), lumG * (1 - x) + x, lumB * (1 - x), 0, 0,
-                        lumR * (1 - x), lumG * (1 - x), lumB * (1 - x) + x, 0, 0,
-                        0, 0, 0, 1, 0,
-                };
-
-        ColorMatrix cm = new ColorMatrix(mat);
-
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
+        Log.d(TAG, "adjustSaturation: " + saturation);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust saturation 2", saturation / 100f);
     }
 
     public static Bitmap adjustHue(Bitmap bmp, float value) {
@@ -234,6 +158,21 @@ public class UtilsAdjust {
         canvas.drawBitmap(bmp, 0, 0, paint);
 
         return ret;
+    }
+
+    public static Bitmap adjustWarmth(Bitmap bmp, float warmth) {
+        Log.d(TAG, "adjustWarmth: " + warmth);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust colorbalance 0.34 0.2 -0.49", warmth / 100f);
+    }
+
+    public static Bitmap adjustVibrance(Bitmap bmp, float vibrance) {
+        Log.d(TAG, "adjustVibrance: " + vibrance);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust saturation 0 @adjust level 0 0.83921 0.8772", -vibrance / 100f);
+    }
+
+    public static Bitmap adjustVignette(Bitmap bmp, float vignette) {
+        Log.d(TAG, "adjustVignette: " + vignette);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@vignette 0.1 0.9", -vignette / 100f);
     }
 
     protected static float cleanValue(float p_val, float p_limit) {

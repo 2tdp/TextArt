@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="@dimen/_248sdp"
-        android:layout_height="@dimen/_352sdp"
+        android:layout_height="@dimen/_340sdp"
         android:layout_centerInParent="true"
         android:padding="@dimen/_4sdp">
 
@@ -40,7 +40,6 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
                 android:text="@string/rp_1"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_15ssp" />
@@ -55,11 +54,10 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/gray_2" />
 
             <TextView
@@ -67,7 +65,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/_4sdp"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
