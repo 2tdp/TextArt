@@ -3,12 +3,16 @@ package com.datnt.textart.activity.project;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.activity.Settings;
+import com.datnt.textart.customview.CropRatioView;
 import com.datnt.textart.utils.Utils;
+import com.edmodo.cropper.CropImageView;
 
 public class ProjectsActivity extends AppCompatActivity {
 

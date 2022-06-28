@@ -111,10 +111,15 @@
         app:showBorder="true"
         app:showIcons="true">
 
-        <com.datnt.textart.customview.CustomView
-            android:id="@+id/vMain"
+        <com.datnt.textart.customview.CropRatioView
+            android:id="@+id/vCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/vMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </com.datnt.textart.customview.stickerview.StickerView>
 
     <View

@@ -1,7 +1,5 @@
 package com.datnt.textart.fragment.create;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

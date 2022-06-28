@@ -9,10 +9,10 @@
     tools:context=".activity.project.ProjectsActivity">
 
     <RelativeLayout
-        android:padding="@dimen/_5sdp"
         android:id="@+id/rlToolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_42sdp">
+        android:layout_height="@dimen/_42sdp"
+        android:padding="@dimen/_5sdp">
 
         <ImageView
             android:id="@+id/ivBack"

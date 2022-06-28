@@ -60,6 +60,7 @@ import com.datnt.textart.adapter.TitleDecorAdapter;
 import com.datnt.textart.adapter.TitleEmojiAdapter;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.textart.customview.CropImage;
+import com.datnt.textart.customview.CropRatioView;
 import com.datnt.textart.customview.CustomSeekbarRunText;
 import com.datnt.textart.customview.CustomSeekbarTwoWay;
 import com.datnt.textart.customview.CustomView;
@@ -115,7 +116,7 @@ public class EditActivity extends AppCompatActivity {
     private ImageView ivOriginal, iv1_1, iv9_16, iv4_5, iv16_9, ivBack, ivTick, ivUndo, ivRedo,
             ivLayer, ivExport, ivLook, ivLock, ivColor, ivColorBlur, ivColorBlurImage, ivVignette, ivVibrance,
             ivWarmth, ivHue, ivSaturation, ivWhites, ivBlacks, ivShadows, ivHighLight, ivExposure,
-            ivContrast, ivBrightness, ivColorBlurDecor, ivColorBlurTemp, ivTickCropImage;
+            ivContrast, ivBrightness, ivColorBlurDecor, ivColorBlurTemp, ivTickCropImage, vMain;
     private TextView tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9, tvTitle, tvFontSize, tvCancelEdittext,
             tvTitleEditText, tvShearX, tvShearY, tvStretch, tvXPos, tvYPos, tvBlur, tvCancelEditEmoji,
             tvTitleEmoji, tvCancelEditImage, tvTitleEditImage, tvXPosImage, tvYPosImage, tvBlurImage,
@@ -152,7 +153,7 @@ public class EditActivity extends AppCompatActivity {
     private LinearLayout llLayerExport, llReUndo, llEditTransform, llEditShadow, llEditEmoji, llEditShadowImage,
             llEditOverlay, llEditShadowDecor, llEditShadowTemp;
     private HorizontalScrollView vSize, vOperation, vEditText, vEditImage, vEditBackground, vEditDecor, vEditTemp;
-    private CustomView vMain;
+    private CropRatioView vCrop;
     private StickerView stickerView;
     private RecyclerView rcvEditColor, rcvTitleEmoji, rcvEditFilter, rcvEditBlend, rcvEditFilterBackground,
             rcvOverlay, rcvTitleDecor, rcvEditColorDecor, rcvLayer, rcvEditColorTemp, rcvTextTemp, rcvEditCrop;
@@ -163,7 +164,7 @@ public class EditActivity extends AppCompatActivity {
     private TitleDecorAdapter titleDecorAdapter;
     private FilterBlendImageAdapter filterBlendImageAdapter;
     private LayerAdapter layerAdapter;
-    private Bitmap bitmap, bitmapDrawable, bitmapFilterBlend;
+    private Bitmap bmRoot, bitmap, bitmapDrawable, bitmapFilterBlend, bitmapAjust;
     private ArrayList<StickerModel> lstSticker;
     private ArrayList<FilterBlendModel> lstFilterBlend;
     private ArrayList<ColorModel> lstColor;
@@ -173,6 +174,8 @@ public class EditActivity extends AppCompatActivity {
             replaceOverlay, replaceDecor, islLayer, isFirstLayer, isTemplate;
     private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0, colorShadow = 0;
     private float opacityBackground = 1, radiusBlur = 5f, dx = 0f, dy = 0f;
+    private float brightness = 0f, contrast = 0f, exposure = 0f, highlight = 0f, shadow = 0f,
+            black = 0f, white = 0f, saturation = 0f, hue = 0f, warmth = 0f, vibrance = 0f, vignette = 0f;
     private Animation animation;
 
     @Override
@@ -350,12 +353,12 @@ public class EditActivity extends AppCompatActivity {
             if (isTemplate) seekAndHideLayout(13);
             else seekAndHideLayout(0);
 
-            stickerView.getLayoutParams().width = (int) vMain.getW();
-            stickerView.getLayoutParams().height = (int) vMain.getH();
-
-            Log.d("2tdp", "evenClick: " + vMain.getW() + "...." + vMain.getH());
-//            stickerView.getLayoutParams().width = 200;
-//            stickerView.getLayoutParams().height = 200;
+            bitmap = vCrop.getCroppedImage();
+            if (vCrop.getVisibility() == View.VISIBLE) {
+                vCrop.setVisibility(View.GONE);
+                vMain.setImageBitmap(bitmap);
+                vMain.setVisibility(View.VISIBLE);
+            }
         });
 
         rlLayer.setOnClickListener(v -> {
@@ -371,13 +374,6 @@ public class EditActivity extends AppCompatActivity {
         rlPickDecor.setOnClickListener(v -> seekAndHideLayout(0));
         rlEditDecor.setOnClickListener(v -> seekAndHideLayout(0));
         rlEditTemp.setOnClickListener(v -> seekAndHideLayout(0));
-
-        //size
-        ivOriginal.setOnClickListener(v -> checkSize(0));
-        iv1_1.setOnClickListener(v -> checkSize(1));
-        iv9_16.setOnClickListener(v -> checkSize(2));
-        iv4_5.setOnClickListener(v -> checkSize(3));
-        iv16_9.setOnClickListener(v -> checkSize(4));
 
         //template
         rlDelTemp.setOnClickListener(v -> delStick());
@@ -464,7 +460,7 @@ public class EditActivity extends AppCompatActivity {
 
         //background
         rlBackground.setOnClickListener(v -> background());
-        rlDelBackground.setOnClickListener(v -> vMain.setData(null, new ColorModel(Color.WHITE, Color.WHITE, 0, false)));
+        rlDelBackground.setOnClickListener(v -> vCrop.setData(null, new ColorModel(Color.WHITE, Color.WHITE, 0, false)));
         rlReplaceBackground.setOnClickListener(v -> replaceBackground());
         rlAdjustBackground.setOnClickListener(v -> adjustBackground());
         rlFilterBackground.setOnClickListener(v -> filterBackground());
@@ -502,6 +498,11 @@ public class EditActivity extends AppCompatActivity {
 
         //size
         rlCrop.setOnClickListener(v -> seekAndHideLayout(12));
+        ivOriginal.setOnClickListener(v -> checkSize(0));
+        iv1_1.setOnClickListener(v -> checkSize(1));
+        iv9_16.setOnClickListener(v -> checkSize(2));
+        iv4_5.setOnClickListener(v -> checkSize(3));
+        iv16_9.setOnClickListener(v -> checkSize(4));
     }
 
     private void exportPhoto() {
@@ -1224,12 +1225,12 @@ public class EditActivity extends AppCompatActivity {
     //flip
     private void flipXBackground() {
         bitmap = UtilsAdjust.createFlippedBitmap(bitmap, true, false);
-        vMain.setData(bitmap, null);
+        vMain.setImageBitmap(bitmap);
     }
 
     private void flipYBackground() {
         bitmap = UtilsAdjust.createFlippedBitmap(bitmap, false, true);
-        vMain.setData(bitmap, null);
+        vMain.setImageBitmap(bitmap);
     }
 
     //opacity
@@ -1324,7 +1325,7 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.changeNotify();
 
             Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filterBlend.getParameterFilter(), 0.8f);
-            vMain.setData(bm, null);
+            vMain.setImageBitmap(bm);
             positionFilterBackground = pos;
         });
         if (!lstFilterBlend.isEmpty()) filterBlendImageAdapter.setData(lstFilterBlend);
@@ -1421,46 +1422,46 @@ public class EditActivity extends AppCompatActivity {
     private void adjustEditOption(int pos) {
         switch (pos) {
             case 0:
-                sbAdjust.setProgress((int) vMain.getBrightness());
+                sbAdjust.setProgress((int) brightness);
                 break;
             case 1:
-                sbAdjust.setProgress((int) vMain.getContrast());
+                sbAdjust.setProgress((int) contrast);
                 break;
             case 2:
-                sbAdjust.setProgress((int) vMain.getExposure());
+                sbAdjust.setProgress((int) exposure);
                 break;
             case 3:
-                sbAdjust.setProgress((int) vMain.getHighlight());
+                sbAdjust.setProgress((int) highlight);
                 break;
             case 4:
-                sbAdjust.setProgress((int) vMain.getShadow());
+                sbAdjust.setProgress((int) shadow);
                 break;
             case 5:
-                sbAdjust.setProgress((int) vMain.getBlack());
+                sbAdjust.setProgress((int) black);
                 break;
             case 6:
-                sbAdjust.setProgress((int) vMain.getWhite());
+                sbAdjust.setProgress((int) white);
                 break;
             case 7:
-                sbAdjust.setProgress((int) vMain.getSaturation());
+                sbAdjust.setProgress((int) saturation);
                 break;
             case 8:
-                sbAdjust.setProgress((int) vMain.getHue());
+                sbAdjust.setProgress((int) hue);
                 break;
             case 9:
-                sbAdjust.setProgress((int) vMain.getWarmth());
+                sbAdjust.setProgress((int) warmth);
                 break;
             case 10:
-                sbAdjust.setProgress((int) vMain.getVibrance());
+                sbAdjust.setProgress((int) vibrance);
                 break;
             case 11:
-                sbAdjust.setProgress((int) vMain.getVignette());
+                sbAdjust.setProgress((int) vignette);
                 break;
         }
 
         tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
 
-        vMain.setData(vMain.getBitmap(), null);
+        bitmapAjust = bitmap;
         sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -1483,42 +1484,56 @@ public class EditActivity extends AppCompatActivity {
     private void setValueAdjust(int value, int pos) {
         switch (pos) {
             case 0:
-                vMain.setBrightness(value);
+                brightness = value * 2f;
+                bitmap = UtilsAdjust.adjustBrightness(bitmapAjust, brightness);
                 break;
             case 1:
-                vMain.setContrast(value);
+                contrast = value;
+                bitmap = UtilsAdjust.adjustBrightness(bitmapAjust, contrast);
                 break;
             case 2:
-                vMain.setExposure(value);
+                exposure = value * 4f;
+                bitmap = UtilsAdjust.adjustExposure(bitmapAjust, exposure);
                 break;
             case 3:
-                vMain.setHighlight(value);
+                if (value > 0) highlight = value * 4f;
+                else if (value < 0) highlight = value * 2f;
+                bitmap = UtilsAdjust.adjustHighLight(bitmapAjust, highlight);
                 break;
             case 4:
-                vMain.setShadow(value);
-                break;
+                if (value > 0) highlight = value * 4f;
+                else if (value < 0) highlight = value * 2f;
+                bitmap = UtilsAdjust.adjustHighLight(bitmapAjust, shadow);
             case 5:
-                vMain.setBlack(value);
+                black = value * 2f;
+                bitmap = UtilsAdjust.adjustBlacks(bitmapAjust, black);
                 break;
             case 6:
-                vMain.setWhite(value);
+                white = value * 2f;
+                bitmap = UtilsAdjust.adjustWhites(bitmapAjust, white);
                 break;
             case 7:
-                vMain.setSaturation(value);
+                saturation = value * 2f;
+                bitmap = UtilsAdjust.adjustSaturation(bitmapAjust, saturation);
                 break;
             case 8:
-                vMain.setHue(value);
+                hue = value * 360 / 100f;
+                bitmap = UtilsAdjust.adjustHue(bitmapAjust, hue);
                 break;
             case 9:
-                vMain.setWarmth(value);
+                warmth = value * 2f;
+                bitmap = UtilsAdjust.adjustWarmth(bitmapAjust, warmth);
                 break;
             case 10:
-                vMain.setVibrance(value);
+                vibrance = value * 2f;
+                bitmap = UtilsAdjust.adjustVibrance(bitmapAjust, vibrance);
                 break;
             case 11:
-                vMain.setVignette(value);
+                vignette = value * 2f;
+                bitmap = UtilsAdjust.adjustVignette(bitmapAjust, vignette);
                 break;
         }
+        vMain.setImageBitmap(bitmap);
     }
 
     private void setUpOptionAdjustBackground(int pos) {
@@ -3834,14 +3849,22 @@ public class EditActivity extends AppCompatActivity {
         if (!strUri.equals("")) {
             try {
                 bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
-                if (bitmap != null && isBackground) setUpDataFilterBackground();
-                if (isBackground)
+                bmRoot = bitmap;
+                if (bitmap != null && isBackground) {
+                    setUpDataFilterBackground();
                     bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterBlendImage.EFFECT_CONFIGS[positionFilterBackground], 0.8f);
-                if (bitmap != null) vMain.setData(bitmap, null);
-                if (!isBackground) vMain.setSize(0);
-                else {
-                    vMain.setSize(sizeMain);
+                    adjust();
+                    if (vCrop.getVisibility() == View.GONE) {
+                        seekAndHideLayout(12);
+                        vCrop.setData(bitmap, null);
+                        vCrop.setSize(sizeMain);
+                    }
                     vMain.setAlpha(opacityBackground);
+                    Log.d("2tdp", "getData: " + 1);
+                } else if (!isBackground) {
+                    vCrop.setData(bitmap, null);
+                    vCrop.setSize(0);
+                    Log.d("2tdp", "getData: " + 2);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -3854,11 +3877,42 @@ public class EditActivity extends AppCompatActivity {
             stickerView.addSticker(drawableSticker);
             lstSticker.add(new StickerModel(null, null, template, null, null, null, drawableSticker, null, -1, -1));
             isTemplate = true;
-            if (bitmap != null) vMain.setData(bitmap, null);
+            if (bitmap != null)
+                vCrop.setData(bitmap, null);
+//                vMain.setImageBitmap(bitmap);
         } else {
             ColorModel color = DataLocalManager.getColor("color");
-            if (color != null) vMain.setData(null, color);
+            if (color != null) vCrop.setData(null, color);
         }
+    }
+
+    private void adjust() {
+        if (brightness != 0f)
+            bitmap = UtilsAdjust.adjustBrightness(bitmapAjust, brightness);
+        if (contrast != 0f)
+            bitmap = UtilsAdjust.adjustBrightness(bitmapAjust, contrast);
+        if (exposure != 0f)
+            bitmap = UtilsAdjust.adjustExposure(bitmapAjust, exposure);
+        if (highlight != 0f)
+            bitmap = UtilsAdjust.adjustHighLight(bitmapAjust, highlight);
+        if (shadow != 0f)
+            bitmap = UtilsAdjust.adjustHighLight(bitmapAjust, shadow);
+        if (black != 0f)
+            bitmap = UtilsAdjust.adjustBlacks(bitmapAjust, black);
+        if (white != 0f)
+            bitmap = UtilsAdjust.adjustWhites(bitmapAjust, white);
+        if (saturation != 0f)
+            bitmap = UtilsAdjust.adjustSaturation(bitmapAjust, saturation);
+        if (hue != 0f)
+            bitmap = UtilsAdjust.adjustHue(bitmapAjust, hue);
+        if (warmth != 0f)
+            bitmap = UtilsAdjust.adjustWarmth(bitmapAjust, warmth);
+        if (vibrance != 0f)
+            bitmap = UtilsAdjust.adjustVibrance(bitmapAjust, vibrance);
+        if (vignette != 0f)
+            bitmap = UtilsAdjust.adjustVignette(bitmapAjust, vignette);
+
+        vMain.setImageBitmap(bitmap);
     }
 
     private int getId() {
@@ -4697,10 +4751,11 @@ public class EditActivity extends AppCompatActivity {
                 if (vOperation.getVisibility() == View.VISIBLE) {
                     vOperation.startAnimation(animation);
                     vOperation.setVisibility(View.GONE);
-                    llLayerExport.setVisibility(View.GONE);
-                    llReUndo.setVisibility(View.GONE);
-                    vOperation.setVisibility(View.GONE);
                 }
+
+                llLayerExport.setVisibility(View.GONE);
+                llReUndo.setVisibility(View.GONE);
+                vOperation.setVisibility(View.GONE);
 
                 if (rlExpandEditText.getVisibility() == View.VISIBLE) {
                     rlExpandEditText.startAnimation(animation);
@@ -4757,6 +4812,8 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
 
+                if (vMain.getVisibility() == View.VISIBLE) vMain.setVisibility(View.GONE);
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vSize.getVisibility() == View.GONE) {
                     vSize.startAnimation(animation);
@@ -4764,6 +4821,7 @@ public class EditActivity extends AppCompatActivity {
                     vSize.setVisibility(View.VISIBLE);
                     ivTick.setVisibility(View.VISIBLE);
                 }
+                if (vCrop.getVisibility() == View.GONE) vCrop.setVisibility(View.VISIBLE);
                 break;
             case 13:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -4884,8 +4942,8 @@ public class EditActivity extends AppCompatActivity {
                 iv16_9.setBackgroundResource(R.drawable.boder_size_uncheck);
                 tv16_9.setTextColor(getResources().getColor(R.color.gray));
 
-                vMain.setSize(0);
-                if (bitmap != null) vMain.setData(bitmap, null);
+                vCrop.setSize(0);
+                if (bmRoot != null) vCrop.setData(bmRoot, null);
                 break;
             case 1:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_uncheck);
@@ -4899,8 +4957,8 @@ public class EditActivity extends AppCompatActivity {
                 iv16_9.setBackgroundResource(R.drawable.boder_size_uncheck);
                 tv16_9.setTextColor(getResources().getColor(R.color.gray));
 
-                vMain.setSize(1);
-                if (bitmap != null) vMain.setData(bitmap, null);
+                vCrop.setSize(1);
+                if (bmRoot != null) vCrop.setData(bmRoot, null);
                 break;
             case 2:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_uncheck);
@@ -4914,8 +4972,8 @@ public class EditActivity extends AppCompatActivity {
                 iv16_9.setBackgroundResource(R.drawable.boder_size_uncheck);
                 tv16_9.setTextColor(getResources().getColor(R.color.gray));
 
-                vMain.setSize(2);
-                if (bitmap != null) vMain.setData(bitmap, null);
+                vCrop.setSize(2);
+                if (bmRoot != null) vCrop.setData(bmRoot, null);
                 break;
             case 3:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_uncheck);
@@ -4929,8 +4987,8 @@ public class EditActivity extends AppCompatActivity {
                 iv16_9.setBackgroundResource(R.drawable.boder_size_uncheck);
                 tv16_9.setTextColor(getResources().getColor(R.color.gray));
 
-                vMain.setSize(3);
-                if (bitmap != null) vMain.setData(bitmap, null);
+                vCrop.setSize(3);
+                if (bmRoot != null) vCrop.setData(bmRoot, null);
                 break;
             case 4:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_uncheck);
@@ -4944,8 +5002,8 @@ public class EditActivity extends AppCompatActivity {
                 iv16_9.setBackgroundResource(R.drawable.boder_size_check);
                 tv16_9.setTextColor(getResources().getColor(R.color.black));
 
-                vMain.setSize(4);
-                if (bitmap != null) vMain.setData(bitmap, null);
+                vCrop.setSize(4);
+                if (bmRoot != null) vCrop.setData(bmRoot, null);
                 break;
         }
     }
@@ -4954,6 +5012,7 @@ public class EditActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         ivTick = findViewById(R.id.ivTick);
         stickerView = findViewById(R.id.stickerView);
+        vCrop = findViewById(R.id.vCrop);
         vMain = findViewById(R.id.vMain);
         ivOriginal = findViewById(R.id.ivOriginal);
         iv1_1 = findViewById(R.id.iv1_1);
