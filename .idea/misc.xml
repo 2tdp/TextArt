@@ -4,8 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/boder_dialog.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_choose.xml" value="0.1975" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_export.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_full_feature.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_lifetime_suports.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_remove_all_ads.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_tick_2.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_un_choose.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_untick_2.xml" value="0.1975" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_warning.xml" value="0.1975" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/ic_write.xml" value="0.1975" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/sticker_transparent_background.xml" value="0.1985" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/sticker_transparent_text.xml" value="0.1985" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/drawable/test.xml" value="0.2315" />
@@ -13,6 +21,7 @@
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_create_project.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_crop_image.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_edit.xml" value="0.33" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_main.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/activity_projects.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/dialog_check_permission.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/dialog_click_create.xml" value="0.3546875" />
@@ -22,6 +31,8 @@
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/dialog_pick_direction.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/fragment_one_splash.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/fragment_two_splash.xml" value="0.3546875" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/fragment_vip_one.xml" value="0.33" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/fragment_vip_two.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/item_draw_path.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/TextArt/app/src/main/res/layout/splash_activity.xml" value="0.3546875" />

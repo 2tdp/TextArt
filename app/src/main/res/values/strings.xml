@@ -140,5 +140,19 @@
     <string name="save_photo">Save To Photos</string>
     <string name="remove">Remove WaterMark</string>
 
+    //vip
+    <string name="title_vip_1">Start Like A Pro</string>
+    <string name="title_vip_2">Unlock All Feature</string>
+    <string name="str_continue">Continue</string>
+    <string name="write_on_photo_pro">Write On Photo Pro</string>
+    <string name="unlock_all_feature_and_content">Unlock All Feature And Content</string>
+    <string name="month">Monthly</string>
+    <string name="year">Yearly</string>
+    <string name="lifetime">Lifetime</string>
+    <string name="des_month">9$/month</string>
+    <string name="des_year">39$/year</string>
+    <string name="des_lifetime">100$</string>
+    <string name="des_vip_1">Restore Purchases</string>
+    <string name="des_vip_2">Subscription will auto-renew. Cancel anytime</string>
 
 </resources>

@@ -13,6 +13,7 @@ import com.datnt.textart.R;
 import com.datnt.textart.activity.project.CreateProjectActivity;
 import com.datnt.textart.activity.project.ProjectsActivity;
 import com.datnt.textart.activity.template.TemplateActivity;
+import com.datnt.textart.fragment.vip.VipOneFragment;
 import com.datnt.textart.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.activity_main);
 
         init();
@@ -65,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
         tvTemp.setOnClickListener(v -> {
             Utils.setIntent(this, TemplateActivity.class.getName());
         });
+
+        ivVip.setOnClickListener(v -> clickVip());
+    }
+
+    private void clickVip() {
+        VipOneFragment vipOneFragment = VipOneFragment.newInstance();
+        Utils.replaceFragment(getSupportFragmentManager(), vipOneFragment, false, true);
     }
 
     private void setUpFragmentManager() {

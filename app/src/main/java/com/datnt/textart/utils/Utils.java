@@ -2,7 +2,6 @@ package com.datnt.textart.utils;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -15,6 +14,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -23,13 +24,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsets;
-import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
@@ -39,10 +38,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.datnt.textart.R;
-import com.datnt.textart.customview.CustomView;
-import com.datnt.textart.sharepref.DataLocalManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,12 +50,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 public class Utils {
+
+    public static final int res = android.R.id.content;
+    public static final int enter = R.anim.slide_in_right;
+    public static final int exit = R.anim.slide_out_left;
+    public static final int popEnter = R.anim.slide_in_left_small;
+    public static final int popExit = R.anim.slide_out_right;
 
     public static void setStatusBarTransparent(Activity activity) {
         View decorView = activity.getWindow().getDecorView();
@@ -94,6 +96,32 @@ public class Utils {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(activity.getPackageName(), nameActivity));
         activity.startActivity(intent, ActivityOptions.makeCustomAnimation(activity, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
+    }
+
+    public static void replaceFragment(final FragmentManager manager, final Fragment fragment, boolean isAdd,
+                                       final boolean addBackStack) {
+        try {
+            FragmentTransaction fragmentTransaction = manager.beginTransaction();
+            if (enter != 0 && exit != 0 && popEnter != 0 && popExit != 0)
+                fragmentTransaction.setCustomAnimations(enter, exit, popEnter, popExit);
+            if (addBackStack)
+                fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
+            if (isAdd) {
+                fragmentTransaction.add(res, fragment, fragment.getClass().getSimpleName());
+            } else {
+                fragmentTransaction.replace(res, fragment, fragment.getClass().getSimpleName());
+            }
+            fragmentTransaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void clearBackStack(FragmentManager manager){
+        int count = manager.getBackStackEntryCount();
+        for (int i = 0; i < count; ++i) {
+            manager.popBackStack();
+        }
     }
 
     public static void setAnimExit(Activity activity) {
@@ -155,6 +183,15 @@ public class Utils {
         c.rotate(view.getRotation(), (float) view.getWidth() / 2, (float) view.getHeight() / 2);
         view.draw(c);
         return b;
+    }
+
+    public static Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+        Bitmap bmOverlay = Bitmap.createBitmap(bmp2.getWidth(), bmp2.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmOverlay);
+        RectF rectF = new RectF(0, 0, bmp2.getWidth(), bmp2.getHeight());
+        canvas.drawBitmap(bmp1, null, rectF, new Paint());
+        canvas.drawBitmap(bmp2, null, rectF, new Paint());
+        return bmOverlay;
     }
 
     public static Bitmap modifyOrientation(Context context, Bitmap bitmap, Uri uri) throws IOException {

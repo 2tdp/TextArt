@@ -1,41 +1,27 @@
 package com.datnt.textart.customview.stickerview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.animation.RotateAnimation;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.datnt.textart.R;
-import com.datnt.textart.customview.CustomView;
-import com.datnt.textart.data.DataColor;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.utils.UtilsAdjust;
-
-import java.io.Serializable;
 
 /**
  * Customize your sticker with text and image background.
