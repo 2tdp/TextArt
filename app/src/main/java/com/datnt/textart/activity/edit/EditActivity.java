@@ -341,22 +341,7 @@ public class EditActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> onBackPressed());
 
         ivExport.setOnClickListener(v -> exportPhoto());
-        ivTick.setOnClickListener(v -> {
-            if (isTemplate) seekAndHideLayout(13);
-            else seekAndHideLayout(0);
-
-            if (!isColor) {
-                bitmap = vCrop.getCroppedImage();
-                vCrop.setVisibility(View.GONE);
-                vMain.setImageBitmap(bitmap);
-                vMain.setVisibility(View.VISIBLE);
-                stickerView.getLayoutParams().height = bitmap.getHeight();
-                stickerView.getLayoutParams().width = bitmap.getWidth();
-            } else {
-                stickerView.getLayoutParams().height = (int) vColor.getH();
-                stickerView.getLayoutParams().width = (int) vColor.getW();
-            }
-        });
+        ivTick.setOnClickListener(v -> clickTick());
 
         rlLayer.setOnClickListener(v -> {
             seekAndHideLayout(0);
@@ -498,12 +483,33 @@ public class EditActivity extends AppCompatActivity {
         rlFlipXDecor.setOnClickListener(v -> stickerView.flipCurrentSticker(0));
 
         //size
-        rlCrop.setOnClickListener(v -> seekAndHideLayout(12));
+        rlCrop.setOnClickListener(v -> {
+            seekAndHideLayout(12);
+            stickerView.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
+            stickerView.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+        });
         ivOriginal.setOnClickListener(v -> checkSize(0));
         iv1_1.setOnClickListener(v -> checkSize(1));
         iv9_16.setOnClickListener(v -> checkSize(2));
         iv4_5.setOnClickListener(v -> checkSize(3));
         iv16_9.setOnClickListener(v -> checkSize(4));
+    }
+
+    private void clickTick() {
+        if (isTemplate) seekAndHideLayout(13);
+        else seekAndHideLayout(0);
+
+        if (!isColor) {
+            bitmap = vCrop.getCroppedImage();
+            vCrop.setVisibility(View.GONE);
+            vMain.setImageBitmap(bitmap);
+            vMain.setVisibility(View.VISIBLE);
+            stickerView.getLayoutParams().height = bitmap.getHeight();
+            stickerView.getLayoutParams().width = bitmap.getWidth();
+        } else {
+            stickerView.getLayoutParams().height = (int) vColor.getH();
+            stickerView.getLayoutParams().width = (int) vColor.getW();
+        }
     }
 
     private void exportPhoto() {
@@ -1225,13 +1231,17 @@ public class EditActivity extends AppCompatActivity {
 
     //flip
     private void flipXBackground() {
-        bitmap = UtilsAdjust.createFlippedBitmap(bitmap, true, false);
-        vMain.setImageBitmap(bitmap);
+        if (!isColor) {
+            bitmap = UtilsAdjust.createFlippedBitmap(bitmap, true, false);
+            vMain.setImageBitmap(bitmap);
+        }
     }
 
     private void flipYBackground() {
-        bitmap = UtilsAdjust.createFlippedBitmap(bitmap, false, true);
-        vMain.setImageBitmap(bitmap);
+        if (!isColor) {
+            bitmap = UtilsAdjust.createFlippedBitmap(bitmap, false, true);
+            vMain.setImageBitmap(bitmap);
+        }
     }
 
     //opacity
@@ -1248,7 +1258,11 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onMove(View v, int value) {
-                vMain.setAlpha(value / 100f);
+                if (!isColor)
+                    vMain.setAlpha(value / 100f);
+                else
+                    vColor.setAlpha(value / 100f);
+
                 opacityBackground = value / 100f;
             }
 
@@ -3881,7 +3895,12 @@ public class EditActivity extends AppCompatActivity {
             stickerView.addSticker(drawableSticker);
             lstSticker.add(new StickerModel(null, null, template, null, null, null, drawableSticker, null, -1, -1));
             isTemplate = true;
-            if (bitmap != null) vCrop.setData(bitmap);
+            if (bitmap != null)
+                if (vCrop.getVisibility() == View.GONE) {
+                    seekAndHideLayout(12);
+                    vCrop.setData(bitmap);
+                    vCrop.setSize(sizeMain);
+                }
         } else {
             ColorModel color = DataLocalManager.getColor("color");
             isColor = true;
@@ -4479,6 +4498,18 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
 
+                if (isColor) {
+                    rlFilterBackground.setVisibility(View.GONE);
+                    rlAdjustBackground.setVisibility(View.GONE);
+                    rlFlipYBackground.setVisibility(View.GONE);
+                    rlFlipXBackground.setVisibility(View.GONE);
+                } else {
+                    rlFilterBackground.setVisibility(View.VISIBLE);
+                    rlAdjustBackground.setVisibility(View.VISIBLE);
+                    rlFlipYBackground.setVisibility(View.VISIBLE);
+                    rlFlipXBackground.setVisibility(View.VISIBLE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditBackground.getVisibility() == View.GONE) {
                     rlExpandEditBackground.startAnimation(animation);
@@ -4763,7 +4794,6 @@ public class EditActivity extends AppCompatActivity {
 
                 llLayerExport.setVisibility(View.GONE);
                 llReUndo.setVisibility(View.GONE);
-                vOperation.setVisibility(View.GONE);
 
                 if (rlExpandEditText.getVisibility() == View.VISIBLE) {
                     rlExpandEditText.startAnimation(animation);
@@ -4822,7 +4852,8 @@ public class EditActivity extends AppCompatActivity {
 
                 if (vMain.getVisibility() == View.VISIBLE) vMain.setVisibility(View.GONE);
 
-                if (vColor.getVisibility() == View.VISIBLE) vColor.setVisibility(View.GONE);
+                if (vColor.getVisibility() == View.VISIBLE && !isColor)
+                    vColor.setVisibility(View.GONE);
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vSize.getVisibility() == View.GONE) {
@@ -4831,7 +4862,8 @@ public class EditActivity extends AppCompatActivity {
                     vSize.setVisibility(View.VISIBLE);
                     ivTick.setVisibility(View.VISIBLE);
                 }
-                if (vCrop.getVisibility() == View.GONE) vCrop.setVisibility(View.VISIBLE);
+                if (vCrop.getVisibility() == View.GONE && !isColor)
+                    vCrop.setVisibility(View.VISIBLE);
                 break;
             case 13:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -4951,7 +4983,6 @@ public class EditActivity extends AppCompatActivity {
                 tv4_5.setTextColor(getResources().getColor(R.color.gray));
                 iv16_9.setBackgroundResource(R.drawable.boder_size_uncheck);
                 tv16_9.setTextColor(getResources().getColor(R.color.gray));
-
 
                 if (!isColor) {
                     vCrop.setSize(0);
@@ -5306,15 +5337,17 @@ public class EditActivity extends AppCompatActivity {
         DataLocalManager.setTemp(null, "temp");
     }
 
-
     @Override
     public void onBackPressed() {
         animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
-        if (vSize.getVisibility() == View.VISIBLE) {
+        if (vSize.getVisibility() == View.VISIBLE && isColor) {
             vSize.startAnimation(animation);
             tvTitle.setVisibility(View.GONE);
             vSize.setVisibility(View.GONE);
             ivTick.setVisibility(View.GONE);
+        } else if (vSize.getVisibility() == View.VISIBLE && !isColor) {
+            clickTick();
+            return;
         }
 
         if (rlExpandEditText.getVisibility() == View.VISIBLE) {
@@ -5401,5 +5434,9 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isBackground) getData();
+    }
 }

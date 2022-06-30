@@ -71,12 +71,17 @@ public class ColorView extends View {
         }
     }
 
-    public float getW(){
-        return w;
+    public void setAlpha(int alpha) {
+        paint.setAlpha(alpha);
+        invalidate();
+    }
+
+    public float getW() {
+        return width;
     }
 
     public float getH() {
-        return h;
+        return height;
     }
 
     public void setData(ColorModel color) {
@@ -112,10 +117,14 @@ public class ColorView extends View {
     }
 
     private void setPath(float scale) {
-        if (w / h > scale) {
+        if (w / h >= scale) {
             path.addRect((w * (1 - scale)) / 2, 0, (w * (1 + scale)) / 2, h, Path.Direction.CW);
+            width = scale * w;
+            height = h;
         } else if (w / h < scale) {
-            path.addRect(0, (h * (1 - 1 / scale)) / 2, w, (h * (1 + 1 / scale)) / 2, Path.Direction.CW);
+            path.addRect(0, (h - w / scale) / 2, w, (h + w / scale) / 2, Path.Direction.CW);
+            width = w;
+            height = w / scale;
         }
     }
 

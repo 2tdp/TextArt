@@ -133,7 +133,6 @@
         </com.datnt.textart.customview.stickerview.StickerView>
     </RelativeLayout>
 
-
     <View
         android:id="@+id/v"
         android:layout_width="wrap_content"
