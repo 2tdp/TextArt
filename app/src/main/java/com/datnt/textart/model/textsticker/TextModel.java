@@ -1,6 +1,7 @@
 package com.datnt.textart.model.textsticker;
 
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.model.ShadowModel;
 
 import java.io.Serializable;
 

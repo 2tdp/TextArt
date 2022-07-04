@@ -85,13 +85,13 @@ import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.model.DecorModel;
 import com.datnt.textart.model.EmojiModel;
 import com.datnt.textart.model.FilterBlendModel;
-import com.datnt.textart.model.ImageModel;
+import com.datnt.textart.model.image.ImageModel;
 import com.datnt.textart.model.LayerModel;
 import com.datnt.textart.model.OverlayModel;
 import com.datnt.textart.model.Project;
 import com.datnt.textart.model.background.AdjustModel;
 import com.datnt.textart.model.background.BackgroundModel;
-import com.datnt.textart.model.textsticker.ShadowModel;
+import com.datnt.textart.model.ShadowModel;
 import com.datnt.textart.model.textsticker.ShearTextModel;
 import com.datnt.textart.model.StickerModel;
 import com.datnt.textart.model.textsticker.StyleFontModel;
@@ -510,9 +510,11 @@ public class EditActivity extends AppCompatActivity {
         if (isTemplate) seekAndHideLayout(13);
         else seekAndHideLayout(0);
 
+        int size = getResources().getDisplayMetrics().widthPixels;
+
         if (!isColor) {
             Bitmap bm = vCrop.getCroppedImage();
-            Bitmap bitmap = Bitmap.createScaledBitmap(bm, 720, 720 * bm.getHeight() / bm.getWidth(), false);
+            Bitmap bitmap = Bitmap.createScaledBitmap(bm, size, size * bm.getHeight() / bm.getWidth(), false);
             backgroundModel.setBackground(bitmap);
             stickerView.getLayoutParams().width = bitmap.getWidth();
             vMain.getLayoutParams().width = bitmap.getWidth();
@@ -558,13 +560,14 @@ public class EditActivity extends AppCompatActivity {
         public boolean handleMessage(@NonNull Message message) {
             switch (message.what) {
                 case 0:
+                    image();
                     if (!isReplaceImage) {
                         Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
                         DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable, new ArrayList<>(), getId(), true, false, false, false);
 
                         stickerView.addSticker(sticker);
                         lstSticker.add(new StickerModel(null, null, null,
-                                new ImageModel(bitmapFilterBlend, bitmapFilterBlend, 0, 0),
+                                new ImageModel(bitmapFilterBlend, bitmapFilterBlend, null, 0, 0),
                                 null, backgroundModel, null, sticker, null));
                     } else {
                         for (StickerModel st : lstSticker) {
@@ -573,12 +576,12 @@ public class EditActivity extends AppCompatActivity {
 
                                     Bitmap bitmap = bitmapFilterBlend;
                                     if (st.getImageModel().getPosFilter() != 0) {
-                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
                                                 FilterBlendImage.EFFECT_CONFIGS[st.getImageModel().getPosFilter()], 0.8f);
                                     }
 
                                     if (st.getImageModel().getPosBlend() != 0) {
-                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
                                                 FilterBlendImage.EFFECT_CONFIGS_BLEND[st.getImageModel().getPosBlend()], 0.8f);
                                     }
 
@@ -586,10 +589,14 @@ public class EditActivity extends AppCompatActivity {
                                     DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable,
                                             new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
 
+                                    if (st.getImageModel().getShadowModel() != null) {
+                                        sticker.setShadow(st.getImageModel().getShadowModel().getBlur(), st.getImageModel().getShadowModel().getxPos(),
+                                                st.getImageModel().getShadowModel().getyPos(), st.getImageModel().getShadowModel().getColorBlur(), false);
+                                    }
                                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
+
                                     stickerView.replace(sticker, true);
-                                    st.setImageModel(new ImageModel(bitmap, bitmapFilterBlend, st.getImageModel().getPosFilter(), st.getImageModel().getPosBlend()));
-                                    image();
+                                    st.setImageModel(new ImageModel(bitmap, bitmapFilterBlend, null, st.getImageModel().getPosFilter(), st.getImageModel().getPosBlend()));
                                     break;
                                 }
                         }
@@ -2042,6 +2049,7 @@ public class EditActivity extends AppCompatActivity {
                         sticker.setAlpha(drawableSticker.getAlpha());
                         st.getImageModel().setImage(bitmap);
                         st.getImageModel().setPosBlend(pos);
+                        st.getImageModel().setPosFilter(0);
 
                         stickerView.replace(sticker, true);
                         break;
@@ -2330,6 +2338,8 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 vEditImage.startAnimation(animation);
                 if (vEditImage.getVisibility() == View.GONE) vEditImage.setVisibility(View.VISIBLE);
+
+                addShadowImageModel(new ShadowModel(dx, dy, radiusBlur, colorShadow));
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -2349,6 +2359,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addShadowImageModel(ShadowModel shadowModel) {
+        for (StickerModel t : lstSticker) {
+            if (t.getDrawableSticker() != null)
+                if (t.getDrawableSticker().getId() == drawableSticker.getId()) {
+                    t.getImageModel().setShadowModel(shadowModel);
+                    break;
+                }
+        }
     }
 
     //filter
@@ -2373,6 +2393,7 @@ public class EditActivity extends AppCompatActivity {
                         sticker.setAlpha(drawableSticker.getAlpha());
                         st.getImageModel().setImage(bitmap);
                         st.getImageModel().setPosFilter(pos);
+                        st.getImageModel().setPosBlend(0);
 
                         stickerView.replace(sticker, true);
                         break;
@@ -2465,6 +2486,10 @@ public class EditActivity extends AppCompatActivity {
                             new ArrayList<>(), getId(), true, false, false, false);
 
                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
+                    if (st.getImageModel().getShadowModel() != null) {
+                        sticker.setShadow(st.getImageModel().getShadowModel().getBlur(), st.getImageModel().getShadowModel().getxPos(),
+                                st.getImageModel().getShadowModel().getyPos(), st.getImageModel().getShadowModel().getColorBlur(), false);
+                    }
 
                     stickerView.addSticker(sticker);
                     lstSticker.add(new StickerModel(null, null, null, st.getImageModel(),

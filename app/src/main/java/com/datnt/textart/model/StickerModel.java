@@ -3,6 +3,7 @@ package com.datnt.textart.model;
 import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.customview.stickerview.TextSticker;
 import com.datnt.textart.model.background.BackgroundModel;
+import com.datnt.textart.model.image.ImageModel;
 import com.datnt.textart.model.textsticker.TextModel;
 
 import java.io.Serializable;
