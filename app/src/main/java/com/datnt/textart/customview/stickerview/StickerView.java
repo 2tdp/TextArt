@@ -912,13 +912,23 @@ public class StickerView extends FrameLayout {
         sticker.getMappedPoints(dst, bounds);
     }
 
-    public void saveImage(Context context){
+    public void saveImage(Context context) {
         handlingSticker = null;
 
         Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         this.draw(canvas);
         Utils.saveImage(context, bitmap, "");
+    }
+
+    public Bitmap getThumb() {
+        handlingSticker = null;
+
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+
+        return bitmap;
     }
 
     public void save(@NonNull File file) {
@@ -949,6 +959,10 @@ public class StickerView extends FrameLayout {
             lstLayer.add(new LayerModel(st, true, false, false));
         }
         return lstLayer;
+    }
+
+    public ArrayList<Sticker> getListStickers() {
+        return stickers;
     }
 
     public boolean isNoneSticker() {

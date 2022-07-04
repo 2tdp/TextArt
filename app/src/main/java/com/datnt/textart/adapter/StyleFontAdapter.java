@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
-import com.datnt.textart.model.StyleFontModel;
+import com.datnt.textart.model.textsticker.StyleFontModel;
 import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;

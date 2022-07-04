@@ -1,4 +1,4 @@
-package com.datnt.textart.model;
+package com.datnt.textart.model.textsticker;
 
 import java.io.Serializable;
 import java.util.ArrayList;

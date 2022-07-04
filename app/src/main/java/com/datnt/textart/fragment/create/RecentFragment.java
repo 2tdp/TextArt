@@ -1,7 +1,10 @@
 package com.datnt.textart.fragment.create;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,10 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.PermissionRequest;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.RequestPermissionActivity;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.BucketAdapter;
 import com.datnt.textart.adapter.RecentAdapter;
@@ -27,6 +32,7 @@ import com.datnt.textart.model.PicModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 
+import java.security.Permission;
 import java.util.ArrayList;
 
 public class RecentFragment extends Fragment {
@@ -65,10 +71,13 @@ public class RecentFragment extends Fragment {
         rcvBucket = view.findViewById(R.id.rcvBucketPic);
         rlExpand = view.findViewById(R.id.rlExpand);
         vBg = view.findViewById(R.id.viewBg);
+        lstBucket = new ArrayList<>();
 
         rlExpand.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 60 / 100;
 
-        lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
+        else Utils.setIntent(requireActivity(), RequestPermissionActivity.class.getName());
 
         if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 

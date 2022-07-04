@@ -26,10 +26,11 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentHold
     public RecentAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
         this.callBack = callBack;
+        lstPic = new ArrayList<>();
     }
 
     public void setData(ArrayList<PicModel> lstPic) {
-        this.lstPic = new ArrayList<>(lstPic);
+        this.lstPic = lstPic;
         notifyChange();
     }
 

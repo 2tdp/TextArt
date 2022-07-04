@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
-import com.datnt.textart.model.FontModel;
+import com.datnt.textart.model.textsticker.FontModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 
 import java.util.ArrayList;

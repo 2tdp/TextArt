@@ -1,7 +1,9 @@
 package com.datnt.textart.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager2;
@@ -50,8 +53,7 @@ public class SplashActivity extends AppCompatActivity {
 
         tvSplash.setOnClickListener(view -> {
             if (viewPager2.getCurrentItem() == 2) {
-                Intent intent = new Intent(SplashActivity.this, RequestPermissionActivity.class);
-                startActivity(intent);
+                Utils.setIntent(this, RequestPermissionActivity.class.getName());
                 finish();
             } else {
                 viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1, true);
@@ -81,8 +83,7 @@ public class SplashActivity extends AppCompatActivity {
         if (!DataLocalManager.getFirstInstall("first")) {
             DataLocalManager.setFirstInstall("first", true);
         } else {
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
+            Utils.setIntent(this, RequestPermissionActivity.class.getName());
             finish();
         }
     }

@@ -37,6 +37,7 @@ public class TemplateActivity extends AppCompatActivity {
         TemplateAdapter templateAdapter = new TemplateAdapter(this, R.layout.item_template, (o, pos) -> {
             TemplateModel template = (TemplateModel) o;
             DataLocalManager.setTemp(template, "temp");
+            DataLocalManager.setOption("", "bitmap");
             Utils.setIntent(this, EditActivity.class.getName());
         });
 

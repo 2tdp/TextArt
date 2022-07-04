@@ -1,14 +1,12 @@
 package com.datnt.textart.data;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.datnt.textart.model.FontModel;
-import com.datnt.textart.model.StyleFontModel;
+import com.datnt.textart.model.textsticker.FontModel;
+import com.datnt.textart.model.textsticker.StyleFontModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class DataFont {
 

@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,9 +22,9 @@ import com.datnt.textart.R;
 import com.datnt.textart.adapter.FontsAdapter;
 import com.datnt.textart.adapter.StyleFontAdapter;
 import com.datnt.textart.data.DataFont;
-import com.datnt.textart.model.FontModel;
-import com.datnt.textart.model.StyleFontModel;
-import com.datnt.textart.model.TextModel;
+import com.datnt.textart.model.textsticker.FontModel;
+import com.datnt.textart.model.textsticker.StyleFontModel;
+import com.datnt.textart.model.textsticker.TextModel;
 import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void clickTick() {
-        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null);
+        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null, null, null, 255);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("text", text);
         setResult(Activity.RESULT_OK, returnIntent);

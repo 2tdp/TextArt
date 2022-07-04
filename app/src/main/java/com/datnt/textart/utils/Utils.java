@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -117,7 +118,7 @@ public class Utils {
         }
     }
 
-    public static void clearBackStack(FragmentManager manager){
+    public static void clearBackStack(FragmentManager manager) {
         int count = manager.getBackStackEntryCount();
         for (int i = 0; i < count; ++i) {
             manager.popBackStack();

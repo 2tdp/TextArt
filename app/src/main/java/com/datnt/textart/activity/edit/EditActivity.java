@@ -87,10 +87,14 @@ import com.datnt.textart.model.EmojiModel;
 import com.datnt.textart.model.FilterBlendModel;
 import com.datnt.textart.model.LayerModel;
 import com.datnt.textart.model.OverlayModel;
+import com.datnt.textart.model.Project;
+import com.datnt.textart.model.background.AdjustModel;
+import com.datnt.textart.model.textsticker.ShadowModel;
+import com.datnt.textart.model.textsticker.ShearTextModel;
 import com.datnt.textart.model.StickerModel;
-import com.datnt.textart.model.StyleFontModel;
+import com.datnt.textart.model.textsticker.StyleFontModel;
 import com.datnt.textart.model.TemplateModel;
-import com.datnt.textart.model.TextModel;
+import com.datnt.textart.model.textsticker.TextModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.datnt.textart.utils.UtilsAdjust;
@@ -164,7 +168,8 @@ public class EditActivity extends AppCompatActivity {
     private DrawableSticker drawableSticker;
     private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground,
             replaceOverlay, replaceDecor, islLayer, isFirstLayer, isTemplate, isColor;
-    private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0, colorShadow = 0;
+    private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0,
+            colorShadow = 0, opacity = 0;
     private float opacityBackground = 1, radiusBlur = 5f, dx = 0f, dy = 0f;
     private float brightness = 0f, contrast = 0f, exposure = 0f, highlight = 0f, shadow = 0f, black = 0f,
             white = 0f, saturation = 0f, hue = 0f, warmth = 0f, vibrance = 0f, vignette = 0f;
@@ -180,7 +185,8 @@ public class EditActivity extends AppCompatActivity {
 
     private void init() {
         setUpLayout();
-        getData();
+        if (!DataLocalManager.getCheck("isProject")) getData();
+        else setUpDataProject();
         evenClick();
         setUpStickerView();
     }
@@ -495,17 +501,44 @@ public class EditActivity extends AppCompatActivity {
         iv16_9.setOnClickListener(v -> checkSize(4));
     }
 
+    private void saveProject() {
+        ArrayList<Project> lstProject = new ArrayList<>();
+        ArrayList<TextModel> lstTextModel = new ArrayList<>();
+
+        Bitmap thumb = stickerView.getThumb();
+
+        for (Sticker sticker : stickerView.getListStickers()) {
+            if (sticker instanceof TextSticker) {
+                TextSticker textSticker = (TextSticker) sticker;
+                for (StickerModel st : lstSticker) {
+                    if (st.getTextSticker() != null)
+                        if (st.getTextSticker().getId() == textSticker.getId()) {
+                            lstTextModel.add(st.getTextModel());
+                            break;
+                        }
+                }
+                lstProject.add(new Project(bitmap, lstTextModel, textSticker.getMatrix(), thumb));
+            }
+        }
+        DataLocalManager.setListProject(lstProject, "lstProject");
+    }
+
     private void clickTick() {
         if (isTemplate) seekAndHideLayout(13);
         else seekAndHideLayout(0);
 
         if (!isColor) {
-            bitmap = vCrop.getCroppedImage();
+            Bitmap bm = vCrop.getCroppedImage();
+            bitmap = Bitmap.createScaledBitmap(bm, 720, 720 * bm.getHeight() / bm.getWidth(), false);
+            stickerView.getLayoutParams().width = bitmap.getWidth();
+            vMain.getLayoutParams().width = bitmap.getWidth();
+
+            stickerView.getLayoutParams().height = bitmap.getHeight();
+            vMain.getLayoutParams().height = bitmap.getHeight();
+
             vCrop.setVisibility(View.GONE);
             vMain.setImageBitmap(bitmap);
             vMain.setVisibility(View.VISIBLE);
-            stickerView.getLayoutParams().height = bitmap.getHeight();
-            stickerView.getLayoutParams().width = bitmap.getWidth();
         } else {
             stickerView.getLayoutParams().height = (int) vColor.getH();
             stickerView.getLayoutParams().width = (int) vColor.getW();
@@ -529,6 +562,10 @@ public class EditActivity extends AppCompatActivity {
         llSavePhoto.setOnClickListener(vSave -> {
             stickerView.saveImage(this);
             dialog.cancel();
+        });
+        llRemove.setOnClickListener(vRemove -> {
+            dialog.cancel();
+            Utils.showToast(this, "Remove");
         });
     }
 
@@ -1938,6 +1975,9 @@ public class EditActivity extends AppCompatActivity {
                 vEditBackground.startAnimation(animation);
                 if (vEditBackground.getVisibility() == View.GONE)
                     vEditBackground.setVisibility(View.VISIBLE);
+
+                addAdjustBackground(new AdjustModel(brightness, contrast, exposure, highlight, shadow,
+                        black, white, saturation, hue, warmth, vibrance, vignette));
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -1957,6 +1997,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addAdjustBackground(AdjustModel adjustModel) {
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker() != null)
+                if (t.getTextSticker().getId() == textSticker.getId()) {
+                    t.getTextModel().setOpacity(opacity);
+                    break;
+                }
+        }
     }
 
     //replace
@@ -2680,6 +2730,7 @@ public class EditActivity extends AppCompatActivity {
 
         if (textSticker != null)
             sbOpacityText.setProgress((int) (textSticker.getAlpha() * 100 / 255f));
+
         sbOpacityText.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -2688,8 +2739,9 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onMove(View v, int value) {
-                if (textSticker != null) textSticker.setAlpha((int) (value * 255 / 100f));
-                Log.d("2tdp", "onMove: " + value);
+                opacity = (int) (value * 255 / 100f);
+                if (textSticker != null) textSticker.setAlpha(opacity);
+
                 stickerView.replace(textSticker, true);
             }
 
@@ -2731,6 +2783,9 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 vEditText.startAnimation(animation);
                 if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+
+                addOpacityTextModel(opacity);
+
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -2750,6 +2805,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addOpacityTextModel(int opacity) {
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker() != null)
+                if (t.getTextSticker().getId() == textSticker.getId()) {
+                    t.getTextModel().setOpacity(opacity);
+                    break;
+                }
+        }
     }
 
     //shadow
@@ -2884,6 +2949,8 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 vEditText.startAnimation(animation);
                 if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+
+                addShadowTextModel(new ShadowModel(dx, dy, radiusBlur, colorShadow));
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -2903,6 +2970,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addShadowTextModel(ShadowModel shadowModel) {
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker() != null)
+                if (t.getTextSticker().getId() == textSticker.getId()) {
+                    t.getTextModel().setShadowModel(shadowModel);
+                    break;
+                }
+        }
     }
 
     //transform
@@ -3007,6 +3084,8 @@ public class EditActivity extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 vEditText.startAnimation(animation);
                 if (vEditText.getVisibility() == View.GONE) vEditText.setVisibility(View.VISIBLE);
+
+                addShearTextModel(new ShearTextModel(sbShearX.getProgress() / 100f, sbShearY.getProgress() / 100f, sbStretch.getProgress() / 100f));
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -3026,6 +3105,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addShearTextModel(ShearTextModel shearTextModel) {
+        for (StickerModel t : lstSticker) {
+            if (t.getTextSticker() != null)
+                if (t.getTextSticker().getId() == textSticker.getId()) {
+                    t.getTextModel().setShearTextModel(shearTextModel);
+                    break;
+                }
+        }
     }
 
     //color
@@ -3214,8 +3303,12 @@ public class EditActivity extends AppCompatActivity {
                 if (t.getTextSticker().getId() == textSticker.getId()) {
                     setTextSticker(text, new TextModel(t.getTextModel()));
                     stickerView.addSticker(text);
+                    if (t.getTextModel().getShearTextModel() != null) {
+                        stickerView.shearSticker(t.getTextModel().getShearTextModel().getShearX(), true);
+                        stickerView.shearSticker(t.getTextModel().getShearTextModel().getShearY(), false);
+                        stickerView.stretchSticker(t.getTextModel().getShearTextModel().getStretch());
+                    }
                     textSticker = text;
-
                     break;
                 }
         }
@@ -3231,10 +3324,12 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         if (textModel.getColor() != null) sticker.setTextColor(textModel.getColor());
-        if (textSticker != null) {
-            sticker.setAlpha(textSticker.getAlpha());
-            sticker.setShadow(textSticker.getRadiusBlur(), textSticker.getDx(), textSticker.getDy(), textSticker.getColorShadow());
+        sticker.setAlpha(textModel.getOpacity());
+        if (textModel.getShadowModel() != null) {
+            sticker.setShadow(textModel.getShadowModel().getBlur(), textModel.getShadowModel().getxPos(),
+                    textModel.getShadowModel().getyPos(), textModel.getShadowModel().getColorBlur());
         }
+
         switch (textModel.getTypeAlign()) {
             case Gravity.START:
                 textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
@@ -3744,7 +3839,6 @@ public class EditActivity extends AppCompatActivity {
                         lstSticker.add(new StickerModel(null, null, st.getTemplateModel(), null, null, null, sticker, st.getColor(), -1, -1));
                     else
                         lstSticker.add(new StickerModel(null, null, st.getTemplateModel(), null, null, null, sticker, null, -1, -1));
-
                     break;
                 }
         }
@@ -3896,11 +3990,7 @@ public class EditActivity extends AppCompatActivity {
             lstSticker.add(new StickerModel(null, null, template, null, null, null, drawableSticker, null, -1, -1));
             isTemplate = true;
             if (bitmap != null)
-                if (vCrop.getVisibility() == View.GONE) {
-                    seekAndHideLayout(12);
-                    vCrop.setData(bitmap);
-                    vCrop.setSize(sizeMain);
-                }
+                vCrop.setData(bitmap);
         } else {
             ColorModel color = DataLocalManager.getColor("color");
             isColor = true;
@@ -3911,6 +4001,21 @@ public class EditActivity extends AppCompatActivity {
             vColor.setData(color);
             vColor.setSize(0);
         }
+    }
+
+    //setUpProject
+    private void setUpDataProject() {
+        DataLocalManager.setCheck("isProject", false);
+        Project project = DataLocalManager.getProject("project");
+        if (project == null) return;
+
+        if (!project.getListTextModel().isEmpty()) {
+
+            for (TextModel textModel : project.getListTextModel()) {
+
+            }
+        }
+
     }
 
     private void adjust(Bitmap bm) {
@@ -5339,6 +5444,7 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        stickerView.setCurrentSticker(null);
         animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
         if (vSize.getVisibility() == View.VISIBLE && isColor) {
             vSize.startAnimation(animation);
@@ -5429,7 +5535,13 @@ public class EditActivity extends AppCompatActivity {
                 Utils.setAnimExit(this);
                 dialog.cancel();
             });
-
+            tvSave.setOnClickListener(vSave -> {
+                saveProject();
+                clearData();
+                super.onBackPressed();
+                Utils.setAnimExit(this);
+                dialog.cancel();
+            });
             tvCancel.setOnClickListener(vCancel -> dialog.cancel());
         }
     }

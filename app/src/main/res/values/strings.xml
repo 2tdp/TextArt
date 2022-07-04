@@ -145,6 +145,9 @@
     <string name="title_vip_2">Unlock All Feature</string>
     <string name="str_continue">Continue</string>
     <string name="write_on_photo_pro">Write On Photo Pro</string>
+    <string name="full_features">Full Features</string>
+    <string name="remove_all">Remove All Ads</string>
+    <string name="lifetime_support">Lifetime Support</string>
     <string name="unlock_all_feature_and_content">Unlock All Feature And Content</string>
     <string name="month">Monthly</string>
     <string name="year">Yearly</string>
@@ -154,5 +157,7 @@
     <string name="des_lifetime">100$</string>
     <string name="des_vip_1">Restore Purchases</string>
     <string name="des_vip_2">Subscription will auto-renew. Cancel anytime</string>
+    <string name="basic">Basic</string>
+    <string name="premium">Premium</string>
 
 </resources>

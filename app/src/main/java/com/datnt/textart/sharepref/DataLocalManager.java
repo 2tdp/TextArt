@@ -2,8 +2,10 @@ package com.datnt.textart.sharepref;
 
 import android.content.Context;
 
+import com.datnt.textart.adapter.ProjectAdapter;
 import com.datnt.textart.model.ColorModel;
-import com.datnt.textart.model.FontModel;
+import com.datnt.textart.model.textsticker.FontModel;
+import com.datnt.textart.model.Project;
 import com.datnt.textart.model.TemplateModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -142,5 +144,64 @@ public class DataLocalManager {
         }
 
         return temp;
+    }
+
+    public static void setListProject(ArrayList<Project> lstProject, String key) {
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.toJsonTree(lstProject).getAsJsonArray();
+        String json = jsonArray.toString();
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static ArrayList<Project> getListProject(String key) {
+        Gson gson = new Gson();
+        JSONObject jsonObject;
+        ArrayList<Project> lstProject = new ArrayList<>();
+
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        try {
+            JSONArray jsonArray = new JSONArray(strJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                lstProject.add(gson.fromJson(jsonObject.toString(), Project.class));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return lstProject;
+    }
+
+    public static void setProject(Project project, String key) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = null;
+        if (project != null) jsonObject = gson.toJsonTree(project).getAsJsonObject();
+
+        String json;
+        if (jsonObject != null) json = jsonObject.toString();
+        else json = "";
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static Project getProject(String key) {
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        Project project = null;
+
+        Gson gson = new Gson();
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(strJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (jsonObject != null) {
+            project = gson.fromJson(jsonObject.toString(), Project.class);
+        }
+
+        return project;
     }
 }

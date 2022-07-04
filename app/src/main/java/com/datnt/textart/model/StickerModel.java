@@ -1,9 +1,9 @@
 package com.datnt.textart.model;
 
-import android.graphics.Bitmap;
-
 import com.datnt.textart.customview.stickerview.DrawableSticker;
 import com.datnt.textart.customview.stickerview.TextSticker;
+import com.datnt.textart.model.background.BackgroundModel;
+import com.datnt.textart.model.textsticker.TextModel;
 
 import java.io.Serializable;
 
@@ -12,28 +12,21 @@ public class StickerModel implements Serializable {
     private TextModel textModel;
     private DecorModel decorModel;
     private TemplateModel templateModel;
-    private Bitmap bitmapRoot;
-    private Bitmap bitmap;
+    private BackgroundModel backgroundModel;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
     private ColorModel color;
-    private int positionFilter;
-    private int positionBlend;
 
     public StickerModel(TextModel textModel, DecorModel decorModel, TemplateModel templateModel,
-                        Bitmap bitmapRoot, Bitmap bitmap, TextSticker textSticker,
-                        DrawableSticker drawableSticker, ColorModel color,
-                        int positionFilter, int positionBlend) {
+                        BackgroundModel backgroundModel, TextSticker textSticker,
+                        DrawableSticker drawableSticker, ColorModel color) {
         this.textModel = textModel;
         this.decorModel = decorModel;
         this.templateModel = templateModel;
-        this.bitmapRoot = bitmapRoot;
-        this.bitmap = bitmap;
+        this.backgroundModel = backgroundModel;
         this.textSticker = textSticker;
         this.drawableSticker = drawableSticker;
         this.color = color;
-        this.positionFilter = positionFilter;
-        this.positionBlend = positionBlend;
     }
 
     public TextModel getTextModel() {
@@ -60,20 +53,12 @@ public class StickerModel implements Serializable {
         this.templateModel = templateModel;
     }
 
-    public Bitmap getBitmapRoot() {
-        return bitmapRoot;
+    public BackgroundModel getBackgroundModel() {
+        return backgroundModel;
     }
 
-    public void setBitmapRoot(Bitmap bitmapRoot) {
-        this.bitmapRoot = bitmapRoot;
-    }
-
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
+    public void setBackgroundModel(BackgroundModel backgroundModel) {
+        this.backgroundModel = backgroundModel;
     }
 
     public TextSticker getTextSticker() {
@@ -98,21 +83,5 @@ public class StickerModel implements Serializable {
 
     public void setColor(ColorModel color) {
         this.color = color;
-    }
-
-    public int getPositionFilter() {
-        return positionFilter;
-    }
-
-    public void setPositionFilter(int positionFilter) {
-        this.positionFilter = positionFilter;
-    }
-
-    public int getPositionBlend() {
-        return positionBlend;
-    }
-
-    public void setPositionBlend(int positionBlend) {
-        this.positionBlend = positionBlend;
     }
 }
