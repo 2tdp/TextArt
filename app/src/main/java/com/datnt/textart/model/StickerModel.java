@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class StickerModel implements Serializable {
 
     private TextModel textModel;
+    private EmojiModel emojiModel;
+    private ImageModel imageModel;
     private DecorModel decorModel;
     private TemplateModel templateModel;
     private BackgroundModel backgroundModel;
@@ -17,10 +19,12 @@ public class StickerModel implements Serializable {
     private DrawableSticker drawableSticker;
     private ColorModel color;
 
-    public StickerModel(TextModel textModel, DecorModel decorModel, TemplateModel templateModel,
-                        BackgroundModel backgroundModel, TextSticker textSticker,
+    public StickerModel(TextModel textModel, EmojiModel emojiModel, DecorModel decorModel, ImageModel imageModel,
+                        TemplateModel templateModel, BackgroundModel backgroundModel, TextSticker textSticker,
                         DrawableSticker drawableSticker, ColorModel color) {
         this.textModel = textModel;
+        this.emojiModel = emojiModel;
+        this.imageModel = imageModel;
         this.decorModel = decorModel;
         this.templateModel = templateModel;
         this.backgroundModel = backgroundModel;
@@ -35,6 +39,22 @@ public class StickerModel implements Serializable {
 
     public void setTextModel(TextModel textModel) {
         this.textModel = textModel;
+    }
+
+    public EmojiModel getEmojiModel() {
+        return emojiModel;
+    }
+
+    public void setEmojiModel(EmojiModel emojiModel) {
+        this.emojiModel = emojiModel;
+    }
+
+    public ImageModel getImageModel() {
+        return imageModel;
+    }
+
+    public void setImageModel(ImageModel imageModel) {
+        this.imageModel = imageModel;
     }
 
     public DecorModel getDecorModel() {

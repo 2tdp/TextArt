@@ -85,10 +85,12 @@ import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.model.DecorModel;
 import com.datnt.textart.model.EmojiModel;
 import com.datnt.textart.model.FilterBlendModel;
+import com.datnt.textart.model.ImageModel;
 import com.datnt.textart.model.LayerModel;
 import com.datnt.textart.model.OverlayModel;
 import com.datnt.textart.model.Project;
 import com.datnt.textart.model.background.AdjustModel;
+import com.datnt.textart.model.background.BackgroundModel;
 import com.datnt.textart.model.textsticker.ShadowModel;
 import com.datnt.textart.model.textsticker.ShearTextModel;
 import com.datnt.textart.model.StickerModel;
@@ -160,17 +162,17 @@ public class EditActivity extends AppCompatActivity {
     private TitleDecorAdapter titleDecorAdapter;
     private FilterBlendImageAdapter filterBlendImageAdapter;
     private LayerAdapter layerAdapter;
-    private Bitmap bmRoot, bitmap, bitmapDrawable, bitmapFilterBlend, bitmapAjust;
+    private Bitmap bitmapDrawable, bitmapFilterBlend, bitmapAjust;
+    private BackgroundModel backgroundModel;
     private ArrayList<StickerModel> lstSticker;
     private ArrayList<FilterBlendModel> lstFilterBlend;
     private ArrayList<ColorModel> lstColor;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
-    private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isBackground,
+    private boolean check, isFirstEmoji, replaceEmoji, isReplaceImage, isFilter, isReplaceBackground,
             replaceOverlay, replaceDecor, islLayer, isFirstLayer, isTemplate, isColor;
-    private int sizeMain, positionFilter = 0, positionBlend = 0, positionFilterBackground = 0,
-            colorShadow = 0, opacity = 0;
-    private float opacityBackground = 1, radiusBlur = 5f, dx = 0f, dy = 0f;
+    private int positionFilter = 0, positionBlend = 0, colorShadow = 0, opacity = 0;
+    private float radiusBlur = 5f, dx = 0f, dy = 0f;
     private float brightness = 0f, contrast = 0f, exposure = 0f, highlight = 0f, shadow = 0f, black = 0f,
             white = 0f, saturation = 0f, hue = 0f, warmth = 0f, vibrance = 0f, vignette = 0f;
     private Animation animation;
@@ -252,15 +254,6 @@ public class EditActivity extends AppCompatActivity {
                     if (drawableSticker.isDecor()) seekAndHideLayout(11);
                     else if (drawableSticker.isOverlay()) seekAndHideLayout(9);
                     else if (drawableSticker.isImage()) {
-                        for (StickerModel st : lstSticker) {
-                            if (st.getDrawableSticker() != null)
-                                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                                    clearData();
-                                    bitmapFilterBlend = st.getBitmapRoot();
-                                    positionFilter = st.getPositionFilter();
-                                    positionBlend = st.getPositionBlend();
-                                }
-                        }
                         image();
                     } else if (drawableSticker.isTemplate()) seekAndHideLayout(13);
                     else seekAndHideLayout(5);
@@ -300,18 +293,8 @@ public class EditActivity extends AppCompatActivity {
                     textSticker = null;
                     if (drawableSticker.isDecor()) seekAndHideLayout(11);
                     else if (drawableSticker.isOverlay()) seekAndHideLayout(9);
-                    else if (drawableSticker.isImage()) {
-                        for (StickerModel st : lstSticker) {
-                            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
-                                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                                    clearData();
-                                    bitmapFilterBlend = st.getBitmapRoot();
-                                    positionFilter = st.getPositionFilter();
-                                    positionBlend = st.getPositionBlend();
-                                }
-                        }
-                        image();
-                    } else if (drawableSticker.isTemplate()) seekAndHideLayout(13);
+                    else if (drawableSticker.isImage()) seekAndHideLayout(6);
+                    else if (drawableSticker.isTemplate()) seekAndHideLayout(13);
                     else seekAndHideLayout(5);
                 } else if (sticker instanceof TextSticker) {
                     textSticker = (TextSticker) sticker;
@@ -517,7 +500,7 @@ public class EditActivity extends AppCompatActivity {
                             break;
                         }
                 }
-                lstProject.add(new Project(bitmap, lstTextModel, textSticker.getMatrix(), thumb));
+                lstProject.add(new Project(backgroundModel, lstTextModel, textSticker.getMatrix(), thumb));
             }
         }
         DataLocalManager.setListProject(lstProject, "lstProject");
@@ -529,7 +512,8 @@ public class EditActivity extends AppCompatActivity {
 
         if (!isColor) {
             Bitmap bm = vCrop.getCroppedImage();
-            bitmap = Bitmap.createScaledBitmap(bm, 720, 720 * bm.getHeight() / bm.getWidth(), false);
+            Bitmap bitmap = Bitmap.createScaledBitmap(bm, 720, 720 * bm.getHeight() / bm.getWidth(), false);
+            backgroundModel.setBackground(bitmap);
             stickerView.getLayoutParams().width = bitmap.getWidth();
             vMain.getLayoutParams().width = bitmap.getWidth();
 
@@ -574,35 +558,41 @@ public class EditActivity extends AppCompatActivity {
         public boolean handleMessage(@NonNull Message message) {
             switch (message.what) {
                 case 0:
-                    Bitmap bitmap = null;
-                    Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
-                    DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable, new ArrayList<>(), getId(), true, false, false, false);
-                    for (StickerModel st : lstSticker) {
-                        if (st.getDrawableSticker() != null)
-                            if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                                sticker.setAlpha(st.getDrawableSticker().getAlpha());
-                                positionFilter = st.getPositionFilter();
-                                positionBlend = st.getPositionBlend();
-                                if (positionFilter != 0) {
-                                    bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, FilterBlendImage.EFFECT_CONFIGS[positionFilter], 0.8f);
-                                }
-                                if (positionBlend != 0) {
-                                    bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, FilterBlendImage.EFFECT_CONFIGS_BLEND[positionBlend], 0.8f);
-                                }
-                            }
-                    }
                     if (!isReplaceImage) {
+                        Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
+                        DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable, new ArrayList<>(), getId(), true, false, false, false);
+
                         stickerView.addSticker(sticker);
-                        lstSticker.add(new StickerModel(null, null, null, bitmapFilterBlend, bitmapFilterBlend, null, sticker, null, 0, 0));
+                        lstSticker.add(new StickerModel(null, null, null,
+                                new ImageModel(bitmapFilterBlend, bitmapFilterBlend, 0, 0),
+                                null, backgroundModel, null, sticker, null));
                     } else {
-                        if (bitmap != null) {
-                            sticker.setDrawable(new BitmapDrawable(getResources(), bitmap));
-                            lstSticker.add(new StickerModel(null, null, null, bitmapFilterBlend, bitmap, null, sticker, null, positionFilter, positionBlend));
-                        } else {
-                            sticker.setDrawable(new BitmapDrawable(getResources(), bitmapFilterBlend));
-                            lstSticker.add(new StickerModel(null, null, null, bitmapFilterBlend, bitmapFilterBlend, null, sticker, null, 0, 0));
+                        for (StickerModel st : lstSticker) {
+                            if (st.getDrawableSticker() != null)
+                                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+
+                                    Bitmap bitmap = bitmapFilterBlend;
+                                    if (st.getImageModel().getPosFilter() != 0) {
+                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                                FilterBlendImage.EFFECT_CONFIGS[st.getImageModel().getPosFilter()], 0.8f);
+                                    }
+
+                                    if (st.getImageModel().getPosBlend() != 0) {
+                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                                FilterBlendImage.EFFECT_CONFIGS_BLEND[st.getImageModel().getPosBlend()], 0.8f);
+                                    }
+
+                                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                                    DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable,
+                                            new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
+
+                                    sticker.setAlpha(st.getDrawableSticker().getAlpha());
+                                    stickerView.replace(sticker, true);
+                                    st.setImageModel(new ImageModel(bitmap, bitmapFilterBlend, st.getImageModel().getPosFilter(), st.getImageModel().getPosBlend()));
+                                    image();
+                                    break;
+                                }
                         }
-                        stickerView.replace(sticker, true);
                     }
                     break;
                 case 1:
@@ -611,9 +601,9 @@ public class EditActivity extends AppCompatActivity {
                         if (isFilter) {
                             rcvEditFilter.smoothScrollToPosition(positionFilter);
                             filterBlendImageAdapter.setCurrent(positionFilter);
-                        } else if (isBackground) {
-                            rcvEditFilterBackground.smoothScrollToPosition(positionFilterBackground);
-                            filterBlendImageAdapter.setCurrent(positionFilterBackground);
+                        } else if (isReplaceBackground) {
+                            rcvEditFilterBackground.smoothScrollToPosition(backgroundModel.getPositionFilterBackground());
+                            filterBlendImageAdapter.setCurrent(backgroundModel.getPositionFilterBackground());
                         } else {
                             rcvEditBlend.smoothScrollToPosition(positionBlend);
                             filterBlendImageAdapter.setCurrent(positionBlend);
@@ -1091,9 +1081,11 @@ public class EditActivity extends AppCompatActivity {
 
                     stickerView.addSticker(sticker);
                     if (st.getColor() != null)
-                        lstSticker.add(new StickerModel(null, st.getDecorModel(), null, null, null, null, sticker, st.getColor(), -1, -1));
+                        lstSticker.add(new StickerModel(null, null, st.getDecorModel(),
+                                null, null, backgroundModel, null, sticker, st.getColor()));
                     else
-                        lstSticker.add(new StickerModel(null, st.getDecorModel(), null, null, null, null, sticker, null, -1, -1));
+                        lstSticker.add(new StickerModel(null, null, st.getDecorModel(),
+                                null, null, backgroundModel, null, sticker, null));
 
                     break;
                 }
@@ -1106,7 +1098,8 @@ public class EditActivity extends AppCompatActivity {
         switch (pos) {
             case 0:
                 stickerView.addSticker(sticker);
-                lstSticker.add(new StickerModel(null, decor, null, null, null, null, sticker, null, -1, -1));
+                lstSticker.add(new StickerModel(null, null, decor, null,
+                        null, backgroundModel, null, sticker, null));
                 break;
             case 1:
                 for (StickerModel st : lstSticker) {
@@ -1222,7 +1215,7 @@ public class EditActivity extends AppCompatActivity {
     private void addOverlay(int pos, OverlayModel overlay) {
 
         DrawableSticker sticker = null;
-        bitmapDrawable = Utils.getBitmapFromAsset(this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
+        backgroundModel.setBackgroundRoot(Utils.getBitmapFromAsset(this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false));
 
         switch (pos) {
             case 0:
@@ -1239,7 +1232,8 @@ public class EditActivity extends AppCompatActivity {
                 }
                 break;
         }
-        lstSticker.add(new StickerModel(null, null, null, null, bitmapDrawable, null, sticker, null, -1, -1));
+        lstSticker.add(new StickerModel(null, null, null, null,
+                null, backgroundModel, null, sticker, null));
     }
 
     private void setUpDataOverlay() {
@@ -1263,21 +1257,21 @@ public class EditActivity extends AppCompatActivity {
     //background
     private void background() {
         seekAndHideLayout(7);
-        if (bitmap != null) setUpDataFilterBackground();
+        if (backgroundModel.getBackground() != null) setUpDataFilterBackground();
     }
 
     //flip
     private void flipXBackground() {
         if (!isColor) {
-            bitmap = UtilsAdjust.createFlippedBitmap(bitmap, true, false);
-            vMain.setImageBitmap(bitmap);
+            backgroundModel.setBackground(UtilsAdjust.createFlippedBitmap(backgroundModel.getBackground(), true, false));
+            vMain.setImageBitmap(backgroundModel.getBackground());
         }
     }
 
     private void flipYBackground() {
         if (!isColor) {
-            bitmap = UtilsAdjust.createFlippedBitmap(bitmap, false, true);
-            vMain.setImageBitmap(bitmap);
+            backgroundModel.setBackground(UtilsAdjust.createFlippedBitmap(backgroundModel.getBackground(), false, true));
+            vMain.setImageBitmap(backgroundModel.getBackground());
         }
     }
 
@@ -1286,7 +1280,7 @@ public class EditActivity extends AppCompatActivity {
         setUpLayoutEditOpacityBackground(0);
         tvCancelEditBackground.setOnClickListener(v -> setUpLayoutEditOpacityBackground(1));
 
-        sbOpacityBackground.setProgress((int) (opacityBackground * 100));
+        sbOpacityBackground.setProgress((int) backgroundModel.getOpacity());
         sbOpacityBackground.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -1300,7 +1294,7 @@ public class EditActivity extends AppCompatActivity {
                 else
                     vColor.setAlpha(value / 100f);
 
-                opacityBackground = value / 100f;
+                backgroundModel.setOpacity(value / 100f);
             }
 
             @Override
@@ -1376,9 +1370,9 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.setCurrent(pos);
             filterBlendImageAdapter.changeNotify();
 
-            Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filterBlend.getParameterFilter(), 0.8f);
+            Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(backgroundModel.getBackground(), filterBlend.getParameterFilter(), 0.8f);
             vMain.setImageBitmap(bm);
-            positionFilterBackground = pos;
+            backgroundModel.setPositionFilterBackground(pos);
         });
         if (!lstFilterBlend.isEmpty()) filterBlendImageAdapter.setData(lstFilterBlend);
 
@@ -1386,13 +1380,14 @@ public class EditActivity extends AppCompatActivity {
         rcvEditFilterBackground.setLayoutManager(manager);
         rcvEditFilterBackground.setAdapter(filterBlendImageAdapter);
 
-        rcvEditFilterBackground.smoothScrollToPosition(positionFilterBackground);
-        filterBlendImageAdapter.setCurrent(positionFilterBackground);
+        rcvEditFilterBackground.smoothScrollToPosition(backgroundModel.getPositionFilterBackground());
+        filterBlendImageAdapter.setCurrent(backgroundModel.getPositionFilterBackground());
         filterBlendImageAdapter.changeNotify();
     }
 
     private void setUpDataFilterBackground() {
         new Thread(() -> {
+            Bitmap bitmap = backgroundModel.getBackground();
             lstFilterBlend = FilterBlendImage.getDataFilter(
                     Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false));
 
@@ -1515,7 +1510,7 @@ public class EditActivity extends AppCompatActivity {
 
         tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
 
-        bitmapAjust = bitmap;
+        bitmapAjust = backgroundModel.getBackground();
         sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -1539,56 +1534,56 @@ public class EditActivity extends AppCompatActivity {
         switch (pos) {
             case 0:
                 brightness = value * 2f;
-                bitmap = UtilsAdjust.adjustBrightness(bitmapAjust, brightness);
+                backgroundModel.setBackground(UtilsAdjust.adjustBrightness(bitmapAjust, brightness));
                 break;
             case 1:
                 contrast = value;
-                bitmap = UtilsAdjust.adjustContrast(bitmapAjust, contrast);
+                backgroundModel.setBackground(UtilsAdjust.adjustContrast(bitmapAjust, contrast));
                 break;
             case 2:
                 exposure = value * 4f;
-                bitmap = UtilsAdjust.adjustExposure(bitmapAjust, exposure);
+                backgroundModel.setBackground(UtilsAdjust.adjustExposure(bitmapAjust, exposure));
                 break;
             case 3:
                 if (value > 0) highlight = value * 4f;
                 else if (value < 0) highlight = value * 2f;
-                bitmap = UtilsAdjust.adjustHighLight(bitmapAjust, highlight);
+                backgroundModel.setBackground(UtilsAdjust.adjustHighLight(bitmapAjust, highlight));
                 break;
             case 4:
                 if (value > 0) shadow = value * 4f;
                 else if (value < 0) shadow = value * 2f;
-                bitmap = UtilsAdjust.adjustShadow(bitmapAjust, shadow);
+                backgroundModel.setBackground(UtilsAdjust.adjustShadow(bitmapAjust, shadow));
                 break;
             case 5:
                 black = value * 2f;
-                bitmap = UtilsAdjust.adjustBlacks(bitmapAjust, black);
+                backgroundModel.setBackground(UtilsAdjust.adjustBlacks(bitmapAjust, black));
                 break;
             case 6:
                 white = value * 2f;
-                bitmap = UtilsAdjust.adjustWhites(bitmapAjust, white);
+                backgroundModel.setBackground(UtilsAdjust.adjustWhites(bitmapAjust, white));
                 break;
             case 7:
                 saturation = value * 2f;
-                bitmap = UtilsAdjust.adjustSaturation(bitmapAjust, saturation);
+                backgroundModel.setBackground(UtilsAdjust.adjustSaturation(bitmapAjust, saturation));
                 break;
             case 8:
                 hue = value * 360 / 100f;
-                bitmap = UtilsAdjust.adjustHue(bitmapAjust, hue);
+                backgroundModel.setBackground(UtilsAdjust.adjustHue(bitmapAjust, hue));
                 break;
             case 9:
                 warmth = value * 2f;
-                bitmap = UtilsAdjust.adjustWarmth(bitmapAjust, warmth);
+                backgroundModel.setBackground(UtilsAdjust.adjustWarmth(bitmapAjust, warmth));
                 break;
             case 10:
                 vibrance = value * 2f;
-                bitmap = UtilsAdjust.adjustVibrance(bitmapAjust, vibrance);
+                backgroundModel.setBackground(UtilsAdjust.adjustVibrance(bitmapAjust, vibrance));
                 break;
             case 11:
                 vignette = value * 2f;
-                bitmap = UtilsAdjust.adjustVignette(bitmapAjust, vignette);
+                backgroundModel.setBackground(UtilsAdjust.adjustVignette(bitmapAjust, vignette));
                 break;
         }
-        vMain.setImageBitmap(bitmap);
+        vMain.setImageBitmap(backgroundModel.getBackground());
     }
 
     private void setUpOptionAdjustBackground(int pos) {
@@ -2011,9 +2006,9 @@ public class EditActivity extends AppCompatActivity {
 
     //replace
     private void replaceBackground() {
-        isBackground = true;
+        isReplaceBackground = true;
         Intent intent = new Intent();
-        intent.putExtra("pickBG", isBackground);
+        intent.putExtra("pickBG", isReplaceBackground);
         intent.setComponent(new ComponentName(getPackageName(), CreateProjectActivity.class.getName()));
         startActivity(intent, ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
     }
@@ -2037,21 +2032,22 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.changeNotify();
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
-            DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap), new ArrayList<>(), getId(), true, false, false, false);
-            Bitmap bm = null;
 
             for (StickerModel st : lstSticker) {
-                if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                if (st.getDrawableSticker() != null)
                     if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                        DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap),
+                                new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
+
                         sticker.setAlpha(drawableSticker.getAlpha());
-                        bm = st.getBitmapRoot();
+                        st.getImageModel().setImage(bitmap);
+                        st.getImageModel().setPosBlend(pos);
+
+                        stickerView.replace(sticker, true);
+                        break;
                     }
             }
-            stickerView.replace(sticker, true);
-            drawableSticker = sticker;
-            lstSticker.add(new StickerModel(null, null, null, bm, bitmap, null, sticker, null, 0, pos));
 
-            bitmapFilterBlend = bm;
             positionBlend = pos;
         });
 
@@ -2367,21 +2363,22 @@ public class EditActivity extends AppCompatActivity {
             filterBlendImageAdapter.changeNotify();
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
-            DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap), new ArrayList<>(), getId(), true, false, false, false);
-            Bitmap bm = null;
 
             for (StickerModel st : lstSticker) {
-                if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                if (st.getDrawableSticker() != null)
                     if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                        DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap),
+                                new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
+
                         sticker.setAlpha(drawableSticker.getAlpha());
-                        bm = st.getBitmapRoot();
+                        st.getImageModel().setImage(bitmap);
+                        st.getImageModel().setPosFilter(pos);
+
+                        stickerView.replace(sticker, true);
+                        break;
                     }
             }
-            stickerView.replace(sticker, true);
-            drawableSticker = sticker;
-            lstSticker.add(new StickerModel(null, null, null, bm, bitmap, null, sticker, null, pos, 0));
 
-            bitmapFilterBlend = bm;
             positionFilter = pos;
         });
 
@@ -2461,12 +2458,19 @@ public class EditActivity extends AppCompatActivity {
         }
 
         for (StickerModel st : lstSticker) {
-            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+            if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                    DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), st.getBitmap()), new ArrayList<>(), getId(), true, false, false, false);
+
+                    DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), st.getImageModel().getImage()),
+                            new ArrayList<>(), getId(), true, false, false, false);
+
                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
+
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, null, null, st.getBitmapRoot(), st.getBitmap(), null, sticker, null, st.getPositionFilter(), st.getPositionBlend()));
+                    lstSticker.add(new StickerModel(null, null, null, st.getImageModel(),
+                            null, backgroundModel, null, sticker, null));
+
+                    break;
                 }
         }
     }
@@ -2560,7 +2564,7 @@ public class EditActivity extends AppCompatActivity {
         tvCancelEditEmoji.setOnClickListener(v -> setUpLayoutEditOpacityEmoji(1));
 
         for (StickerModel st : lstSticker) {
-            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+            if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId())
                     sbOpacityEmoji.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
         }
@@ -2573,7 +2577,6 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onMove(View v, int value) {
                 if (drawableSticker != null) drawableSticker.setAlpha((int) (value * 255 / 100f));
-                Log.d("2tdp", "onMove: " + value);
                 stickerView.replace(drawableSticker, true);
             }
 
@@ -2640,25 +2643,24 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void addNewEmoji(int id, EmojiModel emoji, int pos) {
-        bitmapDrawable = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji(), true, false);
-        Drawable drawable = new BitmapDrawable(getResources(), bitmapDrawable);
+        Bitmap bitmap = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji(), true, false);
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
         DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), id, false, false, false, false);
-
 
         switch (pos) {
             case 0:
                 stickerView.addSticker(sticker);
-                lstSticker.add(new StickerModel(null, null, null, bitmapDrawable, bitmapDrawable, null, sticker, null, -1, -1));
+                lstSticker.add(new StickerModel(null, emoji, null, null, null, backgroundModel, null, sticker, null));
             case 1:
                 for (StickerModel st : lstSticker) {
-                    if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                    if (st.getDrawableSticker() != null)
                         if (st.getDrawableSticker().getId() == drawableSticker.getId()
                                 && !st.getDrawableSticker().isImage()
                                 && !st.getDrawableSticker().isOverlay()
                                 && !st.getDrawableSticker().isDecor()) {
+
+                            st.setEmojiModel(emoji);
                             sticker.setAlpha(st.getDrawableSticker().getAlpha());
-                            st.setBitmap(bitmapDrawable);
-                            st.setBitmapRoot(bitmapDrawable);
                         }
                 }
 
@@ -3342,9 +3344,11 @@ public class EditActivity extends AppCompatActivity {
                 break;
         }
         if (textModel.getColor() != null)
-            lstSticker.add(new StickerModel(textModel, null, null, null, null, sticker, null, textModel.getColor(), -1, -1));
+            lstSticker.add(new StickerModel(textModel, null, null, null,
+                    null, backgroundModel, sticker, null, textModel.getColor()));
         else
-            lstSticker.add(new StickerModel(textModel, null, null, null, null, sticker, null, null, -1, -1));
+            lstSticker.add(new StickerModel(textModel, null, null, null,
+                    null, backgroundModel, sticker, null, null));
         sticker.resizeText();
     }
 
@@ -3478,32 +3482,36 @@ public class EditActivity extends AppCompatActivity {
         }
 
         for (StickerModel st : lstSticker) {
-            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this)) {
+            if (st.getDrawableSticker() != null) {
                 if (st.getDrawableSticker().getId() == drawableSticker.getId()
                         && !st.getDrawableSticker().isOverlay()
                         && !st.getDrawableSticker().isImage()
                         && !st.getDrawableSticker().isDecor()
                         && !st.getDrawableSticker().isTemplate()) {
 
-                    BitmapDrawable drawable = new BitmapDrawable(getResources(), st.getBitmap());
+                    Bitmap bitmap = Utils.getBitmapFromAsset(this, st.getEmojiModel().getNameFolder(), st.getEmojiModel().getNameEmoji(), true, false);
+
+                    BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
 
                     DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, false, false, false);
                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
 
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, null, null, st.getBitmapRoot(), st.getBitmap(), null, sticker, null, -1, -1));
+                    lstSticker.add(new StickerModel(null, st.getEmojiModel(), null, null,
+                            null, st.getBackgroundModel(), null, sticker, null));
                     break;
                 }
 
                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay()) {
 
-                    BitmapDrawable drawable = new BitmapDrawable(getResources(), st.getBitmap());
+                    BitmapDrawable drawable = new BitmapDrawable(getResources(), st.getBackgroundModel().getBackground());
 
                     DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, false, true, false);
                     sticker.setAlpha(st.getDrawableSticker().getAlpha());
 
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, null, null, st.getBitmapRoot(), st.getBitmap(), null, sticker, null, -1, -1));
+                    lstSticker.add(new StickerModel(null, null, null, null,
+                            null, backgroundModel, null, sticker, null));
                     break;
                 }
             }
@@ -3836,9 +3844,11 @@ public class EditActivity extends AppCompatActivity {
                     stickerView.addSticker(sticker);
                     stickerView.setCurrentSticker(sticker);
                     if (st.getColor() != null)
-                        lstSticker.add(new StickerModel(null, null, st.getTemplateModel(), null, null, null, sticker, st.getColor(), -1, -1));
+                        lstSticker.add(new StickerModel(null, null, null, null,
+                                st.getTemplateModel(), backgroundModel, null, sticker, st.getColor()));
                     else
-                        lstSticker.add(new StickerModel(null, null, st.getTemplateModel(), null, null, null, sticker, null, -1, -1));
+                        lstSticker.add(new StickerModel(null, null, null, null,
+                                st.getTemplateModel(), backgroundModel, null, sticker, null));
                     break;
                 }
         }
@@ -3939,19 +3949,22 @@ public class EditActivity extends AppCompatActivity {
             return;
         }
 
-        StickerModel stickerModel = null;
-        for (StickerModel st : lstSticker) {
-            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(getBaseContext()))
-                if (st.getDrawableSticker().getId() == drawableSticker.getId()) stickerModel = st;
-        }
-        lstSticker.remove(stickerModel);
-        stickerView.remove(stickerView.getCurrentSticker());
         if (!islLayer) seekAndHideLayout(0);
         else {
             layerAdapter.setData(stickerView.getListLayer());
             layerAdapter.setCurrent(0);
-            stickerView.setCurrentSticker(stickerView.getListLayer().get(0).getSticker());
+            if (stickerView.getStickerCount() > 0)
+                stickerView.setCurrentSticker(stickerView.getListLayer().get(0).getSticker());
         }
+
+        StickerModel stickerModel = null;
+        Sticker sticker = stickerView.getCurrentSticker();
+        for (StickerModel st : lstSticker) {
+            if (sticker == st.getDrawableSticker() || sticker == st.getTextSticker())
+                stickerModel = st;
+        }
+        lstSticker.remove(stickerModel);
+        stickerView.remove(sticker);
     }
 
     //SetUpData
@@ -3961,19 +3974,21 @@ public class EditActivity extends AppCompatActivity {
         if (!strUri.equals("")) {
             isColor = false;
             try {
-                bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
-                bmRoot = bitmap;
-                if (bitmap != null && isBackground) {
+                Bitmap bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
+                backgroundModel.setBackground(bitmap);
+                backgroundModel.setBackgroundRoot(bitmap);
+                if (bitmap != null && isReplaceBackground) {
                     setUpDataFilterBackground();
-                    bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterBlendImage.EFFECT_CONFIGS[positionFilterBackground], 0.8f);
-                    adjust(bitmap);
+                    backgroundModel.setBackground(CGENativeLibrary.cgeFilterImage_MultipleEffects(backgroundModel.getBackgroundRoot(),
+                            FilterBlendImage.EFFECT_CONFIGS[backgroundModel.getPositionFilterBackground()], 0.8f));
+                    adjust(backgroundModel.getBackground());
                     if (vCrop.getVisibility() == View.GONE) {
                         seekAndHideLayout(12);
-                        vCrop.setData(bmRoot);
-                        vCrop.setSize(sizeMain);
+                        vCrop.setData(backgroundModel.getBackgroundRoot());
+                        vCrop.setSize(backgroundModel.getSizeMain());
                     }
-                    vMain.setAlpha(opacityBackground);
-                } else if (!isBackground) {
+                    vMain.setAlpha(backgroundModel.getOpacity());
+                } else if (!isReplaceBackground) {
                     vCrop.setData(bitmap);
                     vCrop.setSize(0);
                 }
@@ -3982,12 +3997,13 @@ public class EditActivity extends AppCompatActivity {
             }
         } else if (template != null) {
             isColor = false;
-            bitmap = Utils.getBitmapFromAsset(this, "template/template_background", template.getBackground(), false, false);
+            Bitmap bitmap = Utils.getBitmapFromAsset(this, "template/template_background", template.getBackground(), false, false);
+            backgroundModel.setBackground(bitmap);
 
             DrawableSticker drawableSticker = new DrawableSticker(this, null, template.getLstPathData(), getId(), false, false, false, true);
 
             stickerView.addSticker(drawableSticker);
-            lstSticker.add(new StickerModel(null, null, template, null, null, null, drawableSticker, null, -1, -1));
+            lstSticker.add(new StickerModel(null, null, null, null, template, backgroundModel, null, drawableSticker, null));
             isTemplate = true;
             if (bitmap != null)
                 vCrop.setData(bitmap);
@@ -4020,29 +4036,29 @@ public class EditActivity extends AppCompatActivity {
 
     private void adjust(Bitmap bm) {
         if (brightness != 0f)
-            bmRoot = UtilsAdjust.adjustBrightness(bm, brightness);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustBrightness(bm, brightness));
         if (contrast != 0f)
-            bmRoot = UtilsAdjust.adjustBrightness(bm, contrast);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustBrightness(bm, contrast));
         if (exposure != 0f)
-            bmRoot = UtilsAdjust.adjustExposure(bm, exposure);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustExposure(bm, exposure));
         if (highlight != 0f)
-            bmRoot = UtilsAdjust.adjustHighLight(bm, highlight);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustHighLight(bm, highlight));
         if (shadow != 0f)
-            bmRoot = UtilsAdjust.adjustHighLight(bm, shadow);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustHighLight(bm, shadow));
         if (black != 0f)
-            bmRoot = UtilsAdjust.adjustBlacks(bm, black);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustBlacks(bm, black));
         if (white != 0f)
-            bmRoot = UtilsAdjust.adjustWhites(bm, white);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustWhites(bm, white));
         if (saturation != 0f)
-            bmRoot = UtilsAdjust.adjustSaturation(bm, saturation);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustSaturation(bm, saturation));
         if (hue != 0f)
-            bmRoot = UtilsAdjust.adjustHue(bm, hue);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustHue(bm, hue));
         if (warmth != 0f)
-            bmRoot = UtilsAdjust.adjustWarmth(bm, warmth);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustWarmth(bm, warmth));
         if (vibrance != 0f)
-            bmRoot = UtilsAdjust.adjustVibrance(bm, vibrance);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustVibrance(bm, vibrance));
         if (vignette != 0f)
-            bmRoot = UtilsAdjust.adjustVignette(bm, vignette);
+            backgroundModel.setBackgroundRoot(UtilsAdjust.adjustVignette(bm, vignette));
 
 //        vMain.setImageBitmap(bitmap);
     }
@@ -5075,7 +5091,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void checkSize(int pos) {
-        sizeMain = pos;
+        backgroundModel.setSizeMain(pos);
         switch (pos) {
             case 0:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_check);
@@ -5091,7 +5107,7 @@ public class EditActivity extends AppCompatActivity {
 
                 if (!isColor) {
                     vCrop.setSize(0);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(backgroundModel.getBackgroundRoot());
                 } else vColor.setSize(0);
                 break;
             case 1:
@@ -5108,7 +5124,7 @@ public class EditActivity extends AppCompatActivity {
 
                 if (!isColor) {
                     vCrop.setSize(1);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(backgroundModel.getBackgroundRoot());
                 } else vColor.setSize(1);
                 break;
             case 2:
@@ -5125,7 +5141,7 @@ public class EditActivity extends AppCompatActivity {
 
                 if (!isColor) {
                     vCrop.setSize(2);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(backgroundModel.getBackgroundRoot());
                 } else vColor.setSize(2);
                 break;
             case 3:
@@ -5142,7 +5158,7 @@ public class EditActivity extends AppCompatActivity {
 
                 if (!isColor) {
                     vCrop.setSize(3);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(backgroundModel.getBackgroundRoot());
                 } else vColor.setSize(3);
                 break;
             case 4:
@@ -5160,7 +5176,7 @@ public class EditActivity extends AppCompatActivity {
 
                 if (!isColor) {
                     vCrop.setSize(4);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(backgroundModel.getBackgroundRoot());
                 } else vColor.setSize(4);
                 break;
         }
@@ -5426,6 +5442,8 @@ public class EditActivity extends AppCompatActivity {
         lstColor = new ArrayList<>();
         lstColor.addAll(DataColor.setListColor(this));
 
+        backgroundModel = new BackgroundModel();
+
         GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.parseColor("#575757"), Color.parseColor("#575757")});
         gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         gradientDrawable.setCornerRadius(10f);
@@ -5433,7 +5451,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void clearData() {
-        if (bitmap != null) bitmap = null;
         if (bitmapDrawable != null) bitmapDrawable = null;
         if (bitmapFilterBlend != null) bitmapFilterBlend = null;
         if (lstFilterBlend != null) lstFilterBlend = null;
@@ -5549,6 +5566,6 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isBackground) getData();
+        if (isReplaceBackground) getData();
     }
 }
