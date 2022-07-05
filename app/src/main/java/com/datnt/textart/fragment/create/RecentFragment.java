@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.PermissionRequest;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -27,12 +26,11 @@ import com.datnt.textart.adapter.RecentAdapter;
 import com.datnt.textart.callback.ICheckTouch;
 import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.data.DataPic;
-import com.datnt.textart.model.BucketPicModel;
-import com.datnt.textart.model.PicModel;
+import com.datnt.textart.model.picture.BucketPicModel;
+import com.datnt.textart.model.picture.PicModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 
-import java.security.Permission;
 import java.util.ArrayList;
 
 public class RecentFragment extends Fragment {
@@ -170,6 +168,7 @@ public class RecentFragment extends Fragment {
         recentAdapter = new RecentAdapter(requireContext(), (Object o, int pos) -> {
             PicModel pic = (PicModel) o;
             DataLocalManager.setOption(pic.getUri(), "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);

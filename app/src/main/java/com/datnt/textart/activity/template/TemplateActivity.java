@@ -38,6 +38,7 @@ public class TemplateActivity extends AppCompatActivity {
             TemplateModel template = (TemplateModel) o;
             DataLocalManager.setTemp(template, "temp");
             DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
             Utils.setIntent(this, EditActivity.class.getName());
         });
 

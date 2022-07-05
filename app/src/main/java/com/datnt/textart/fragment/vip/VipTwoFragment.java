@@ -37,7 +37,7 @@ public class VipTwoFragment extends Fragment {
     }
 
     private void evenClick() {
-        ivBack.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        ivBack.setOnClickListener(v -> Utils.clearBackStack(requireActivity().getSupportFragmentManager()));
 
         rlMonth.setOnClickListener(v -> setUpChooseOption(0));
         rlYear.setOnClickListener(v -> setUpChooseOption(1));

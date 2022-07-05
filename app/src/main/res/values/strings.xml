@@ -73,6 +73,7 @@
     <string name="input_text">Input Text</string>
     <string name="tap_to_edit">Tap to edit</string>
     <string name="pls_pick_style">Please choose font!</string>
+    <string name="pls_enter_text">Are you sure want to Exit text?</string>
     <string name="quotes">Quotes</string>
     <string name="fonts">Fonts</string>
     <string name="style">Style</string>

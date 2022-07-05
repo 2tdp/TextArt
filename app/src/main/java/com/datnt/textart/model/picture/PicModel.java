@@ -1,4 +1,4 @@
-package com.datnt.textart.model;
+package com.datnt.textart.model.picture;
 
 import java.io.Serializable;
 

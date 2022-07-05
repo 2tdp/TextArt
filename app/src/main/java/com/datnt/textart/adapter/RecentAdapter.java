@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.datnt.textart.R;
 import com.datnt.textart.callback.ICallBackItem;
-import com.datnt.textart.model.PicModel;
+import com.datnt.textart.model.picture.PicModel;
 
 import java.util.ArrayList;
 

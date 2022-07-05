@@ -1,5 +1,6 @@
 package com.datnt.textart.customview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -75,7 +76,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         canvas.drawLine(0, getHeight(), getWidth(), getHeight(), paintLine);
 
         if (rectF != null) {
-            canvas.translate(getWidth() / 8f, (getHeight() - y) / 4f);
+            canvas.translate(getWidth() / 5f, (getHeight() - y) / 4f);
             canvas.scale(scale, scale);
             canvas.clipPath(path);
         }
@@ -92,7 +93,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         Canvas canvas = new Canvas(bm);
 
         if (rectF != null) {
-            canvas.translate(getWidth() / 8f, (getHeight() - y) / 4f);
+            canvas.translate(getWidth() / 5f, (getHeight() - y) / 4f);
             canvas.scale(scale, scale);
             canvas.clipPath(path);
         }
@@ -123,6 +124,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         invalidate();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -147,7 +149,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         path.addPath(PathParser.createPathFromPathData(o));
 
         path.computeBounds(rectF, true);
-        scale =  4 * getWidth() / (rectF.width() * 5f);
+        scale =  3 * getWidth() / (rectF.width() * 5f);
         y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
         invalidate();
     }

@@ -14,7 +14,7 @@ public class DataOverlay {
         ArrayList<OverlayModel> lstOverlay = new ArrayList<>();
         try {
             String[] f = context.getAssets().list(name + "/");
-            for (String s : f) lstOverlay.add(new OverlayModel(s, name, false));
+            for (String s : f) lstOverlay.add(new OverlayModel(s, name, 255, false));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -359,8 +359,10 @@ public class EditActivity extends AppCompatActivity {
 
         //layer
         ivLayer.setOnClickListener(v -> {
-            layer();
-            isFirstLayer = false;
+            if (stickerView.getStickerCount() > 0) {
+                layer();
+                isFirstLayer = false;
+            }
         });
         rlDelLayer.setOnClickListener(v -> {
             islLayer = true;
@@ -566,40 +568,37 @@ public class EditActivity extends AppCompatActivity {
                         DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable, new ArrayList<>(), getId(), true, false, false, false);
 
                         stickerView.addSticker(sticker);
-                        lstSticker.add(new StickerModel(null, null, null,
-                                new ImageModel(bitmapFilterBlend, bitmapFilterBlend, null, 0, 0),
+                        lstSticker.add(new StickerModel(null, null, null, null,
+                                new ImageModel(bitmapFilterBlend, bitmapFilterBlend, null, 255, 0, 0),
                                 null, backgroundModel, null, sticker, null));
                     } else {
-                        for (StickerModel st : lstSticker) {
-                            if (st.getDrawableSticker() != null)
-                                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                        if (stickerView.getCurrentSticker() == null) {
+                            Utils.showToast(EditActivity.this, getResources().getString(R.string.choose_sticker_text));
+                        } else
+                            for (StickerModel st : lstSticker) {
+                                if (st.getDrawableSticker() != null)
+                                    if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                                        st.getImageModel().setImageRoot(bitmapFilterBlend);
 
-                                    Bitmap bitmap = bitmapFilterBlend;
-                                    if (st.getImageModel().getPosFilter() != 0) {
-                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
-                                                FilterBlendImage.EFFECT_CONFIGS[st.getImageModel().getPosFilter()], 0.8f);
+                                        if (st.getImageModel().getPosFilter() != 0) {
+                                            bitmapFilterBlend = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                                    FilterBlendImage.EFFECT_CONFIGS[st.getImageModel().getPosFilter()], 0.8f);
+                                        }
+
+                                        if (st.getImageModel().getPosBlend() != 0) {
+                                            bitmapFilterBlend = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend,
+                                                    FilterBlendImage.EFFECT_CONFIGS_BLEND[st.getImageModel().getPosBlend()], 0.8f);
+                                        }
+
+                                        st.getImageModel().setImage(bitmapFilterBlend);
+                                        Drawable drawable = new BitmapDrawable(getResources(), bitmapFilterBlend);
+
+                                        drawable.setAlpha(st.getImageModel().getOpacity());
+                                        stickerView.getCurrentSticker().setDrawable(drawable);
+                                        stickerView.invalidate();
+                                        break;
                                     }
-
-                                    if (st.getImageModel().getPosBlend() != 0) {
-                                        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
-                                                FilterBlendImage.EFFECT_CONFIGS_BLEND[st.getImageModel().getPosBlend()], 0.8f);
-                                    }
-
-                                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                                    DrawableSticker sticker = new DrawableSticker(getBaseContext(), drawable,
-                                            new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
-
-                                    if (st.getImageModel().getShadowModel() != null) {
-                                        sticker.setShadow(st.getImageModel().getShadowModel().getBlur(), st.getImageModel().getShadowModel().getxPos(),
-                                                st.getImageModel().getShadowModel().getyPos(), st.getImageModel().getShadowModel().getColorBlur(), false);
-                                    }
-                                    sticker.setAlpha(st.getDrawableSticker().getAlpha());
-
-                                    stickerView.replace(sticker, true);
-                                    st.setImageModel(new ImageModel(bitmap, bitmapFilterBlend, null, st.getImageModel().getPosFilter(), st.getImageModel().getPosBlend()));
-                                    break;
-                                }
-                        }
+                            }
                     }
                     break;
                 case 1:
@@ -1088,10 +1087,10 @@ public class EditActivity extends AppCompatActivity {
 
                     stickerView.addSticker(sticker);
                     if (st.getColor() != null)
-                        lstSticker.add(new StickerModel(null, null, st.getDecorModel(),
+                        lstSticker.add(new StickerModel(null, null, null, st.getDecorModel(),
                                 null, null, backgroundModel, null, sticker, st.getColor()));
                     else
-                        lstSticker.add(new StickerModel(null, null, st.getDecorModel(),
+                        lstSticker.add(new StickerModel(null, null, null, st.getDecorModel(),
                                 null, null, backgroundModel, null, sticker, null));
 
                     break;
@@ -1105,7 +1104,7 @@ public class EditActivity extends AppCompatActivity {
         switch (pos) {
             case 0:
                 stickerView.addSticker(sticker);
-                lstSticker.add(new StickerModel(null, null, decor, null,
+                lstSticker.add(new StickerModel(null, null, null, decor, null,
                         null, backgroundModel, null, sticker, null));
                 break;
             case 1:
@@ -1140,9 +1139,12 @@ public class EditActivity extends AppCompatActivity {
         tvCancelEditOverlay.setOnClickListener(v -> setUpLayoutEditOpacityOverlay(1));
 
         for (StickerModel st : lstSticker) {
-            if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
-                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay())
-                    sbOpacityOverlay.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay()) {
+                    opacity = (int) (st.getDrawableSticker().getAlpha() * 100 / 255f);
+                    sbOpacityOverlay.setProgress(opacity);
+                    break;
+                }
         }
         sbOpacityOverlay.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
@@ -1152,8 +1154,8 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onMove(View v, int value) {
-                if (drawableSticker != null) drawableSticker.setAlpha((int) (value * 255 / 100f));
-                Log.d("2tdp", "onMove: " + value);
+                opacity = (int) (value * 255 / 100f);
+                if (drawableSticker != null) drawableSticker.setAlpha(opacity);
                 stickerView.replace(drawableSticker, true);
             }
 
@@ -1198,6 +1200,8 @@ public class EditActivity extends AppCompatActivity {
                 llEditOverlay.startAnimation(animation);
                 if (llEditOverlay.getVisibility() == View.GONE)
                     llEditOverlay.setVisibility(View.VISIBLE);
+
+                addOpacityOverlayModel(opacity);
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -1219,28 +1223,45 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    private void addOpacityOverlayModel(int opacity) {
+        for (StickerModel t : lstSticker) {
+            if (t.getDrawableSticker() != null)
+                if (t.getDrawableSticker().getId() == drawableSticker.getId() && t.getDrawableSticker().isOverlay()) {
+                    t.getOverlayModel().setOpacity(opacity);
+                    break;
+                }
+        }
+    }
+
     private void addOverlay(int pos, OverlayModel overlay) {
 
-        DrawableSticker sticker = null;
-        backgroundModel.setBackgroundRoot(Utils.getBitmapFromAsset(this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false));
+        Bitmap bitmap = Utils.getBitmapFromAsset(this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
 
         switch (pos) {
             case 0:
-                sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmapDrawable), new ArrayList<>(), getId(), false, true, false, false);
+                DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, true, false, false);
                 stickerView.addSticker(sticker);
+
+                lstSticker.add(new StickerModel(null, null, overlay, null, null,
+                        null, backgroundModel, null, sticker, null));
                 break;
             case 1:
-                for (StickerModel st : lstSticker) {
-                    if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay()) {
-                        sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmapDrawable), new ArrayList<>(),
-                                drawableSticker.getId(), false, true, false, false);
-                        stickerView.replace(sticker, true);
+                if (stickerView.getCurrentSticker() == null)
+                    Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+                else
+                    for (StickerModel st : lstSticker) {
+                        if (st.getDrawableSticker() != null)
+                            if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay()) {
+                                drawable.setAlpha(st.getOverlayModel().getOpacity());
+                                overlay.setOpacity(st.getOverlayModel().getOpacity());
+                                st.setOverlayModel(overlay);
+                                stickerView.getCurrentSticker().setDrawable(drawable);
+                                stickerView.invalidate();
+                                break;
+                            }
                     }
-                }
-                break;
         }
-        lstSticker.add(new StickerModel(null, null, null, null,
-                null, backgroundModel, null, sticker, null));
     }
 
     private void setUpDataOverlay() {
@@ -2040,21 +2061,22 @@ public class EditActivity extends AppCompatActivity {
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
 
-            for (StickerModel st : lstSticker) {
-                if (st.getDrawableSticker() != null)
-                    if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                        DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap),
-                                new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
+            if (stickerView.getCurrentSticker() == null)
+                Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+            else
+                for (StickerModel st : lstSticker) {
+                    if (st.getDrawableSticker() != null)
+                        if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
 
-                        sticker.setAlpha(drawableSticker.getAlpha());
-                        st.getImageModel().setImage(bitmap);
-                        st.getImageModel().setPosBlend(pos);
-                        st.getImageModel().setPosFilter(0);
-
-                        stickerView.replace(sticker, true);
-                        break;
-                    }
-            }
+                            st.getImageModel().setImage(bitmap);
+                            st.getImageModel().setPosBlend(pos);
+                            st.getImageModel().setPosFilter(0);
+                            stickerView.getCurrentSticker().setDrawable(drawable);
+                            stickerView.invalidate();
+                            break;
+                        }
+                }
 
             positionBlend = pos;
         });
@@ -2134,8 +2156,10 @@ public class EditActivity extends AppCompatActivity {
 
         for (StickerModel st : lstSticker) {
             if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
-                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage())
-                    sbOpacityImage.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
+                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                    opacity = (int) (st.getDrawableSticker().getAlpha() * 100 / 255f);
+                    sbOpacityImage.setProgress(opacity);
+                }
         }
         sbOpacityImage.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
@@ -2145,8 +2169,8 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onMove(View v, int value) {
-                if (drawableSticker != null) drawableSticker.setAlpha((int) (value * 255 / 100f));
-                Log.d("2tdp", "onMove: " + value);
+                opacity = (int) (value * 255 / 100f);
+                if (drawableSticker != null) drawableSticker.setAlpha(opacity);
                 stickerView.replace(drawableSticker, true);
             }
 
@@ -2191,6 +2215,8 @@ public class EditActivity extends AppCompatActivity {
                 vEditImage.startAnimation(animation);
                 if (vEditImage.getVisibility() == View.GONE)
                     vEditImage.setVisibility(View.VISIBLE);
+
+                addOpacityImageModel(opacity);
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -2210,6 +2236,16 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addOpacityImageModel(int opacity) {
+        for (StickerModel t : lstSticker) {
+            if (t.getDrawableSticker() != null)
+                if (t.getDrawableSticker().getId() == drawableSticker.getId() && t.getDrawableSticker().isImage()) {
+                    t.getImageModel().setOpacity(opacity);
+                    break;
+                }
+        }
     }
 
     //shadow
@@ -2384,21 +2420,23 @@ public class EditActivity extends AppCompatActivity {
 
             Bitmap bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmapFilterBlend, filter.getParameterFilter(), 0.8f);
 
-            for (StickerModel st : lstSticker) {
-                if (st.getDrawableSticker() != null)
-                    if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
-                        DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), bitmap),
-                                new ArrayList<>(), st.getDrawableSticker().getId(), true, false, false, false);
+            if (stickerView.getCurrentSticker() == null)
+                Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+            else
+                for (StickerModel st : lstSticker) {
+                    if (st.getDrawableSticker() != null)
+                        if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
 
-                        sticker.setAlpha(drawableSticker.getAlpha());
-                        st.getImageModel().setImage(bitmap);
-                        st.getImageModel().setPosFilter(pos);
-                        st.getImageModel().setPosBlend(0);
+                            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                            st.getImageModel().setImage(bitmap);
+                            st.getImageModel().setPosFilter(pos);
+                            st.getImageModel().setPosBlend(0);
 
-                        stickerView.replace(sticker, true);
-                        break;
-                    }
-            }
+                            stickerView.getCurrentSticker().setDrawable(drawable);
+                            stickerView.invalidate();
+                            break;
+                        }
+                }
 
             positionFilter = pos;
         });
@@ -2482,19 +2520,17 @@ public class EditActivity extends AppCompatActivity {
             if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
 
-                    DrawableSticker sticker = new DrawableSticker(this, new BitmapDrawable(getResources(), st.getImageModel().getImage()),
+                    DrawableSticker sticker = new DrawableSticker(this, drawableSticker.getDrawable(),
                             new ArrayList<>(), getId(), true, false, false, false);
 
-                    sticker.setAlpha(st.getDrawableSticker().getAlpha());
-                    if (st.getImageModel().getShadowModel() != null) {
+                    sticker.setAlpha(drawableSticker.getAlpha());
+                    if (drawableSticker.getColorShadow() != 0)
                         sticker.setShadow(st.getImageModel().getShadowModel().getBlur(), st.getImageModel().getShadowModel().getxPos(),
                                 st.getImageModel().getShadowModel().getyPos(), st.getImageModel().getShadowModel().getColorBlur(), false);
-                    }
 
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, null, null, st.getImageModel(),
+                    lstSticker.add(new StickerModel(null, null, null, null, st.getImageModel(),
                             null, backgroundModel, null, sticker, null));
-
                     break;
                 }
         }
@@ -2505,13 +2541,16 @@ public class EditActivity extends AppCompatActivity {
         setUpLayoutEditCropImage(0);
         tvCancelCropImage.setOnClickListener(v -> setUpLayoutEditCropImage(1));
 
-        Bitmap bitmap = ((BitmapDrawable) drawableSticker.getDrawable()).getBitmap();
-        pathCrop.setBitmap(bitmap);
-        pathCrop.setPath(DataPic.getPathDataCrop(0));
+        for (StickerModel st : lstSticker) {
+            if (st.getDrawableSticker() != null)
+                if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                    pathCrop.setBitmap(st.getImageModel().getImage());
+                    pathCrop.setPath(DataPic.getPathDataCrop(0));
+                    break;
+                }
+        }
 
-        CropImageAdapter cropImageAdapter = new CropImageAdapter(this, (o, pos) -> {
-            pathCrop.setPath((String) o);
-        });
+        CropImageAdapter cropImageAdapter = new CropImageAdapter(this, (o, pos) -> pathCrop.setPath((String) o));
 
         GridLayoutManager manager = new GridLayoutManager(this, 2, LinearLayoutManager.HORIZONTAL, false);
         cropImageAdapter.setData(Arrays.asList(DataPic.lstPathData));
@@ -2523,9 +2562,21 @@ public class EditActivity extends AppCompatActivity {
     private void afterCropImage() {
         setUpLayoutEditCropImage(1);
 
-        isReplaceImage = true;
-        bitmapFilterBlend = pathCrop.getBitmapCreate();
-        handler.sendEmptyMessage(0);
+        Bitmap bitmap = pathCrop.getBitmapCreate();
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+        if (stickerView.getCurrentSticker() == null)
+            Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+        else {
+            for (StickerModel st : lstSticker) {
+                if (st.getDrawableSticker() != null)
+                    if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isImage()) {
+                        st.getImageModel().setImage(bitmap);
+
+                        stickerView.getCurrentSticker().setDrawable(drawable);
+                        stickerView.invalidate();
+                    }
+            }
+        }
     }
 
     private void setUpLayoutEditCropImage(int pos) {
@@ -2590,8 +2641,10 @@ public class EditActivity extends AppCompatActivity {
 
         for (StickerModel st : lstSticker) {
             if (st.getDrawableSticker() != null)
-                if (st.getDrawableSticker().getId() == drawableSticker.getId())
+                if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
+                    opacity = (int) (st.getDrawableSticker().getAlpha() * 100 / 255f);
                     sbOpacityEmoji.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
+                }
         }
         sbOpacityEmoji.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
@@ -2601,8 +2654,10 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onMove(View v, int value) {
-                if (drawableSticker != null) drawableSticker.setAlpha((int) (value * 255 / 100f));
+                opacity = (int) (value * 255 / 100f);
+                if (drawableSticker != null) drawableSticker.setAlpha(opacity);
                 stickerView.replace(drawableSticker, true);
+
             }
 
             @Override
@@ -2646,6 +2701,8 @@ public class EditActivity extends AppCompatActivity {
                 llEditEmoji.startAnimation(animation);
                 if (llEditEmoji.getVisibility() == View.GONE)
                     llEditEmoji.setVisibility(View.VISIBLE);
+
+                addOpacityEmojiModel(opacity);
                 break;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -2667,29 +2724,48 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    private void addOpacityEmojiModel(int opacity) {
+        for (StickerModel t : lstSticker) {
+            if (t.getDrawableSticker() != null)
+                if (t.getDrawableSticker().getId() == drawableSticker.getId()
+                        && !t.getDrawableSticker().isImage()
+                        && !t.getDrawableSticker().isDecor()
+                        && !t.getDrawableSticker().isTemplate()
+                        && !t.getDrawableSticker().isTemplate()) {
+                    t.getEmojiModel().setOpacity(opacity);
+                    break;
+                }
+        }
+    }
+
     private void addNewEmoji(int id, EmojiModel emoji, int pos) {
         Bitmap bitmap = Utils.getBitmapFromAsset(this, emoji.getNameFolder(), emoji.getNameEmoji(), true, false);
         Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-        DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), id, false, false, false, false);
 
         switch (pos) {
             case 0:
+                DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), id, false, false, false, false);
+
                 stickerView.addSticker(sticker);
-                lstSticker.add(new StickerModel(null, emoji, null, null, null, backgroundModel, null, sticker, null));
+                lstSticker.add(new StickerModel(null, emoji, null, null, null, null, backgroundModel, null, sticker, null));
             case 1:
-                for (StickerModel st : lstSticker) {
-                    if (st.getDrawableSticker() != null)
-                        if (st.getDrawableSticker().getId() == drawableSticker.getId()
-                                && !st.getDrawableSticker().isImage()
-                                && !st.getDrawableSticker().isOverlay()
-                                && !st.getDrawableSticker().isDecor()) {
+                if (stickerView.getCurrentSticker() == null)
+                    Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+                else
+                    for (StickerModel st : lstSticker) {
+                        if (st.getDrawableSticker() != null)
+                            if (st.getDrawableSticker().getId() == drawableSticker.getId()
+                                    && !st.getDrawableSticker().isImage()
+                                    && !st.getDrawableSticker().isOverlay()
+                                    && !st.getDrawableSticker().isDecor()) {
 
-                            st.setEmojiModel(emoji);
-                            sticker.setAlpha(st.getDrawableSticker().getAlpha());
-                        }
-                }
-
-                stickerView.replace(sticker, true);
+                                drawable.setAlpha(st.getEmojiModel().getOpacity());
+                                emoji.setOpacity(st.getEmojiModel().getOpacity());
+                                st.setEmojiModel(emoji);
+                                stickerView.getCurrentSticker().setDrawable(drawable);
+                                stickerView.invalidate();
+                            }
+                    }
                 break;
         }
     }
@@ -3369,10 +3445,10 @@ public class EditActivity extends AppCompatActivity {
                 break;
         }
         if (textModel.getColor() != null)
-            lstSticker.add(new StickerModel(textModel, null, null, null,
+            lstSticker.add(new StickerModel(textModel, null, null, null, null,
                     null, backgroundModel, sticker, null, textModel.getColor()));
         else
-            lstSticker.add(new StickerModel(textModel, null, null, null,
+            lstSticker.add(new StickerModel(textModel, null, null, null, null,
                     null, backgroundModel, sticker, null, null));
         sticker.resizeText();
     }
@@ -3518,24 +3594,25 @@ public class EditActivity extends AppCompatActivity {
 
                     BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
 
+                    drawable.setAlpha(st.getEmojiModel().getOpacity());
                     DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, false, false, false);
-                    sticker.setAlpha(st.getDrawableSticker().getAlpha());
 
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, st.getEmojiModel(), null, null,
+                    lstSticker.add(new StickerModel(null, st.getEmojiModel(), null, null, null,
                             null, st.getBackgroundModel(), null, sticker, null));
                     break;
                 }
 
                 if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isOverlay()) {
 
-                    BitmapDrawable drawable = new BitmapDrawable(getResources(), st.getBackgroundModel().getBackground());
+                    Bitmap bitmap = Utils.getBitmapFromAsset(this, st.getOverlayModel().getNameFolder(), st.getOverlayModel().getNameOverlay(), false, false);
+                    BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
 
-                    DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, false, true, false);
-                    sticker.setAlpha(st.getDrawableSticker().getAlpha());
+                    DrawableSticker sticker = new DrawableSticker(this, drawable, new ArrayList<>(), getId(), false, true, false, false);
+                    sticker.setAlpha(drawableSticker.getAlpha());
 
                     stickerView.addSticker(sticker);
-                    lstSticker.add(new StickerModel(null, null, null, null,
+                    lstSticker.add(new StickerModel(null, null, st.getOverlayModel(), null, null,
                             null, backgroundModel, null, sticker, null));
                     break;
                 }
@@ -3553,7 +3630,7 @@ public class EditActivity extends AppCompatActivity {
             TemplateModel template = (TemplateModel) o;
 
             for (StickerModel st : lstSticker) {
-                if (st.getDrawableSticker() != null && st.getDrawableSticker().getDrawable() != Utils.getDrawableTransparent(EditActivity.this))
+                if (st.getDrawableSticker() != null)
                     if (st.getDrawableSticker().getId() == drawableSticker.getId() && st.getDrawableSticker().isTemplate()) {
                         DrawableSticker sticker = new DrawableSticker(this, null, template.getLstPathData(), getId(), false, false, false, true);
                         if (st.getColor() != null) sticker.setColor(st.getColor());
@@ -3869,10 +3946,10 @@ public class EditActivity extends AppCompatActivity {
                     stickerView.addSticker(sticker);
                     stickerView.setCurrentSticker(sticker);
                     if (st.getColor() != null)
-                        lstSticker.add(new StickerModel(null, null, null, null,
+                        lstSticker.add(new StickerModel(null, null, null, null, null,
                                 st.getTemplateModel(), backgroundModel, null, sticker, st.getColor()));
                     else
-                        lstSticker.add(new StickerModel(null, null, null, null,
+                        lstSticker.add(new StickerModel(null, null, null, null, null,
                                 st.getTemplateModel(), backgroundModel, null, sticker, null));
                     break;
                 }
@@ -3974,32 +4051,57 @@ public class EditActivity extends AppCompatActivity {
             return;
         }
 
+        StickerModel stickerModel = null;
+
+        if (drawableSticker != null)
+            for (StickerModel st : lstSticker) {
+                if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
+                    stickerModel = st;
+                    stickerView.remove(st.getDrawableSticker());
+                    break;
+                }
+            }
+        if (textSticker != null)
+            for (StickerModel st : lstSticker) {
+                if (st.getTextSticker().getId() == textSticker.getId()) {
+                    stickerModel = st;
+                    stickerView.remove(st.getTextSticker());
+                    break;
+                }
+            }
+
+        if (stickerView.getStickerCount() > 0) {
+            Sticker sticker = stickerView.getSticker(0);
+            if (sticker instanceof DrawableSticker) drawableSticker = (DrawableSticker) sticker;
+            if (sticker instanceof TextSticker) textSticker = (TextSticker) sticker;
+        } else stickerView.setCurrentSticker(null);
+
         if (!islLayer) seekAndHideLayout(0);
         else {
             layerAdapter.setData(stickerView.getListLayer());
             layerAdapter.setCurrent(0);
             if (stickerView.getStickerCount() > 0)
                 stickerView.setCurrentSticker(stickerView.getListLayer().get(0).getSticker());
+            else seekAndHideLayout(0);
         }
 
-        StickerModel stickerModel = null;
-        Sticker sticker = stickerView.getCurrentSticker();
-        for (StickerModel st : lstSticker) {
-            if (sticker == st.getDrawableSticker() || sticker == st.getTextSticker())
-                stickerModel = st;
-        }
         lstSticker.remove(stickerModel);
-        stickerView.remove(sticker);
     }
 
     //SetUpData
     private void getData() {
         String strUri = DataLocalManager.getOption("bitmap");
+        String picAsset = DataLocalManager.getOption("bitmap_myapp");
         TemplateModel template = DataLocalManager.getTemp("temp");
-        if (!strUri.equals("")) {
+        if (!strUri.equals("") || !picAsset.equals("")) {
             isColor = false;
             try {
-                Bitmap bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
+                Bitmap bitmap = null;
+                if (!strUri.equals(""))
+                    bitmap = Utils.modifyOrientation(getBaseContext(), MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(strUri)), Uri.parse(strUri));
+                if (!picAsset.equals(""))
+                    bitmap = Utils.getBitmapFromAsset(this, "offline_myapp", picAsset, false, false);
+
                 backgroundModel.setBackground(bitmap);
                 backgroundModel.setBackgroundRoot(bitmap);
                 if (bitmap != null && isReplaceBackground) {
@@ -4028,7 +4130,7 @@ public class EditActivity extends AppCompatActivity {
             DrawableSticker drawableSticker = new DrawableSticker(this, null, template.getLstPathData(), getId(), false, false, false, true);
 
             stickerView.addSticker(drawableSticker);
-            lstSticker.add(new StickerModel(null, null, null, null, template, backgroundModel, null, drawableSticker, null));
+            lstSticker.add(new StickerModel(null, null, null, null, null, template, backgroundModel, null, drawableSticker, null));
             isTemplate = true;
             if (bitmap != null)
                 vCrop.setData(bitmap);
@@ -4097,6 +4199,10 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void seekAndHideLayout(int pos) {
+        if (stickerView.getStickerCount() == 0)
+            ivLayer.setImageResource(R.drawable.ic_layer_uncheck);
+        else ivLayer.setImageResource(R.drawable.ic_layer);
+
         switch (pos) {
             case 0:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -4376,6 +4482,21 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
 
+                if (rlEditOpacityText.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityText(1);
+
+                if (llEditShadow.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditShadow(1);
+
+                if (llEditTransform.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditTransform(1);
+
+                if (rlEditColor.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditColor(1);
+
+                if (rlEditFontSize.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditFontSize(1);
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditText.getVisibility() == View.GONE) {
                     rlExpandEditText.startAnimation(animation);
@@ -4510,6 +4631,9 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
 
+                if (rlEditOpacityEmoji.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityEmoji(1);
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditEmoji.getVisibility() == View.GONE) {
                     rlExpandEditEmoji.startAnimation(animation);
@@ -4573,6 +4697,18 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.startAnimation(animation);
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
+
+                if (rlEditBlend.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditBlendImage(1);
+
+                if (rlEditOpacityImage.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityImage(1);
+
+                if (llEditShadowImage.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditShadowImage(1);
+
+                if (rlEditFilter.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditFilterImage(1);
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditImage.getVisibility() == View.GONE) {
@@ -4795,6 +4931,9 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
 
+                if (rlEditOpacityOverlay.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityOverlay(1);
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditOverlay.getVisibility() == View.GONE) {
                     rlExpandEditOverlay.startAnimation(animation);
@@ -4923,6 +5062,15 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditTemp.startAnimation(animation);
                     rlExpandEditTemp.setVisibility(View.GONE);
                 }
+
+                if (rlEditOpacityDecor.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityDecor(1);
+
+                if (llEditShadowDecor.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditShadowDecor(1);
+
+                if (rlEditColorDecor.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditColorDecor(1);
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditDecor.getVisibility() == View.GONE) {
@@ -5074,6 +5222,15 @@ public class EditActivity extends AppCompatActivity {
                     rlExpandEditDecor.startAnimation(animation);
                     rlExpandEditDecor.setVisibility(View.GONE);
                 }
+
+                if (rlEditOpacityTemp.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditOpacityTemp(1);
+
+                if (llEditShadowTemp.getVisibility() == View.VISIBLE)
+                    setUpLayoutEditShadowTemp(1);
+
+                if (rlEditColorTemp.getVisibility() == View.VISIBLE)
+                    setUpLayoutColorTextTemp(1);
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditTemp.getVisibility() == View.GONE) {
@@ -5481,6 +5638,7 @@ public class EditActivity extends AppCompatActivity {
         if (lstFilterBlend != null) lstFilterBlend = null;
         lstFilterBlend = new ArrayList<>();
         DataLocalManager.setOption("", "bitmap");
+        DataLocalManager.setOption("", "bitmap_myapp");
         DataLocalManager.setTemp(null, "temp");
     }
 

@@ -75,6 +75,7 @@ public class ColorFragment extends Fragment {
                 if (color.getColorStart() == color.getColorEnd()) {
                     DataLocalManager.setColor(color, "color");
                     DataLocalManager.setOption("", "bitmap");
+                    DataLocalManager.setOption("", "bitmap_myapp");
                     if (!isBackground)
                         Utils.setIntent(requireActivity(), EditActivity.class.getName());
                     else clickTouch.checkTouch(true);
@@ -136,6 +137,7 @@ public class ColorFragment extends Fragment {
             color.setDirec(direc);
             DataLocalManager.setColor(color, "color");
             DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
             if (!isBackground) Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);
             dialog.cancel();
@@ -281,6 +283,7 @@ public class ColorFragment extends Fragment {
             ColorModel color = new ColorModel(colorPicker.getSelectedColor(), colorPicker.getSelectedColor(), 0, false);
             DataLocalManager.setColor(color, "color");
             DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);

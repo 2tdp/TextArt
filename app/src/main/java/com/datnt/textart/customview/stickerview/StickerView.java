@@ -512,6 +512,10 @@ public class StickerView extends FrameLayout {
         invalidate();
     }
 
+    public Sticker getSticker(int index) {
+        return stickers.get(index);
+    }
+
     @Nullable
     protected BitmapStickerIcon findCurrentIconTouched() {
         for (BitmapStickerIcon icon : icons) {

@@ -5,21 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
-import android.util.Log;
 
 import com.datnt.textart.R;
-import com.datnt.textart.model.BucketPicModel;
-import com.datnt.textart.model.PicModel;
+import com.datnt.textart.model.OverlayModel;
+import com.datnt.textart.model.picture.BucketPicModel;
+import com.datnt.textart.model.picture.PicModel;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataPic {
 
@@ -175,6 +171,18 @@ public class DataPic {
             }
         }
         return lstPic;
+    }
+
+    public static ArrayList<String> getPicAssets(Context context, String name) {
+        ArrayList<String> lstPicAsset = new ArrayList<>();
+        try {
+            String[] f = context.getAssets().list(name + "/");
+            lstPicAsset.addAll(Arrays.asList(f));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lstPicAsset;
     }
 
     public static String getPathDataCrop(int pos) {

@@ -75,7 +75,6 @@ public class DrawableSticker extends Sticker {
         }
 
         realBounds = new RectF(0, 0, getWidth(), getHeight());
-
     }
 
     @NonNull
@@ -85,6 +84,8 @@ public class DrawableSticker extends Sticker {
 
     public DrawableSticker setDrawable(@Nullable Drawable drawable) {
         this.drawable = drawable;
+        if (drawable != null)
+            realBounds = new RectF(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         return this;
     }
 
@@ -105,8 +106,10 @@ public class DrawableSticker extends Sticker {
     @NonNull
     @Override
     public DrawableSticker setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-        if (isDecor || isTemplate) paint.setAlpha(alpha);
-        else drawable.setAlpha(alpha);
+        if (isDecor || isTemplate)
+            paint.setAlpha(alpha);
+        else
+            drawable.setAlpha(alpha);
         return this;
     }
 

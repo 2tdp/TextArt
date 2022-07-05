@@ -4,11 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -76,12 +80,28 @@ public class AddTextActivity extends AppCompatActivity {
     }
 
     private void clickTick() {
-        TextModel text = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null, null, null, 255);
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("text", text);
-        setResult(Activity.RESULT_OK, returnIntent);
-        Utils.hideKeyboard(this, ivTick);
-        onBackPressed();
+        String text = etText.getText().toString();
+        if (text.equals("")) {
+            @SuppressLint("InflateParams")
+            View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit_text, null, false);
+            TextView tvNo = v.findViewById(R.id.tvNo);
+            TextView tvYes = v.findViewById(R.id.tvYes);
+
+            AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
+            dialog.setCancelable(false);
+            dialog.setView(v);
+            dialog.show();
+
+            tvNo.setOnClickListener(vNo -> dialog.cancel());
+            tvYes.setOnClickListener(vYes -> onBackPressed());
+        } else {
+            TextModel textModel = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null, null, null, 255);
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("text", textModel);
+            setResult(Activity.RESULT_OK, returnIntent);
+            Utils.hideKeyboard(this, ivTick);
+            onBackPressed();
+        }
     }
 
     private void setUpQuotes() {

@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.MyAppAdapter;
-import com.datnt.textart.adapter.RecentAdapter;
 import com.datnt.textart.callback.ICheckTouch;
 import com.datnt.textart.data.DataPic;
-import com.datnt.textart.model.PicModel;
+import com.datnt.textart.model.picture.PicModel;
+import com.datnt.textart.sharepref.DataLocalManager;
+import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -58,11 +60,18 @@ public class MyAppFragment extends Fragment {
     }
 
     private void setUpLayout() {
-        ArrayList<PicModel> lstPic = new ArrayList<>();
+        ArrayList<String> lstPic = new ArrayList<>(DataPic.getPicAssets(requireContext(), "offline_myapp"));
 
         myAppAdapter = new MyAppAdapter(requireContext(), (Object o, int pos) -> {
+            String picAsset = (String) o;
+            DataLocalManager.setOption(picAsset, "bitmap_myapp");
+            DataLocalManager.setOption("", "bitmap");
+            if (!isBackground)
+                Utils.setIntent(requireActivity(), EditActivity.class.getName());
+            else clickTouch.checkTouch(true);
         });
 
+        myAppAdapter.setData(lstPic);
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
         rcvPicMyApp.setLayoutManager(manager);
         rcvPicMyApp.setAdapter(myAppAdapter);

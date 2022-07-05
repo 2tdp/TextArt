@@ -13,6 +13,7 @@ public class StickerModel implements Serializable {
     private TextModel textModel;
     private EmojiModel emojiModel;
     private ImageModel imageModel;
+    private OverlayModel overlayModel;
     private DecorModel decorModel;
     private TemplateModel templateModel;
     private BackgroundModel backgroundModel;
@@ -20,12 +21,13 @@ public class StickerModel implements Serializable {
     private DrawableSticker drawableSticker;
     private ColorModel color;
 
-    public StickerModel(TextModel textModel, EmojiModel emojiModel, DecorModel decorModel, ImageModel imageModel,
-                        TemplateModel templateModel, BackgroundModel backgroundModel, TextSticker textSticker,
-                        DrawableSticker drawableSticker, ColorModel color) {
+    public StickerModel(TextModel textModel, EmojiModel emojiModel, OverlayModel overlayModel, DecorModel decorModel,
+                        ImageModel imageModel, TemplateModel templateModel, BackgroundModel backgroundModel,
+                        TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color) {
         this.textModel = textModel;
         this.emojiModel = emojiModel;
         this.imageModel = imageModel;
+        this.overlayModel = overlayModel;
         this.decorModel = decorModel;
         this.templateModel = templateModel;
         this.backgroundModel = backgroundModel;
@@ -56,6 +58,14 @@ public class StickerModel implements Serializable {
 
     public void setImageModel(ImageModel imageModel) {
         this.imageModel = imageModel;
+    }
+
+    public OverlayModel getOverlayModel() {
+        return overlayModel;
+    }
+
+    public void setOverlayModel(OverlayModel overlayModel) {
+        this.overlayModel = overlayModel;
     }
 
     public DecorModel getDecorModel() {

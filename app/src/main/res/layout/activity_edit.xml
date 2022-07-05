@@ -2044,7 +2044,6 @@
 
         </LinearLayout>
 
-
         <!--        filter-->
         <RelativeLayout
             android:id="@+id/rlEditFilter"
