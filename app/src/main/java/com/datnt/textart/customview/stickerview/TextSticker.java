@@ -42,7 +42,7 @@ public class TextSticker extends Sticker {
 
     private final Context context;
     private int id, colorShadow = 0;
-    private final Rect realBounds;
+    private Rect realBounds;
     private final Rect textRect;
     private final TextPaint textPaint;
     private Drawable drawable;
@@ -306,8 +306,7 @@ public class TextSticker extends Sticker {
         return this;
     }
 
-    @NonNull
-    public TextSticker setText(@Nullable String text) {
+    public TextSticker setText(String text) {
         this.text = text;
         return this;
     }
@@ -331,16 +330,14 @@ public class TextSticker extends Sticker {
 
         // Safety check
         // (Do not resize if the view does not have dimensions or if there is no text)
-        if (text == null || text.length() <= 0 || availableHeightPixels <= 0 || availableWidthPixels <= 0
-                || maxTextSizePixels <= 0) {
+        if (text == null || text.length() <= 0 || availableHeightPixels <= 0 || availableWidthPixels <= 0 || maxTextSizePixels <= 0) {
             return this;
         }
 
         float targetTextSizePixels = maxTextSizePixels;
         int targetTextHeightPixels = getTextHeightPixels(text, availableWidthPixels, targetTextSizePixels);
 
-        // Until we either fit within our TextView
-        // or we have reached our minimum text size,
+        // Until we either fit within our TextView or we have reached our minimum text size,
         // incrementally try smaller sizes
         while (targetTextHeightPixels > availableHeightPixels && targetTextSizePixels > minTextSizePixels) {
             targetTextSizePixels = Math.max(targetTextSizePixels - 2, minTextSizePixels);
@@ -356,8 +353,7 @@ public class TextSticker extends Sticker {
             textPaintCopy.setTextSize(targetTextSizePixels);
 
             // Measure using a StaticLayout instance
-            StaticLayout staticLayout =
-                    new StaticLayout(text, textPaintCopy, availableWidthPixels, Layout.Alignment.ALIGN_NORMAL,
+            StaticLayout staticLayout = new StaticLayout(text, textPaintCopy, availableWidthPixels, Layout.Alignment.ALIGN_NORMAL,
                             lineSpacingMultiplier, lineSpacingExtra, false);
 
             // Check that we have a least one line of rendered text
@@ -378,7 +374,6 @@ public class TextSticker extends Sticker {
                         lineWidthPixels =
                                 textPaintCopy.measureText(text.subSequence(startOffset, endOffset + 1).toString());
                     }
-
                     setText(text.subSequence(0, endOffset) + mEllipsis);
                 }
             }

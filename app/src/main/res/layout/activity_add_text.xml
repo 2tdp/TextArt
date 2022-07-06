@@ -59,7 +59,6 @@
             android:layout_centerInParent="true"
             android:background="@color/white"
             android:fontFamily="@font/poppins_regular"
-            android:gravity="start"
             android:hint="@string/tap_to_edit"
             android:padding="@dimen/_5sdp"
             android:textColorHint="@color/gray" />

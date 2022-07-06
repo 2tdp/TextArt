@@ -18,11 +18,11 @@ public class DataTemplate {
     public static ArrayList<TemplateModel> getTemplate(Context context, String name) {
         ArrayList<TemplateModel> lstTemp = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("template/template" + name + "/");
+            String[] f = context.getAssets().list("template/template" + name);
             for (String s : f) {
                 String background = "template_background" + s.split("template")[1];
                 String text = "json_temp_text" + s.split("template")[1].replace(".png", ".json");
-                lstTemp.add(new TemplateModel(s, background, text, getPathDataTemp(context, text)));
+                lstTemp.add(new TemplateModel(s, background, text, getPathDataTemp(context, text), null));
             }
         } catch (IOException e) {
             e.printStackTrace();

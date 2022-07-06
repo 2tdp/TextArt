@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fitsSystemWindows="true"
     tools:context=".fragment.vip.VipOneFragment">
 
     <ImageView
@@ -12,7 +11,7 @@
         android:layout_width="@dimen/_40sdp"
         android:layout_height="@dimen/_40sdp"
         android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_30sdp"
         android:padding="@dimen/_10sdp"
         android:src="@drawable/ic_back" />
 

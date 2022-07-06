@@ -3,18 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".fragment.splash.OneSplashFragment">
+    tools:context=".fragment.splash.SplashFragment">
 
     <ImageView
-        android:id="@+id/ivSplash1"
+        android:id="@+id/ivPic"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_448sdp"
         android:fitsSystemWindows="false"
-        android:scaleType="centerCrop"
-        android:src="@drawable/splash_1" />
+        android:scaleType="centerCrop" />
 
     <TextView
+        android:id="@+id/tvDes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

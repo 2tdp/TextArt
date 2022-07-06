@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.activity.Settings;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 public class ProjectsActivity extends AppCompatActivity {
 
     private ImageView ivBack, ivSettings;
+    private TextView tvProjects;
+
     private RecyclerView rcvProject;
     private ProjectAdapter projectAdapter;
 
@@ -50,6 +54,7 @@ public class ProjectsActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         ivSettings = findViewById(R.id.ivSettings);
         rcvProject = findViewById(R.id.rcvProject);
+        tvProjects = findViewById(R.id.tvProjects);
 
         setData();
     }
@@ -61,7 +66,12 @@ public class ProjectsActivity extends AppCompatActivity {
             DataLocalManager.setCheck("isProject", true);
             DataLocalManager.setProject((Project) o, "project");
         });
-        if (!lstProject.isEmpty()) projectAdapter.setData(lstProject);
+
+        if (!lstProject.isEmpty()) {
+            projectAdapter.setData(lstProject);
+            tvProjects.setVisibility(View.GONE);
+        } else tvProjects.setVisibility(View.VISIBLE);
+
         GridLayoutManager manager = new GridLayoutManager(this, 2);
         rcvProject.setLayoutManager(manager);
         rcvProject.setAdapter(projectAdapter);

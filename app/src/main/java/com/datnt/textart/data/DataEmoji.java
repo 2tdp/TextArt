@@ -12,7 +12,7 @@ public class DataEmoji {
     public static ArrayList<EmojiModel> getTitleEmoji(Context context, String name) {
         ArrayList<EmojiModel> lstEmoji = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("emoji/emoji_" + name + "/");
+            String[] f = context.getAssets().list("emoji/emoji_" + name);
             for (String s : f) lstEmoji.add(new EmojiModel(s, "emoji_" + name, 255, false));
         } catch (IOException e) {
             e.printStackTrace();

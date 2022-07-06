@@ -33,8 +33,6 @@ public class CreateProjectActivity extends AppCompatActivity {
     private View vRecent, vMyApp, vColor;
 
     private RecentFragment recentFragment;
-    private MyAppFragment myAppFragment;
-    private ColorFragment colorFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +122,9 @@ public class CreateProjectActivity extends AppCompatActivity {
         recentFragment = RecentFragment.newInstance(isBackground);
         recentFragment.changeFolder(str -> tvRecent.setText(str));
         recentFragment.finish(check -> onBackPressed());
-        myAppFragment = MyAppFragment.newInstance(isBackground);
+        MyAppFragment myAppFragment = MyAppFragment.newInstance(isBackground);
         myAppFragment.finish(check -> onBackPressed());
-        colorFragment = ColorFragment.newInstance(isBackground);
+        ColorFragment colorFragment = ColorFragment.newInstance(isBackground);
         colorFragment.finish(check -> onBackPressed());
 
         fragmentsAdapter.addFrag(recentFragment);

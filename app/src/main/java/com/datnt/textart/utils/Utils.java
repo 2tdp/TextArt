@@ -9,12 +9,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -35,6 +37,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
@@ -44,6 +47,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.datnt.textart.R;
+import com.edmodo.cropper.cropwindow.handle.Handle;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,15 +69,14 @@ public class Utils {
         activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS & WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
-            activity.getWindow().getInsetsController().hide(WindowInsets.Type.navigationBars());
-        }
+        int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            flags = flags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            flags = flags | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+
+        decorView.setSystemUiVisibility(flags);
     }
 
     public static void hideKeyboard(Context context, View view) {

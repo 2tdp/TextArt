@@ -111,6 +111,8 @@ public class ColorView extends View {
                 break;
             default:
                 path.addRect(0, 0, w, h, Path.Direction.CW);
+                width = w;
+                height = h;
                 break;
         }
         invalidate();

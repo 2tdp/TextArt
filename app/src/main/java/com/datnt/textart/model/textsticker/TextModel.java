@@ -16,17 +16,6 @@ public class TextModel implements Serializable {
     private ShearTextModel shearTextModel;
     private int opacity;
 
-    public TextModel(TextModel textModel) {
-        this.content = textModel.getContent();
-        this.quoteModel = textModel.getQuoteModel();
-        this.fontModel = textModel.getFontModel();
-        this.typeAlign = textModel.getTypeAlign();
-        this.color = textModel.getColor();
-        this.shadowModel = textModel.getShadowModel();
-        this.shearTextModel = textModel.getShearTextModel();
-        this.opacity = textModel.getOpacity();
-    }
-
     public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, int typeAlign,
                      ColorModel color, ShadowModel shadowModel, ShearTextModel shearTextModel, int opacity) {
         this.content = content;

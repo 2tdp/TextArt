@@ -1,9 +1,8 @@
 package com.datnt.textart.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,9 +10,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.textart.R;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
-import com.datnt.textart.fragment.splash.OneSplashFragment;
-import com.datnt.textart.fragment.splash.ThreeSplashFragment;
-import com.datnt.textart.fragment.splash.TwoSplashFragment;
+import com.datnt.textart.fragment.splash.SplashFragment;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
@@ -53,6 +50,7 @@ public class SplashActivity extends AppCompatActivity {
 
         tvSplash.setOnClickListener(view -> {
             if (viewPager2.getCurrentItem() == 2) {
+                DataLocalManager.setFirstInstall("first", true);
                 Utils.setIntent(this, RequestPermissionActivity.class.getName());
                 finish();
             } else {
@@ -64,9 +62,9 @@ public class SplashActivity extends AppCompatActivity {
     private void setUpViewPager() {
         ViewPagerAddFragmentsAdapter viewPagerAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
-        OneSplashFragment oneSplashFragment = new OneSplashFragment();
-        TwoSplashFragment twoSplashFragment = new TwoSplashFragment();
-        ThreeSplashFragment threeSplashFragment = new ThreeSplashFragment();
+        SplashFragment oneSplashFragment = SplashFragment.newInstance(R.drawable.splash_1, getResources().getText(R.string.splash_1).toString());
+        SplashFragment twoSplashFragment = SplashFragment.newInstance(R.drawable.splash_2, getResources().getText(R.string.splash_2).toString());
+        SplashFragment threeSplashFragment = SplashFragment.newInstance(R.drawable.splash_3, getResources().getText(R.string.splash_3).toString());
 
         viewPagerAdapter.addFrag(oneSplashFragment);
         viewPagerAdapter.addFrag(twoSplashFragment);
@@ -80,9 +78,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void FirstInstall() {
-        if (!DataLocalManager.getFirstInstall("first")) {
-            DataLocalManager.setFirstInstall("first", true);
-        } else {
+        if (DataLocalManager.getFirstInstall("first")) {
             Utils.setIntent(this, RequestPermissionActivity.class.getName());
             finish();
         }

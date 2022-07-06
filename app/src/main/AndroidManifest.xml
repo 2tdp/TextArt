@@ -40,16 +40,14 @@
             android:exported="false" />
         <activity
             android:name=".activity.RequestPermissionActivity"
-            android:exported="false"
-            android:theme="@style/theme_Splash" />
+            android:exported="false" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="false" />
 
         <activity
             android:name=".activity.SplashActivity"
-            android:exported="true"
-            android:theme="@style/theme_Splash">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

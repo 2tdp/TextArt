@@ -176,7 +176,7 @@ public class DataPic {
     public static ArrayList<String> getPicAssets(Context context, String name) {
         ArrayList<String> lstPicAsset = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list(name + "/");
+            String[] f = context.getAssets().list(name);
             lstPicAsset.addAll(Arrays.asList(f));
         } catch (IOException e) {
             e.printStackTrace();

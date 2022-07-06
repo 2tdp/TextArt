@@ -19,11 +19,10 @@ public class StickerModel implements Serializable {
     private BackgroundModel backgroundModel;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
-    private ColorModel color;
 
     public StickerModel(TextModel textModel, EmojiModel emojiModel, OverlayModel overlayModel, DecorModel decorModel,
                         ImageModel imageModel, TemplateModel templateModel, BackgroundModel backgroundModel,
-                        TextSticker textSticker, DrawableSticker drawableSticker, ColorModel color) {
+                        TextSticker textSticker, DrawableSticker drawableSticker) {
         this.textModel = textModel;
         this.emojiModel = emojiModel;
         this.imageModel = imageModel;
@@ -33,7 +32,6 @@ public class StickerModel implements Serializable {
         this.backgroundModel = backgroundModel;
         this.textSticker = textSticker;
         this.drawableSticker = drawableSticker;
-        this.color = color;
     }
 
     public TextModel getTextModel() {
@@ -106,13 +104,5 @@ public class StickerModel implements Serializable {
 
     public void setDrawableSticker(DrawableSticker drawableSticker) {
         this.drawableSticker = drawableSticker;
-    }
-
-    public ColorModel getColor() {
-        return color;
-    }
-
-    public void setColor(ColorModel color) {
-        this.color = color;
     }
 }

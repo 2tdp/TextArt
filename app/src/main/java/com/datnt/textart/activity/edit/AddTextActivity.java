@@ -46,8 +46,8 @@ public class AddTextActivity extends AppCompatActivity {
     private TextModel textModel;
     private StyleFontAdapter styleFontAdapter;
     private ArrayList<FontModel> lstFont;
-    private int positionStyleFont, positionFont;
-    private boolean check;
+    private int positionStyleFont, positionFont, posGravity;
+    private boolean check, isEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +82,15 @@ public class AddTextActivity extends AppCompatActivity {
     private void clickTick() {
         String text = etText.getText().toString();
         if (text.equals("")) {
-            @SuppressLint("InflateParams")
-            View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit_text, null, false);
-            TextView tvNo = v.findViewById(R.id.tvNo);
-            TextView tvYes = v.findViewById(R.id.tvYes);
-
-            AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
-            dialog.setCancelable(false);
-            dialog.setView(v);
-            dialog.show();
-
-            tvNo.setOnClickListener(vNo -> dialog.cancel());
-            tvYes.setOnClickListener(vYes -> onBackPressed());
+            Utils.showToast(this, getResources().getString(R.string.pls_enter_text));
         } else {
-            TextModel textModel = new TextModel(etText.getText().toString(), null, font, etText.getGravity(), null, null, null, 255);
+            if (!isEditText)
+                textModel = new TextModel(text, null, font, posGravity, null, null, null, 255);
+            else {
+                textModel.setContent(text);
+                textModel.setFontModel(font);
+                textModel.setTypeAlign(posGravity);
+            }
             Intent returnIntent = new Intent();
             returnIntent.putExtra("text", textModel);
             setResult(Activity.RESULT_OK, returnIntent);
@@ -275,18 +270,21 @@ public class AddTextActivity extends AppCompatActivity {
     private void changeStateAlignText(int pos) {
         switch (pos) {
             case 0:
+                posGravity = 0;
                 etText.setGravity(Gravity.START);
                 ivLeft.setImageResource(R.drawable.ic_text_align_left_select);
                 ivCenter.setImageResource(R.drawable.ic_text_align_center);
                 ivRight.setImageResource(R.drawable.ic_text_align_right);
                 break;
             case 1:
+                posGravity = 1;
                 etText.setGravity(Gravity.CENTER);
                 ivLeft.setImageResource(R.drawable.ic_text_align_left);
                 ivCenter.setImageResource(R.drawable.ic_text_align_center_select);
                 ivRight.setImageResource(R.drawable.ic_text_align_right);
                 break;
             case 2:
+                posGravity = 2;
                 etText.setGravity(Gravity.END);
                 ivLeft.setImageResource(R.drawable.ic_text_align_left);
                 ivCenter.setImageResource(R.drawable.ic_text_align_center);
@@ -319,8 +317,10 @@ public class AddTextActivity extends AppCompatActivity {
         tvClear = findViewById(R.id.tvClear);
 
         textModel = (TextModel) getIntent().getSerializableExtra("text");
-        if (textModel != null) setUpText();
-        else {
+        if (textModel != null) {
+            setUpText();
+            isEditText = true;
+        } else {
             tvQuotes.setVisibility(View.VISIBLE);
             tvClear.setVisibility(View.GONE);
             lstFont = DataFont.getDataFont(this);
@@ -329,6 +329,7 @@ public class AddTextActivity extends AppCompatActivity {
                 if (f.getName().equals("Regular")) f.setSelected(true);
             }
             changeStateText(0);
+            changeStateAlignText(0);
         }
     }
 
@@ -336,18 +337,22 @@ public class AddTextActivity extends AppCompatActivity {
         tvQuotes.setVisibility(View.GONE);
         tvClear.setVisibility(View.VISIBLE);
         etText.setText(textModel.getContent());
-        etText.setGravity(textModel.getTypeAlign());
+
         switch (textModel.getTypeAlign()) {
-            case Gravity.START:
+            case 0:
                 changeStateAlignText(0);
+                etText.setGravity(Gravity.START);
                 break;
-            case Gravity.CENTER:
+            case 1:
                 changeStateAlignText(1);
+                etText.setGravity(Gravity.CENTER);
                 break;
-            case Gravity.END:
+            case 2:
                 changeStateAlignText(2);
+                etText.setGravity(Gravity.END);
                 break;
         }
+
         for (int i = 0; i < textModel.getFontModel().getLstStyle().size(); i++) {
             StyleFontModel f = textModel.getFontModel().getLstStyle().get(i);
             if (f.isSelected()) {

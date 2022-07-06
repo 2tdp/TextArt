@@ -18,8 +18,8 @@ public class DataDecor {
     public static ArrayList<DecorModel> getTitleDecor(Context context, String name) {
         ArrayList<DecorModel> lstDecor = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("decor/decor_" + name + "/");
-            for (String s : f) lstDecor.add(new DecorModel(s, "decor_" + name, getPathDataDecor(context, s), false));
+            String[] f = context.getAssets().list("decor/decor_" + name);
+            for (String s : f) lstDecor.add(new DecorModel(s, "decor_" + name, getPathDataDecor(context, s), null, false));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,8 +30,8 @@ public class DataDecor {
     public static ArrayList<DecorModel> getDataDecor(Context context, String name) {
         ArrayList<DecorModel> lstDecor = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("decor_json/json_" + name + "/");
-            for (String s : f) lstDecor.add(new DecorModel(s, "json" + name, getPathDataDecor(context, s), false));
+            String[] f = context.getAssets().list("decor_json/json_" + name);
+            for (String s : f) lstDecor.add(new DecorModel(s, "json" + name, getPathDataDecor(context, s), null, false));
         } catch (IOException e) {
             e.printStackTrace();
         }

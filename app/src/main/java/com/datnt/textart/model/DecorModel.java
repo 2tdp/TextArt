@@ -8,12 +8,14 @@ public class DecorModel implements Serializable {
     private String nameDecor;
     private String nameFolder;
     private ArrayList<String> lstPathData;
+    private ColorModel colorModel;
     private boolean isSelected;
 
-    public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData, boolean isSelected) {
+    public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData, ColorModel colorModel, boolean isSelected) {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;
         this.lstPathData = lstPathData;
+        this.colorModel = colorModel;
         this.isSelected = isSelected;
     }
 
@@ -39,6 +41,14 @@ public class DecorModel implements Serializable {
 
     public void setLstPathData(ArrayList<String> lstPathData) {
         this.lstPathData = lstPathData;
+    }
+
+    public ColorModel getColorModel() {
+        return colorModel;
+    }
+
+    public void setColorModel(ColorModel colorModel) {
+        this.colorModel = colorModel;
     }
 
     public boolean isSelected() {

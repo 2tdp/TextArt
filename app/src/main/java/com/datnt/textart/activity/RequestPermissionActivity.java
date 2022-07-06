@@ -31,6 +31,7 @@ public class RequestPermissionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.request_permission_layout);
     }
 
@@ -46,8 +47,9 @@ public class RequestPermissionActivity extends AppCompatActivity {
 
         ivExit.setOnClickListener(v -> {
             Utils.showToast(this, getString(R.string.rp_3));
-            openSettingPermission();
+//            openSettingPermission();
             dialog.cancel();
+            finish();
         });
         tvAllow.setOnClickListener(v -> {
             checkPermission();

@@ -13,7 +13,7 @@ public class DataFont {
     public static ArrayList<FontModel> getDataFont(Context context) {
         ArrayList<FontModel> lstFont = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("fonts/");
+            String[] f = context.getAssets().list("fonts");
             for (String s : f) {
                 lstFont.add(new FontModel(s, getDataStyleFont(context, s), false, false, false, false));
             }
@@ -27,7 +27,7 @@ public class DataFont {
     public static ArrayList<StyleFontModel> getDataStyleFont(Context context, String nameFont) {
         ArrayList<StyleFontModel> lstStyle = new ArrayList<>();
         try {
-            String[] f = context.getAssets().list("fonts/" + nameFont + "/");
+            String[] f = context.getAssets().list("fonts/" + nameFont);
             for (String s : f) {
                 String[] arr = s.split("_");
                 StringBuilder style = new StringBuilder();

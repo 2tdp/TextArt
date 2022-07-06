@@ -8,12 +8,14 @@ public class TemplateModel implements Serializable {
     private String background;
     private String text;
     private ArrayList<String> lstPathData;
+    private ColorModel colorModel;
 
-    public TemplateModel(String name, String background, String text, ArrayList<String> lstPathData) {
+    public TemplateModel(String name, String background, String text, ArrayList<String> lstPathData, ColorModel colorModel) {
         this.name = name;
         this.background = background;
         this.text = text;
         this.lstPathData = lstPathData;
+        this.colorModel = colorModel;
     }
 
     public String getName() {
@@ -46,5 +48,13 @@ public class TemplateModel implements Serializable {
 
     public void setLstPathData(ArrayList<String> lstPathData) {
         this.lstPathData = lstPathData;
+    }
+
+    public ColorModel getColorModel() {
+        return colorModel;
+    }
+
+    public void setColorModel(ColorModel colorModel) {
+        this.colorModel = colorModel;
     }
 }
