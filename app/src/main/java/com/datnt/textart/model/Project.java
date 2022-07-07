@@ -24,14 +24,10 @@ public class Project implements Serializable {
     private ArrayList<TemplateModel> lstTempModel;
     private ArrayList<Matrix> lstMatrix;
 
-    public Project(BackgroundModel backgroundModel,
-                   ArrayList<TextModel> lstTextModel,
-                   ArrayList<EmojiModel> lstEmojiModel,
-                   ArrayList<ImageModel> lstImageModel,
-                   ArrayList<OverlayModel> lstOverlayModel,
-                   ArrayList<DecorModel> lstDecorModel,
-                   ArrayList<TemplateModel> lstTempModel,
-                   ArrayList<Matrix> lstMatrix, Bitmap thumb) {
+    public Project(BackgroundModel backgroundModel, ArrayList<TextModel> lstTextModel,
+                   ArrayList<EmojiModel> lstEmojiModel, ArrayList<ImageModel> lstImageModel,
+                   ArrayList<OverlayModel> lstOverlayModel, ArrayList<DecorModel> lstDecorModel,
+                   ArrayList<TemplateModel> lstTempModel, ArrayList<Matrix> lstMatrix, Bitmap thumb) {
         this.backgroundModel = backgroundModel;
         this.lstTextModel = lstTextModel;
         this.lstMatrix = lstMatrix;

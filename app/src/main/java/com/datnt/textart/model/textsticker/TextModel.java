@@ -16,6 +16,17 @@ public class TextModel implements Serializable {
     private ShearTextModel shearTextModel;
     private int opacity;
 
+    public TextModel(TextModel textModel) {
+        this.content = textModel.content;
+        this.quoteModel = textModel.quoteModel;
+        this.fontModel = textModel.fontModel;
+        this.typeAlign = textModel.typeAlign;
+        this.color = textModel.color;
+        this.shadowModel = textModel.shadowModel;
+        this.shearTextModel = textModel.shearTextModel;
+        this.opacity = textModel.opacity;
+    }
+
     public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, int typeAlign,
                      ColorModel color, ShadowModel shadowModel, ShearTextModel shearTextModel, int opacity) {
         this.content = content;

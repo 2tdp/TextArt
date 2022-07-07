@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.adapter.FontsAdapter;
 import com.datnt.textart.adapter.StyleFontAdapter;
 import com.datnt.textart.data.DataFont;
@@ -33,7 +34,7 @@ import com.datnt.textart.utils.Utils;
 
 import java.util.ArrayList;
 
-public class AddTextActivity extends AppCompatActivity {
+public class AddTextActivity extends BaseActivity {
 
     private ImageView ivBack, ivTick, ivLeft, ivCenter, ivRight;
     private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts, tvClear;

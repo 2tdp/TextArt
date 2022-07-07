@@ -119,6 +119,8 @@ public class DrawableSticker extends Sticker {
         for (String pathData : lstPath) {
             path.addPath(PathParser.createPathFromPathData(pathData));
         }
+
+        path.computeBounds(realBounds, true);
     }
 
     public ArrayList<String> getListPathData() {

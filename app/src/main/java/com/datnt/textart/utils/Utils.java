@@ -24,6 +24,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -50,6 +51,7 @@ import com.datnt.textart.R;
 import com.edmodo.cropper.cropwindow.handle.Handle;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,6 +152,20 @@ public class Utils {
                 + font.toLowerCase() + "/"
                 + font.toLowerCase() + "_"
                 + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
+    }
+
+    public static Bitmap getBitmapFromUri(Context context, Uri selectedFileUri) {
+        Bitmap image = null;
+        try {
+            ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(selectedFileUri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+
+            parcelFileDescriptor.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
     public static Bitmap getBitmapFromAsset(Context context, String nameFolder, String name, boolean isEmoji, boolean isDecor) {

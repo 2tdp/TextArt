@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.textart.callback.IClickFolder;
 import com.datnt.textart.fragment.create.ColorFragment;
@@ -22,7 +23,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Objects;
 
-public class CreateProjectActivity extends AppCompatActivity {
+public class CreateProjectActivity extends BaseActivity {
 
     private boolean isBackground;
 

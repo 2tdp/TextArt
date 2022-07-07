@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.datnt.textart.R;
 import com.datnt.textart.activity.Settings;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.adapter.ProjectAdapter;
 import com.datnt.textart.customview.CropRatioView;
 import com.datnt.textart.model.Project;
@@ -23,7 +24,7 @@ import com.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
 
-public class ProjectsActivity extends AppCompatActivity {
+public class ProjectsActivity extends BaseActivity {
 
     private ImageView ivBack, ivSettings;
     private TextView tvProjects;
@@ -34,7 +35,6 @@ public class ProjectsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.activity_projects);
 
         init();

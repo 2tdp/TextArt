@@ -102,6 +102,7 @@
     //image
     <string name="crop">Crop</string>
     <string name="filter">Filter</string>
+    <string name="pick_image">Choose Image</string>
     <string name="cant_get_image">Can\'t get image!</string>
 
     //sticker

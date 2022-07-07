@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.textart.fragment.splash.SplashFragment;
 import com.datnt.textart.sharepref.DataLocalManager;
@@ -16,7 +17,7 @@ import com.datnt.textart.utils.Utils;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 @SuppressLint("CustomSplashScreen")
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
 
     private ViewPager2 viewPager2;
     private DotsIndicator indicator;
@@ -33,7 +34,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.splash_activity);
 
         init();

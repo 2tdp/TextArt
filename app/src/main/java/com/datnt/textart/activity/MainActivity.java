@@ -1,7 +1,5 @@
 package com.datnt.textart.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,13 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.activity.project.CreateProjectActivity;
 import com.datnt.textart.activity.project.ProjectsActivity;
 import com.datnt.textart.activity.template.TemplateActivity;
 import com.datnt.textart.fragment.vip.VipOneFragment;
 import com.datnt.textart.utils.Utils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private ImageView ivVip;
     private TextView tvCrePro, tvTemp, tvPro;
@@ -24,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.activity_main);
 
         init();
@@ -84,5 +82,10 @@ public class MainActivity extends AppCompatActivity {
         tvCrePro = findViewById(R.id.tvCreate);
         tvTemp = findViewById(R.id.tvTemp);
         tvPro = findViewById(R.id.tvPro);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

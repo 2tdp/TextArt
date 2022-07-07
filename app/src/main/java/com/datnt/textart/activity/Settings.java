@@ -1,15 +1,14 @@
 package com.datnt.textart.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.utils.Utils;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends BaseActivity {
 
     private ImageView ivBack, ivVip;
     private RelativeLayout rlRate, rlHelp, rlPolicy;

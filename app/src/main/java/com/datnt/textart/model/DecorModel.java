@@ -11,6 +11,14 @@ public class DecorModel implements Serializable {
     private ColorModel colorModel;
     private boolean isSelected;
 
+    public DecorModel(DecorModel decorModel) {
+        this.nameDecor = decorModel.nameDecor;
+        this.nameFolder = decorModel.nameFolder;
+        this.lstPathData = decorModel.lstPathData;
+        this.colorModel = decorModel.colorModel;
+        this.isSelected = decorModel.isSelected;
+    }
+
     public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData, ColorModel colorModel, boolean isSelected) {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;

@@ -1,16 +1,13 @@
 package com.datnt.textart.activity.template;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.activity.edit.EditActivity;
 import com.datnt.textart.adapter.TemplateAdapter;
 import com.datnt.textart.data.DataTemplate;
@@ -18,7 +15,7 @@ import com.datnt.textart.model.TemplateModel;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 
-public class TemplateActivity extends AppCompatActivity {
+public class TemplateActivity extends BaseActivity {
 
 
     @Override

@@ -10,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.datnt.textart.R;
+import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.karumi.dexter.Dexter;
@@ -26,12 +25,11 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
-public class RequestPermissionActivity extends AppCompatActivity {
+public class RequestPermissionActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setStatusBarTransparent(this);
         setContentView(R.layout.request_permission_layout);
     }
 
@@ -117,8 +115,8 @@ public class RequestPermissionActivity extends AppCompatActivity {
         if (!DataLocalManager.getCheck("per")) {
             initView();
         } else {
-            Intent intent = new Intent(RequestPermissionActivity.this, MainActivity.class);
-            startActivity(intent);
+            Utils.setIntent(this, MainActivity.class.getName());
+            finish();
         }
     }
 }

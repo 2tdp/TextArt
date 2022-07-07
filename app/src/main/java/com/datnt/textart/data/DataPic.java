@@ -86,33 +86,34 @@ public class DataPic {
 
                 File file = new File(data);
                 if (file.canRead()) {
-                    lstAll.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                    lstAll.add(new PicModel(id, bucket, data, contentUri.toString(), false));
                     boolean check = false;
                     if (lstBucket.isEmpty()) {
                         lstPic = new ArrayList<>();
                         if (bucket != null) {
-                            lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
                             lstBucket.add(new BucketPicModel(lstPic, bucket));
-                        } else {
-                            lstPic.add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
+                            lstPic.add(new PicModel(id, bucket, data, contentUri.toString(), false));
+                        }
+                        else {
                             lstBucket.add(new BucketPicModel(lstPic, ""));
+                            lstPic.add(new PicModel(id, "", data, contentUri.toString(), false));
                         }
                     } else {
                         for (int i = 0; i < lstBucket.size(); i++) {
                             if (bucket == null) {
-                                lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, "", height, width, size, data, contentUri.toString(), false));
+                                lstBucket.get(i).getLstPic().add(new PicModel(id, "",  data, contentUri.toString(), false));
                                 check = true;
                                 break;
                             }
                             if (bucket.equals(lstBucket.get(i).getBucket())) {
-                                lstBucket.get(i).getLstPic().add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                                lstBucket.get(i).getLstPic().add(new PicModel(id, bucket, data, contentUri.toString(), false));
                                 check = true;
                                 break;
                             }
                         }
                         if (!check) {
                             lstPic = new ArrayList<>();
-                            lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                            lstPic.add(new PicModel(id,bucket, data, contentUri.toString(), false));
                             lstBucket.add(new BucketPicModel(lstPic, bucket));
                         }
                     }
@@ -167,7 +168,7 @@ public class DataPic {
 
                 File file = new File(data);
                 if (file.canRead())
-                    lstPic.add(new PicModel(id, title, date, bucket, height, width, size, data, contentUri.toString(), false));
+                    lstPic.add(new PicModel(id, bucket, data, contentUri.toString(), false));
             }
         }
         return lstPic;
