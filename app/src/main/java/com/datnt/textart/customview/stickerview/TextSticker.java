@@ -9,9 +9,11 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
@@ -122,12 +124,12 @@ public class TextSticker extends Sticker {
 
     @Override
     public int getWidth() {
-            return drawable.getIntrinsicWidth();
+        return drawable.getIntrinsicWidth();
     }
 
     @Override
     public int getHeight() {
-            return drawable.getIntrinsicHeight();
+        return drawable.getIntrinsicHeight();
     }
 
     @Override
@@ -179,6 +181,7 @@ public class TextSticker extends Sticker {
     public TextSticker setTextSize(@Dimension(unit = Dimension.SP) float size) {
         textPaint.setTextSize(convertSpToPx(size));
         maxTextSizePixels = textPaint.getTextSize();
+        createDrawableText();
         return this;
     }
 
@@ -228,6 +231,9 @@ public class TextSticker extends Sticker {
                     new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
                     new float[]{0, 1}, Shader.TileMode.MIRROR);
             textPaint.setShader(shader);
+
+            staticLayout = new StaticLayout(this.text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                    lineSpacingExtra, true);
         }
         return this;
     }
@@ -308,6 +314,7 @@ public class TextSticker extends Sticker {
 
     public TextSticker setText(String text) {
         this.text = text;
+        createDrawableText();
         return this;
     }
 
@@ -354,7 +361,7 @@ public class TextSticker extends Sticker {
 
             // Measure using a StaticLayout instance
             StaticLayout staticLayout = new StaticLayout(text, textPaintCopy, availableWidthPixels, Layout.Alignment.ALIGN_NORMAL,
-                            lineSpacingMultiplier, lineSpacingExtra, false);
+                    lineSpacingMultiplier, lineSpacingExtra, false);
 
             // Check that we have a least one line of rendered text
             if (staticLayout.getLineCount() > 0) {
@@ -419,6 +426,27 @@ public class TextSticker extends Sticker {
 
     private float convertPxToSp(float scaledPixels) {
         return scaledPixels / context.getResources().getDisplayMetrics().scaledDensity;
+    }
+
+    private void createDrawableText() {
+        String text = getText();
+
+        textPaint.getTextBounds(text, 0, text.length(), textRect);
+
+        GradientDrawable drawable = new GradientDrawable();
+
+        float check = context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp);
+        if (text.length() < 20)
+            drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
+        else if (textRect.width() < check)
+            drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
+        else
+            drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
+
+        drawable.setColor(Color.TRANSPARENT);
+        setDrawable(drawable);
+        staticLayout = new StaticLayout(this.text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                lineSpacingExtra, true);
     }
 
     public int getId() {

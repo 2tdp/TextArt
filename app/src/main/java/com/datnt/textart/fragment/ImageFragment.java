@@ -57,7 +57,7 @@ public class ImageFragment extends Fragment {
             Utils.clearBackStack(requireActivity().getSupportFragmentManager());
         });
 
-        recentAdapter.setData(DataPic.getAllPictureList(requireContext()));
+        recentAdapter.setData(DataLocalManager.getListBucket("bucket").get(0).getLstPic());
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
 
         rcvPickImage.setLayoutManager(manager);

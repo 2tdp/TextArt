@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -128,6 +129,27 @@ public class Utils {
         for (int i = 0; i < count; ++i) {
             manager.popBackStack();
         }
+    }
+
+    public static String saveBitmapToApp(Context context, Bitmap bitmap, String name) {
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir("remiTextArt", Context.MODE_PRIVATE);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        File myPath = new File(directory, name + ".png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+            return myPath.getPath();
+        } catch (Exception e) {
+            Log.e("SAVE_IMAGE", e.getMessage(), e);
+        }
+        return "";
     }
 
     public static void setAnimExit(Activity activity) {

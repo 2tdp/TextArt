@@ -69,13 +69,10 @@ public class RecentFragment extends Fragment {
         rcvBucket = view.findViewById(R.id.rcvBucketPic);
         rlExpand = view.findViewById(R.id.rlExpand);
         vBg = view.findViewById(R.id.viewBg);
-        lstBucket = new ArrayList<>();
 
         rlExpand.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 60 / 100;
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            lstBucket = new ArrayList<>(DataPic.getBucketPictureList(requireContext()));
-        else Utils.setIntent(requireActivity(), RequestPermissionActivity.class.getName());
+        lstBucket = new ArrayList<>(DataLocalManager.getListBucket("bucket"));
 
         if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 

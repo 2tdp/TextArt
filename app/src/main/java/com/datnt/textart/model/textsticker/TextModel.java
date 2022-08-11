@@ -1,7 +1,11 @@
 package com.datnt.textart.model.textsticker;
 
+import android.content.Context;
+
+import com.datnt.textart.R;
 import com.datnt.textart.model.ColorModel;
 import com.datnt.textart.model.ShadowModel;
+import com.datnt.textart.utils.Utils;
 
 import java.io.Serializable;
 

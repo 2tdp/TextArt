@@ -3,6 +3,7 @@ package com.datnt.textart.model;
 import java.io.Serializable;
 
 public class EmojiModel implements Serializable {
+
     private String nameEmoji;
     private String nameFolder;
     private int opacity;

@@ -55,7 +55,7 @@
                 android:textSize="@dimen/_13ssp" />
 
             <View
-                android:layout_width="0.5dp"
+                android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.datnt.textart.R;
 import com.datnt.textart.activity.base.BaseActivity;
+import com.datnt.textart.data.DataPic;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;
 import com.karumi.dexter.Dexter;
@@ -65,6 +66,7 @@ public class RequestPermissionActivity extends BaseActivity {
                         public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                             if (multiplePermissionsReport.areAllPermissionsGranted()) {
                                 DataLocalManager.setCheck("per", true);
+                                new Thread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this)).start();
                                 startActivity(intent);
                                 finish();
                             } else {
@@ -86,6 +88,7 @@ public class RequestPermissionActivity extends BaseActivity {
                         public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                             if (multiplePermissionsReport.areAllPermissionsGranted()) {
                                 DataLocalManager.setCheck("per", true);
+                                new Thread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this)).start();
                                 startActivity(intent);
                                 finish();
                             } else {

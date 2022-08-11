@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.datnt.textart.R;
 import com.datnt.textart.activity.base.BaseActivity;
 import com.datnt.textart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.textart.data.DataPic;
 import com.datnt.textart.fragment.splash.SplashFragment;
 import com.datnt.textart.sharepref.DataLocalManager;
 import com.datnt.textart.utils.Utils;

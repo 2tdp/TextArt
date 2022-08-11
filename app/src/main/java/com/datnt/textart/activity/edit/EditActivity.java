@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -162,7 +163,7 @@ public class EditActivity extends AppCompatActivity {
     private Bitmap bitmapDrawable, bitmapFilterBlend, bitmapAjust;
     private BackgroundModel backgroundModel;
     private ArrayList<StickerModel> lstSticker;
-    private ArrayList<FilterBlendModel> lstFilterBlend;
+    private ArrayList<FilterBlendModel> lstFilterBlend, lstBlend;
     private ArrayList<ColorModel> lstColor;
     private TextSticker textSticker;
     private DrawableSticker drawableSticker;
@@ -2080,6 +2081,7 @@ public class EditActivity extends AppCompatActivity {
 
         filterBlendImageAdapter = new FilterBlendImageAdapter(this, (o, pos) -> {
             FilterBlendModel filter = (FilterBlendModel) o;
+            Log.d("2tdp", "blendImage: " + filter.getParameterFilter());
             filter.setCheck(true);
             filterBlendImageAdapter.setCurrent(pos);
             filterBlendImageAdapter.changeNotify();
@@ -2106,7 +2108,7 @@ public class EditActivity extends AppCompatActivity {
             positionBlend = pos;
         });
 
-        if (!lstFilterBlend.isEmpty()) filterBlendImageAdapter.setData(lstFilterBlend);
+        if (!lstFilterBlend.isEmpty()) filterBlendImageAdapter.setData(lstBlend);
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rcvEditBlend.setLayoutManager(manager);
@@ -2119,9 +2121,12 @@ public class EditActivity extends AppCompatActivity {
 
     private void setUpDataBlend() {
         if (bitmapFilterBlend == null) return;
+
+        Bitmap bitmap = Bitmap.createScaledBitmap(bitmapFilterBlend, 400, 400 * bitmapFilterBlend.getHeight() / bitmapFilterBlend.getWidth(), false);
+        String path = Utils.saveBitmapToApp(this, bitmap, "blendDemo");
+
         new Thread(() -> {
-            lstFilterBlend = FilterBlendImage.getDataBlend(
-                    Bitmap.createScaledBitmap(bitmapFilterBlend, 400, 400 * bitmapFilterBlend.getHeight() / bitmapFilterBlend.getWidth(), false));
+            lstBlend = FilterBlendImage.getDataBlend(BitmapFactory.decodeFile(path));
 
             handler.sendEmptyMessage(1);
         }).start();
@@ -2669,7 +2674,7 @@ public class EditActivity extends AppCompatActivity {
             if (st.getDrawableSticker() != null)
                 if (st.getDrawableSticker().getId() == drawableSticker.getId()) {
                     opacity = (int) (st.getDrawableSticker().getAlpha() * 100 / 255f);
-                    sbOpacityEmoji.setProgress((int) (st.getDrawableSticker().getAlpha() * 100 / 255f));
+                    sbOpacityEmoji.setProgress(opacity);
                 }
         }
         sbOpacityEmoji.setOnSeekbarResult(new OnSeekbarResult() {
@@ -2949,6 +2954,7 @@ public class EditActivity extends AppCompatActivity {
         tvXPos.setText(String.valueOf((int) dx));
         sbYPos.setProgress((int) dy);
         tvYPos.setText(String.valueOf((int) dy));
+
         if ((int) textSticker.getRadiusBlur() == 0)
             tvBlur.setText(String.valueOf(0));
         else
@@ -3012,6 +3018,7 @@ public class EditActivity extends AppCompatActivity {
                 else if (value == 50) radiusBlur = 10f;
                 else if (value == 0) radiusBlur = 5f;
                 else radiusBlur = 5 + (value * 5 / 50f);
+
                 tvBlur.setText(String.valueOf(value));
                 textSticker.setShadow(radiusBlur, dx, dy, colorShadow);
                 stickerView.invalidate();
@@ -5671,6 +5678,7 @@ public class EditActivity extends AppCompatActivity {
         if (bitmapFilterBlend != null) bitmapFilterBlend = null;
         if (lstFilterBlend != null) lstFilterBlend = null;
         lstFilterBlend = new ArrayList<>();
+        lstBlend = new ArrayList<>();
         DataLocalManager.setOption("", "bitmap");
         DataLocalManager.setOption("", "bitmap_myapp");
         DataLocalManager.setTemp(null, "temp");

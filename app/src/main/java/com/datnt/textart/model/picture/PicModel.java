@@ -6,14 +6,12 @@ public class PicModel implements Serializable {
 
     private String id;
     private String bucket;
-    private String path;
     private String uri;
     private boolean isCheck;
 
-    public PicModel(String id, String bucket, String path, String uri, boolean isCheck) {
+    public PicModel(String id, String bucket, String uri, boolean isCheck) {
         this.id = id;
         this.bucket = bucket;
-        this.path = path;
         this.uri = uri;
         this.isCheck = isCheck;
     }
@@ -24,10 +22,6 @@ public class PicModel implements Serializable {
 
     public String getBucket() {
         return bucket;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public String getUri() {

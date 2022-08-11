@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.datnt.textart.adapter.ProjectAdapter;
 import com.datnt.textart.model.ColorModel;
+import com.datnt.textart.model.picture.BucketPicModel;
+import com.datnt.textart.model.picture.PicModel;
 import com.datnt.textart.model.textsticker.FontModel;
 import com.datnt.textart.model.Project;
 import com.datnt.textart.model.TemplateModel;
@@ -203,5 +205,32 @@ public class DataLocalManager {
         }
 
         return project;
+    }
+
+    public static void setListBucket(ArrayList<BucketPicModel> lstBucket, String key) {
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.toJsonTree(lstBucket).getAsJsonArray();
+        String json = jsonArray.toString();
+
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static ArrayList<BucketPicModel> getListBucket(String key) {
+        Gson gson = new Gson();
+        JSONObject jsonObject;
+        ArrayList<BucketPicModel> lstBucket = new ArrayList<>();
+
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        try {
+            JSONArray jsonArray = new JSONArray(strJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                lstBucket.add(gson.fromJson(jsonObject.toString(), BucketPicModel.class));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return lstBucket;
     }
 }
